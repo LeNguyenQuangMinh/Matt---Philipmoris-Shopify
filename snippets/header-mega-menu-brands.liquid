@@ -1,0 +1,146 @@
+{% comment %}
+  Mega menu brand panel: A-Z filter, Popular column, All brands columns.
+
+  Accepts:
+  - bl_stts: block.settings
+  - brands_uid: unique string for scoped JS
+{% endcomment %}
+
+{%- liquid
+  assign alphabet = 'A|B|C|D|E|F|G|H|I|J|K|L|M|N|O|P|Q|R|S|T|U|V|W|X|Y|Z|#' | split: '|'
+  assign brand_columns = bl_stts.brand_columns | default: 3
+  assign popular_menu = bl_stts.popular_brands_menu
+  assign has_popular = false
+
+  if popular_menu != blank and linklists[popular_menu].links.size > 0
+    assign has_popular = true
+  endif
+
+  assign brand_letters = ''
+  for vendor in shop.vendors
+    assign first = vendor | strip | slice: 0, 1 | upcase
+    if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
+      assign first = '#'
+    endif
+    unless brand_letters contains first
+      assign brand_letters = brand_letters | append: first
+    endunless
+  endfor
+
+  assign sorted_vendors = shop.vendors | sort_natural
+-%}
+
+<div
+  class="mega-menu-brands"
+  id="MegaMenuBrands-{{ brands_uid }}"
+  style="--brand-columns: {{ brand_columns }};"
+>
+  {%- if bl_stts.brand_text -%}
+    <div class="mega-menu-brands__view-all center uppercase">
+      <a
+        {% if bl_stts.brand_url == blank %}
+          role="link" aria-disabled="true"
+        {% else %}
+          href="{{ bl_stts.brand_url }}"
+        {% endif %}
+        class="link link--underline"
+      >
+        {{ bl_stts.brand_text | escape }}
+      </a>
+    </div>
+  {%- endif -%}
+
+  <ul class="mega-menu-brands__nav list-unstyled" role="list">
+    <li data-letter="all" class="is-active">
+      <button type="button">All</button>
+    </li>
+    {%- for letter in alphabet -%}
+      {%- liquid
+        assign nav_letter = letter
+        if letter == '#'
+          assign nav_letter = '#'
+        endif
+        assign has_letter = false
+        if brand_letters contains letter
+          assign has_letter = true
+        endif
+      -%}
+      <li
+        data-letter="{{ letter | downcase }}"
+        {% unless has_letter %}
+          class="is-disabled"
+        {% endunless %}
+      >
+        <button type="button">{{ letter }}</button>
+      </li>
+    {%- endfor -%}
+  </ul>
+
+  <div class="mega-menu-brands__body">
+    {%- if has_popular -%}
+      <div class="mega-menu-brands__group mega-menu-brands__group--popular">
+        <p class="mega-menu-brands__label h5">
+          {{ bl_stts.popular_title | default: 'Popular' | escape }}
+        </p>
+        <ul class="mega-menu-brands__list list-unstyled" role="list">
+          {%- for link in linklists[popular_menu].links -%}
+            <li>
+              <a href="{{ link.url }}" class="link link--underline">
+                {{ link.title | escape }}
+              </a>
+            </li>
+          {%- endfor -%}
+        </ul>
+      </div>
+    {%- endif -%}
+
+    <div class="mega-menu-brands__group mega-menu-brands__group--all">
+      <p class="mega-menu-brands__label h5">
+        {{ bl_stts.all_title | default: 'All' | escape }}
+      </p>
+      <ul class="mega-menu-brands__list mega-menu-brands__list--columns list-unstyled" role="list">
+        {%- for vendor in sorted_vendors -%}
+          {%- liquid
+            assign first = vendor | strip | slice: 0, 1 | downcase
+            assign data_letter = first
+            if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
+              assign data_letter = '#'
+            endif
+          -%}
+          <li class="mega-menu-brands__item" data-letter="{{ data_letter }}">
+            {{ vendor | link_to_vendor: class: 'link link--underline' }}
+          </li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  </div>
+</div>
+
+<script>
+  (() => {
+    const root = document.getElementById('MegaMenuBrands-{{ brands_uid }}');
+    if (!root || root.dataset.initialized === 'true') return;
+    root.dataset.initialized = 'true';
+
+    const navItems = root.querySelectorAll('.mega-menu-brands__nav [data-letter]');
+    const brandItems = root.querySelectorAll('.mega-menu-brands__item');
+
+    const filterBrands = (letter) => {
+      brandItems.forEach((item) => {
+        const itemLetter = item.getAttribute('data-letter');
+        const show = letter === 'all' || itemLetter === letter;
+        item.hidden = !show;
+      });
+    };
+
+    navItems.forEach((navItem) => {
+      navItem.addEventListener('click', () => {
+        if (navItem.classList.contains('is-disabled')) return;
+
+        navItems.forEach((item) => item.classList.remove('is-active'));
+        navItem.classList.add('is-active');
+        filterBrands(navItem.getAttribute('data-letter'));
+      });
+    });
+  })();
+</script>

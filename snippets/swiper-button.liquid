@@ -1,0 +1,15 @@
+<hover-button class="swiper-button swiper-button-prev {{ class_prev }}" data-slide-arrows-id="{{ slide_id }}">
+  <span class="fill-bg absolute" data-fill-bg></span>
+  <span class="svg-wrapper">
+    {%- render 'icon-arrow' -%}
+  </span>
+</hover-button>
+<hover-button class="swiper-button swiper-button-next {{ class_next }}" data-slide-arrows-id="{{ slide_id }}">
+  <span class="fill-bg absolute" data-fill-bg></span>
+  {%- if show_fraction_on_arrow -%}
+    <span class="swiper-pagination swiper-pagination-fraction custom-fraction"></span>
+  {%- endif -%}
+  <span class="svg-wrapper">
+    {%- render 'icon-arrow' -%}
+  </span>
+</hover-button>

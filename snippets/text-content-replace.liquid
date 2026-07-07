@@ -1,0 +1,33 @@
+{%- doc -%}
+  Replaces text only in HTML text nodes, not inside tags or attributes.
+
+  @param {string} text - HTML string to process
+  @param {string} search - exact string to find
+  @param {string} replacement - replacement HTML
+{%- enddoc -%}
+
+{%- liquid
+  assign parts = text | split: '<'
+  assign parts_size = parts.size
+
+  if parts_size == 1
+    echo text | replace: search, replacement
+  else
+    assign result = parts[0] | replace: search, replacement
+
+    for part in parts offset: 1
+      assign tag = part | split: '>' | first
+      assign tag_length = tag.size | plus: 1
+      assign content_length = part.size | minus: tag_length
+      assign content = part | slice: tag_length, content_length
+
+      capture processed_content
+        render 'text-content-replace', text: content, search: search, replacement: replacement
+      endcapture
+
+      assign result = result | append: '<' | append: tag | append: '>' | append: processed_content
+    endfor
+
+    echo result
+  endif
+-%}
