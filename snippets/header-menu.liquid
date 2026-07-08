@@ -42,8 +42,9 @@
               assign mega_menu_1 = section.blocks | where: 'type', 'mega_menu_1'
               assign mega_menu_2 = section.blocks | where: 'type', 'mega_menu_2'
               assign mega_menu_3 = section.blocks | where: 'type', 'mega_menu_3'
+              assign mega_menu_4 = section.blocks | where: 'type', 'mega_menu_4'
               assign check_mega_menu = false
-              if mega_menu_1.size > 0 or mega_menu_2.size > 0 or mega_menu_3.size > 0
+              if mega_menu_1.size > 0 or mega_menu_2.size > 0 or mega_menu_3.size > 0 or mega_menu_4.size > 0
                 assign check_mega_menu = true
               endif
 
@@ -73,8 +74,16 @@
                   assign has_mega_menu = true
                 endif
               endfor
+
+              for mega_block in mega_menu_4
+                assign block_title = mega_block.settings.menu_item | escape | downcase | handle
+                if block_title == menu_title
+                  assign block = mega_block
+                  assign has_mega_menu = true
+                endif
+              endfor
             -%}
-            {%- if check_mega_menu and has_mega_menu -%}
+            {%- if has_mega_menu or link.links != blank -%}
               <details
                 id="Details-HeaderMenu-{{ forloop.index }}"
                 class="details--dropdown mega-menu"

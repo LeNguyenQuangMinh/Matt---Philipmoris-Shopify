@@ -1,0 +1,102 @@
+{% comment %}
+  Renders a megamenu for the header.
+
+  Usage:
+  {% render 'header-mega-menu' %}
+{% endcomment %}
+
+{%- liquid
+  assign bl_stts = block.settings
+  assign divider = bl_stts.divider
+
+  assign section_fetch = section_fetch | default: false
+  if section.index == nil
+    assign section_fetch = true
+  endif
+-%}
+
+{%- unless section_fetch -%}
+  <div
+    id="MegaMenu-Content-{{ section.id }}-{{ forloopIndex }}-{{ block_id }}"
+    class="list-menu--wrapper"
+    tabindex="-1"
+    style="--columns-count: {{ bl_stts.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
+  ></div>
+{%- else -%}
+  <div
+    id="MegaMenu-Content-{{ section.id }}-{{ forloopIndex }}-{{ block_id }}"
+    class="list-menu--wrapper mega-menu--4 {% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %} {% if divider %} border-b{% endif %}"
+    tabindex="-1"
+    style="--columns-count: {{ bl_stts.grid }}; --gap-x: 2rem; --gap-y: 2rem; padding: 2rem 0;"
+  >
+  {% if link.links.size > 0 %}
+    <div class="mega-menu__container page-width page-width--{{ bl_stts.width }}">
+      
+      {%- if bl_stts.top_link_label != blank -%}
+      <div class="mega-menu-4-top center" style="margin-bottom: 2rem;">
+        <a href="{{ bl_stts.top_link_url | default: '#' }}" class="link link--text uppercase" style="font-size: 1.4rem; letter-spacing: 0.1em; color: rgba(var(--color-foreground), 1); text-decoration: none;">
+          {{ bl_stts.top_link_label }}
+        </a>
+      </div>
+      {%- endif -%}
+
+      <ul
+        class="mega-menu__list header__mega-submenu grid-layout lg:grid-layout--{{ bl_stts.grid }}"
+        role="list"
+        style="display: grid; gap: 2rem; grid-template-columns: repeat({{ bl_stts.grid }}, minmax(0, 1fr));"
+      >
+        {%- for childlink in link.links -%}
+          {%- assign image = blank -%}
+          
+          {%- assign lv1_handle = link.title | replace: '&', 'and' | handleize -%}
+          {%- assign lv2_handle = childlink.title | replace: '&', 'and' | handleize -%}
+          {%- assign image_name_jpg = lv1_handle | append: '-' | append: lv2_handle | append: '.jpg' -%}
+          {%- assign image_name_png = lv1_handle | append: '-' | append: lv2_handle | append: '.png' -%}
+          {%- assign image_name_webp = lv1_handle | append: '-' | append: lv2_handle | append: '.webp' -%}
+          
+          {%- assign custom_image = images[image_name_jpg] -%}
+          {%- if custom_image == blank -%}
+            {%- assign custom_image = images[image_name_png] -%}
+          {%- endif -%}
+          {%- if custom_image == blank -%}
+            {%- assign custom_image = images[image_name_webp] -%}
+          {%- endif -%}
+
+          {%- if custom_image != blank -%}
+            {%- assign image = custom_image -%}
+          {%- elsif childlink.type == 'collection_link' and childlink.object.image != blank -%}
+            {%- assign image = childlink.object.image -%}
+          {%- endif -%}
+
+          <li class="mega-menu__column" style="display: flex; flex-direction: column; gap: 1rem;">
+            {%- if image != blank -%}
+              <a href="{{ childlink.url }}" class="media media--transparent media--square block mb-2" style="padding-bottom: 100%; position: relative; display: block; overflow: hidden;">
+                <img src="{{ image | image_url: width: 300 }}" loading="lazy" width="{{ image.width }}" height="{{ image.height }}" alt="{{ image.alt | escape }}" class="motion-reduce" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover;">
+              </a>
+            {%- endif -%}
+            
+            <a href="{{ childlink.url }}" class="header__menu-item mega-menu__link mega-menu__link--level-2 link link--hover-underline uppercase" style="font-weight: 600; font-size: 1.3rem; margin-bottom: 0.5rem; text-decoration: underline; text-underline-offset: 4px; padding: 0;">
+              {{ childlink.title | escape }}
+            </a>
+            
+            {%- if childlink.links != blank -%}
+              <ul class="list-unstyled" role="list" style="display: flex; flex-direction: column; gap: 0.8rem; margin: 0; padding: 0;">
+                {%- for grandchildlink in childlink.links -%}
+                  <li>
+                    <a href="{{ grandchildlink.url }}" class="header__menu-item mega-menu__link link link--hover-underline mega-menu__link--level-3" style="font-size: 1.4rem; color: rgba(var(--color-foreground), 0.8); padding: 0;">
+                      {{ grandchildlink.title | escape }}
+                    </a>
+                  </li>
+                {%- endfor -%}
+              </ul>
+            {%- endif -%}
+          </li>
+        {%- endfor -%}
+      </ul>
+
+
+
+    </div>
+  {% endif %}
+  </div>
+{%- endunless -%}

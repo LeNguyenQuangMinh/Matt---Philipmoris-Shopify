@@ -1062,6 +1062,90 @@
         ]
       },
       {
+        "type": "mega_menu_4",
+        "name": "Mega menu style 4",
+        "settings": [
+          {
+            "type": "text",
+            "id": "menu_item",
+            "label": "t:settings.menu_item_name",
+            "info": "t:info.menu_item_name_info"
+          },
+          {
+            "type": "select",
+            "id": "grid",
+            "options": [
+              { "value": "2", "label": "2" },
+              { "value": "3", "label": "3" },
+              { "value": "4", "label": "4" },
+              { "value": "5", "label": "5" },
+              { "value": "6", "label": "6" }
+            ],
+            "default": "6",
+            "label": "t:settings.grid_for_menus"
+          },
+          {
+            "type": "header",
+            "content": "t:content.size"
+          },
+          {
+            "type": "select",
+            "id": "width",
+            "label": "t:settings.width",
+            "options": [
+              {
+                "value": "page-width",
+                "label": "t:options.page"
+              },
+              {
+                "value": "full",
+                "label": "t:options.full"
+              }
+            ],
+            "default": "full"
+          },
+          {
+            "type": "header",
+            "content": "Top Link"
+          },
+          {
+            "type": "text",
+            "id": "top_link_label",
+            "label": "Top link label",
+            "default": "VIEW ALL FOOTWEAR"
+          },
+          {
+            "type": "url",
+            "id": "top_link_url",
+            "label": "Top link URL"
+          },
+
+          {
+            "type": "header",
+            "content": "t:content.bottom_block"
+          },
+          {
+            "type": "checkbox",
+            "id": "divider",
+            "label": "t:settings.divider",
+            "default": false
+          },
+          {
+            "type": "checkbox",
+            "id": "inherit_color_scheme",
+            "label": "t:settings.inherit_color_scheme",
+            "default": false
+          },
+          {
+            "type": "color_scheme",
+            "id": "color_scheme",
+            "label": "t:settings.color_scheme",
+            "default": "scheme-1",
+            "visible_if": "{{ block.settings.inherit_color_scheme == false }}"
+          }
+        ]
+      },
+      {
         "type": "vertical_menu",
         "name": "t:names.vertical_menu",
         "limit": 1,
