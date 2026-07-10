@@ -5,7 +5,9 @@
   assign right = ''
 
   if first != blank
-    assign left = 'first '
+    if settings.mobile_layout != 'custom'
+      assign left = 'first '
+    endif
   endif
 
   for item in order
@@ -18,6 +20,10 @@
     case item
       when 'account', 'actions'
         assign item_column = 'right'
+      when 'mobile_search'
+        if settings.mobile_layout == 'custom'
+          assign item_column = 'right'
+        endif
     endcase
 
     if row == 'top' and item_row == 'bottom'
@@ -46,6 +52,12 @@
       endcase
     endif
   endfor
+
+  if first != blank
+    if settings.mobile_layout == 'custom'
+      assign right = right | append: 'first '
+    endif
+  endif
 
   assign columns = 'left,center,right' | split: ','
 -%}

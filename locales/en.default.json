@@ -468,7 +468,7 @@
     "s": "s",
     "sec": "sec",
     "secs": "secs",
-    "search": "Search",
+    "search": "Search Product or Brand",
     "search_for": "Search for “{{ terms }}”",
     "search_input_label": "Search",
     "search_input_placeholder": "Search",
@@ -600,7 +600,7 @@
       "update": "Update address",
       "zip": "Postal/ZIP code"
     },
-    "log_in": "Log in",
+    "log_in": "Sign In",
     "log_out": "Log out",
     "login_page": {
       "alternate_provider_separator": "or",

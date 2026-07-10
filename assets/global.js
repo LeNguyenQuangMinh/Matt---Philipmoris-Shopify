@@ -6049,3 +6049,50 @@ if (!customElements.get('jumbo-text')) customElements.define('jumbo-text', Jumbo
   });
 })();
 // --------------------------------------------------------
+
+class MegaMenuBrands extends HTMLElement {
+  constructor() {
+    super();
+  }
+
+  connectedCallback() {
+    if (this.dataset.initialized === 'true') return;
+    this.dataset.initialized = 'true';
+
+    this.navItems = this.querySelectorAll('.mega-menu-brands__nav [data-letter]');
+    this.brandItems = this.querySelectorAll('.mega-menu-brands__item');
+    this.allLabel = this.querySelector('.mega-menu-brands__group--all .mega-menu-brands__label');
+    this.originalAllTitle = this.allLabel ? this.allLabel.textContent.trim() : 'All';
+
+    this.navItems.forEach((navItem) => {
+      navItem.addEventListener('click', (e) => {
+        e.preventDefault();
+        console.log('Clicked letter:', navItem.getAttribute('data-letter'));
+        if (navItem.classList.contains('is-disabled')) {
+          console.log('This letter is disabled');
+          return;
+        }
+
+        this.navItems.forEach((item) => item.classList.remove('is-active'));
+        navItem.classList.add('is-active');
+        this.filterBrands(navItem.getAttribute('data-letter'));
+      });
+    });
+  }
+
+  filterBrands(letter) {
+    this.brandItems.forEach((item) => {
+      const itemLetter = item.getAttribute('data-letter');
+      const show = letter === 'all' || itemLetter === letter;
+      item.style.display = show ? '' : 'none';
+    });
+
+    if (this.allLabel) {
+      this.allLabel.textContent = letter === 'all' ? this.originalAllTitle : letter.toUpperCase();
+    }
+  }
+}
+
+if (!customElements.get('mega-menu-brands')) {
+  customElements.define('mega-menu-brands', MegaMenuBrands);
+}

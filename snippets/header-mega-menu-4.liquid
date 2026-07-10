@@ -30,7 +30,7 @@
     style="--columns-count: {{ bl_stts.grid }}; --gap-x: 2rem; --gap-y: 2rem; padding: 2rem 0;"
   >
   {% if link.links.size > 0 %}
-    <div class="mega-menu__container page-width page-width--{{ bl_stts.width }}">
+    <div class="mega-menu__container page-width page-width--{{ bl_stts.width }}{% if bl_stts.width == 'custom' or bl_stts.width == 'page-width' %} mega-menu__container--custom-width{% endif %}"{% if bl_stts.width == 'custom' %} style="max-width: {{ bl_stts.custom_width }}px; margin: 0 auto;"{% endif %}>
       
       {%- if bl_stts.top_link_label != blank -%}
       <div class="mega-menu-4-top center" style="margin-bottom: 2rem;">

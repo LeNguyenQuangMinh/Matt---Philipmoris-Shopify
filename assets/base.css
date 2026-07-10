@@ -4945,7 +4945,7 @@ tabs-component:not(.predictive-search-tabs) .tabs-component-content {
   }
 }
 
-@media screen and (max-width: 1024px){
+@media screen and (max-width: 1024px) {
   .swiper:not(.swiper-initialized) .swiper-wrapper.grid-layout--1 .swiper-slide:not(:first-child) {
     display: none;
   }
@@ -7507,6 +7507,7 @@ text-loader-component {
 
   &.link.--active {
     color: var(--color-primary-hover);
+
     .text {
       font-weight: var(--button-font-weight-link);
       background-position-x: left;
@@ -11344,6 +11345,7 @@ form.payment-terms {
 }
 
 @media screen and (min-width: 750px) {
+
   before-you-leave .popup__inner,
   age-verification-popup .popup__inner {
     min-width: 90vw;
@@ -11351,6 +11353,7 @@ form.payment-terms {
 }
 
 @media screen and (min-width: 1025px) {
+
   before-you-leave .popup__inner,
   age-verification-popup .popup__inner {
     min-width: 96rem;
@@ -16322,7 +16325,8 @@ slideshow-animated .slide__img-wrapper img {
   gap: var(--gap);
 }
 
-@media screen and (max-width: 1024px){
+@media screen and (max-width: 1024px) {
+
   .section--featured-collection:has(.type-style--tabs-grid) .has-media-banner,
   .section--featured-collection:has(.type-style--tabs-carousel) .has-media-banner {
     display: contents;
@@ -16342,6 +16346,7 @@ slideshow-animated .slide__img-wrapper img {
 }
 
 @media screen and (min-width: 1025px) {
+
   .section--featured-collection:has(.type-style--tabs-grid) .has-media-banner,
   .section--featured-collection:has(.type-style--tabs-carousel) .has-media-banner {
     grid-template-columns: var(--columns-vertical-int, 1fr 2fr);
@@ -16384,7 +16389,8 @@ slideshow-animated .slide__img-wrapper img {
   }
 }
 
-@media screen and (min-width: 1440px){
+@media screen and (min-width: 1440px) {
+
   .section--featured-collection:has(.type-style--tabs-grid) .has-media-banner,
   .section--featured-collection:has(.type-style--tabs-carousel) .has-media-banner {
     grid-template-columns: var(--columns-vertical-int, 41.5rem 2fr);
@@ -17110,6 +17116,12 @@ body:has(> #header-group:empty) {
   }
 }
 
+.mega-menu__content:not(:has(>.header__submenu-wrapper)):has(.mega-menu__container--custom-width) {
+  width: fit-content;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
 .mega-menu__content:has(>.header__submenu-wrapper) {
   position: absolute;
   width: 20rem;
@@ -17259,6 +17271,7 @@ body:has(> #header-group:empty) {
 .azbrandsTable li:first-child {
   margin-left: 0;
 }
+
 /* new code */
 .mega-menu--2 .menu-dropdown__brand {
   grid-column: 1 / -1;
@@ -18398,6 +18411,7 @@ predictive-search-results__card--query,
 }
 
 @media screen and (min-width: 750px) {
+
   .header.header--reveal-logo-on-sticky[data-scroll-direction='down'] .header-logo,
   .header.header--reveal-logo-on-sticky[data-sticky-state='idle'] .header-logo,
   .header.header--reveal-logo-on-sticky[data-sticky-state='active'] .header-logo {
@@ -18413,6 +18427,7 @@ predictive-search-results__card--query,
 }
 
 @media screen and (min-width: 1025px) {
+
   .header.header--reveal-logo-on-sticky[data-scroll-direction='down'] .header-logo__image-container,
   .header.header--reveal-logo-on-sticky[data-sticky-state='idle'] .header-logo__image-container,
   .header.header--reveal-logo-on-sticky[data-sticky-state='active'] .header-logo__image-container {
@@ -18589,8 +18604,8 @@ predictive-search-results__card--query,
 }
 
 .header__icon .svg-wrapper {
-  width: 44px;
-  height: 44px;
+  width: 22px;
+  height: 22px;
 }
 
 summary.header__icon .svg-wrapper {
@@ -20085,4 +20100,56 @@ ul.items-same-height > li {
 /* app styles */
 .shopify-app-block {
   width: 100%;
+}
+
+/* Mobile layout: Logo left, Icons right (mobile_layout = custom) */
+/* Slot order: leftA=Logo | leftB=Search | center=Account | rightA=Cart | rightB=Hamburger */
+@media screen and (max-width: 1024px) {
+  .header__columns--logo-left {
+    --header-template-columns: 1fr var(--header-mobile-bookend) var(--header-mobile-bookend) var(--header-mobile-bookend) var(--header-mobile-bookend);
+
+    grid-template-areas: 'leftA leftB center rightA rightB';
+
+    /* Logo — far left */
+    .header-logo {
+      grid-area: leftA;
+      text-align: left;
+    }
+
+    /* Search icon — leftB */
+    .search-action {
+      grid-area: leftB;
+    }
+
+    /* Account icon — center */
+    .account-actions {
+      grid-area: center;
+    }
+
+    /* If no account: search moves to center */
+    &:not(:has(.account-actions)) .search-action {
+      grid-area: center;
+    }
+
+    /* Cart/Actions — rightA */
+    .header-actions {
+      grid-area: rightA;
+    }
+
+    /* If no actions: account moves to rightA */
+    &:not(:has(.header-actions)) .account-actions {
+      grid-area: rightA;
+    }
+
+    /* If no account and no actions: search moves to rightA */
+    &:not(:has(.header-actions)):not(:has(.account-actions)) .search-action {
+      grid-area: rightA;
+    }
+
+    /* Hamburger — far right (rightB) */
+    side-drawer-opener.header__icon--menu,
+    .header__icon--menu {
+      grid-area: rightB;
+    }
+  }
 }

@@ -152,7 +152,11 @@
   if sec_stts.search_row == 'bottom' or search_style != 'none' and skip_mobile_search == false
     # Mobile search duplicate for when search is not in the right order for mobile layout
     capture mobile_search
-      render 'header-search', class: 'lg:none', input_id: 'Search-In-Modal-Mobile', style: search_style, variant: 'mobile'
+      if sec_stts.mobile_layout == 'custom'
+        render 'header-search-drawer-trigger'
+      else
+        render 'header-search', class: 'lg:none', input_id: 'Search-In-Modal-Mobile', style: search_style, variant: 'mobile'
+      endif
     endcapture
   endif
 
@@ -328,7 +332,7 @@
             style="{{ style | strip }}"
           {%- endif -%}
         >
-          <div class="header__columns items-{{ sec_stts.align_items }} spacing-style">
+          <div class="header__columns items-{{ sec_stts.align_items }} spacing-style{% if sec_stts.mobile_layout == 'custom' %} header__columns--logo-left{% endif %}">
             {{ content }}
           </div>
         </div>
@@ -1375,6 +1379,22 @@
       {
         "type": "header",
         "content": "t:content.layout"
+      },
+      {
+        "type": "select",
+        "id": "mobile_layout",
+        "label": "Mobile Layout",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "custom",
+            "label": "Custom (Logo Left, Icons Right)"
+          }
+        ],
+        "default": "custom"
       },
       {
         "type": "range",

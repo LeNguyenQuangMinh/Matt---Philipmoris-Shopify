@@ -31,5 +31,5 @@
 </side-drawer-opener>
 
 {% if settings.enable_multi_tab_layout_mobile == false %}
-  {% render 'header-drawer', color_scheme: section.settings.menu_mobile_color_scheme, section_id: section_id %}
+  {% render 'header-drawer', color_scheme: section.settings.menu_mobile_color_scheme, section_id: section_id, mobile_layout: section.settings.mobile_layout %}
 {% endif %}

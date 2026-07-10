@@ -1,0 +1,25 @@
+{% comment %}
+  Renders a search icon that opens the mobile menu drawer (instead of the search modal).
+  Used when mobile_layout == 'custom', since the search box lives inside the drawer.
+{% endcomment %}
+
+<div class="header__column-action header__column-action--icon header-block grid__item block search-action lg:none">
+  <div class="header__search">
+    <div>
+      <side-drawer-opener data-side-drawer="#Drawer-Menu">
+        <button
+          class="header__icon header__icon--search header__icon--summary button focus-inset"
+          type="button"
+          aria-haspopup="dialog"
+          aria-label="{{ 'content.search' | t }}"
+        >
+          <span class="header__icon header__icon--icon">
+            <span class="svg-wrapper">
+              {{- 'icon-search.svg' | inline_asset_content -}}
+            </span>
+          </span>
+        </button>
+      </side-drawer-opener>
+    </div>
+  </div>
+</div>

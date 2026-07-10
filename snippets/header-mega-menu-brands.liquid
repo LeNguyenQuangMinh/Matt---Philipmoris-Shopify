@@ -30,10 +30,10 @@
   assign sorted_vendors = shop.vendors | sort_natural
 -%}
 
-<div
+<mega-menu-brands
   class="mega-menu-brands"
   id="MegaMenuBrands-{{ brands_uid }}"
-  style="--brand-columns: {{ brand_columns }};"
+  style="--brand-columns: {{ brand_columns }}; display: block;"
 >
   {%- if bl_stts.brand_text -%}
     <div class="mega-menu-brands__view-all center uppercase">
@@ -114,33 +114,4 @@
       </ul>
     </div>
   </div>
-</div>
-
-<script>
-  (() => {
-    const root = document.getElementById('MegaMenuBrands-{{ brands_uid }}');
-    if (!root || root.dataset.initialized === 'true') return;
-    root.dataset.initialized = 'true';
-
-    const navItems = root.querySelectorAll('.mega-menu-brands__nav [data-letter]');
-    const brandItems = root.querySelectorAll('.mega-menu-brands__item');
-
-    const filterBrands = (letter) => {
-      brandItems.forEach((item) => {
-        const itemLetter = item.getAttribute('data-letter');
-        const show = letter === 'all' || itemLetter === letter;
-        item.hidden = !show;
-      });
-    };
-
-    navItems.forEach((navItem) => {
-      navItem.addEventListener('click', () => {
-        if (navItem.classList.contains('is-disabled')) return;
-
-        navItems.forEach((item) => item.classList.remove('is-active'));
-        navItem.classList.add('is-active');
-        filterBrands(navItem.getAttribute('data-letter'));
-      });
-    });
-  })();
-</script>
+</mega-menu-brands>
