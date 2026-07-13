@@ -1,0 +1,109 @@
+{% comment %}
+  Renders mega menu content inside the mobile drawer.
+
+  Accepts:
+  - mega_block: {Object} The mega menu block
+  - mega_type: {String} The type of mega menu
+  - link: {Object} The parent link
+{% endcomment %}
+
+{%- liquid
+  assign bl_stts = mega_block.settings
+-%}
+
+<div class="menu-drawer__mega-menu" style="padding: 1rem 3.2rem 2rem;">
+  {%- if mega_type == 'mega_menu_1' -%}
+    {%- if bl_stts.show_promotion_banner -%}
+      <div class="menu-drawer__mega-images" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));">
+        {%- for i in (1..3) -%}
+          {%- capture image_key -%}image_{{ i }}{%- endcapture -%}
+          {%- capture link_key -%}link_url_{{ i }}{%- endcapture -%}
+          {%- assign img = bl_stts[image_key] -%}
+          {%- assign url = bl_stts[link_key] -%}
+          {%- if img != blank -%}
+            <a href="{{ url | default: '#' }}" class="block media media--transparent media--adapt" style="--media-adapt-ratio: {{ img.aspect_ratio | default: 1 }}; border-radius: {{ bl_stts.image_corner_radius | divided_by: 10.0 }}rem; overflow: hidden; border: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem solid rgba(var(--color-foreground), 0.1);">
+              {{ img | image_url: width: 300 | image_tag: loading: 'lazy', class: 'motion-reduce' }}
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+  {%- elsif mega_type == 'mega_menu_2' -%}
+    {%- if bl_stts.megamenu_submenu != blank -%}
+      <ul class="list-unstyled" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        {%- for sublink in bl_stts.megamenu_submenu.links -%}
+          <li><a href="{{ sublink.url }}" class="link link--text uppercase" style="font-size: 1.3rem; font-weight: 600;">{{ sublink.title }}</a></li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+    {%- if bl_stts.show_promotion_banner -%}
+      <div class="menu-drawer__mega-images" style="display: grid; gap: 1rem; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); margin-bottom: 1.5rem;">
+        {%- for i in (1..2) -%}
+          {%- capture image_key -%}image_{{ i }}{%- endcapture -%}
+          {%- capture link_key -%}link_url_{{ i }}{%- endcapture -%}
+          {%- assign img = bl_stts[image_key] -%}
+          {%- assign url = bl_stts[link_key] -%}
+          {%- if img != blank -%}
+            <a href="{{ url | default: '#' }}" class="block media media--transparent media--adapt" style="--media-adapt-ratio: {{ img.aspect_ratio | default: 1 }}; border-radius: {{ bl_stts.image_corner_radius | divided_by: 10.0 }}rem; overflow: hidden; border: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem solid rgba(var(--color-foreground), 0.1);">
+              {{ img | image_url: width: 300 | image_tag: loading: 'lazy', class: 'motion-reduce' }}
+            </a>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+    {%- if bl_stts.show_brand -%}
+      {%- if bl_stts.brand_title != blank -%}
+         <h4 class="h5 m-0" style="margin-bottom: 1rem !important;">{{ bl_stts.brand_title }}</h4>
+      {%- endif -%}
+      {%- if bl_stts.popular_brands_menu != blank -%}
+        <ul class="list-unstyled" style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem;">
+          {%- for b_link in bl_stts.popular_brands_menu.links -%}
+            <li><a href="{{ b_link.url }}" class="link link--text">{{ b_link.title }}</a></li>
+          {%- endfor -%}
+        </ul>
+      {%- endif -%}
+      {%- if bl_stts.brand_text != blank and bl_stts.brand_url != blank -%}
+         <a href="{{ bl_stts.brand_url }}" class="button button--secondary button--full-width">{{ bl_stts.brand_text }}</a>
+      {%- endif -%}
+    {%- endif -%}
+
+  {%- elsif mega_type == 'mega_menu_3' -%}
+    {%- if bl_stts.megamenu_submenu != blank -%}
+      <ul class="list-unstyled" style="margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 1rem;">
+        {%- for sublink in bl_stts.megamenu_submenu.links -%}
+          <li><a href="{{ sublink.url }}" class="link link--text uppercase" style="font-size: 1.3rem; font-weight: 600;">{{ sublink.title }}</a></li>
+        {%- endfor -%}
+      </ul>
+    {%- endif -%}
+    {%- if bl_stts.show_promotion_banner and bl_stts.image_1 != blank -%}
+      <div class="menu-drawer__mega-images" style="margin-bottom: 1.5rem;">
+        <a href="{{ bl_stts.link_url_1 | default: '#' }}" class="block media media--transparent media--adapt" style="--media-adapt-ratio: {{ bl_stts.image_1.aspect_ratio | default: 1 }}; border-radius: {{ bl_stts.image_corner_radius | divided_by: 10.0 }}rem; overflow: hidden; border: {{ bl_stts.image_border_thickness | divided_by: 10.0 }}rem solid rgba(var(--color-foreground), 0.1);">
+          {{ bl_stts.image_1 | image_url: width: 400 | image_tag: loading: 'lazy', class: 'motion-reduce' }}
+        </a>
+      </div>
+    {%- endif -%}
+    {%- if bl_stts.product_collection != blank -%}
+      <div class="menu-drawer__mega-products">
+        {%- if bl_stts.label != blank -%}
+          <h4 class="h5 m-0" style="margin-bottom: 1rem !important;">{{ bl_stts.label }}</h4>
+        {%- endif -%}
+        <div class="grid grid--2-col-mobile" style="gap: 1rem;">
+          {%- for product in bl_stts.product_collection.products limit: 2 -%}
+             <div class="grid__item">
+               {% render 'resource-card',
+                 resource_type: 'product',
+                 resource: product,
+                 image_aspect_ratio: '4 / 5',
+                 show_variant_swatches: false
+               %}
+             </div>
+          {%- endfor -%}
+        </div>
+        {%- if bl_stts.link != blank -%}
+           <a href="{{ bl_stts.link }}" class="link center block" style="margin-top: 1rem; text-decoration: underline;">View all</a>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+  {%- endif -%}
+</div>

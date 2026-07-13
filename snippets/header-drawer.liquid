@@ -17,6 +17,7 @@
   assign class_link = 'menu-drawer__menu-item list-menu__item link link--text focus-inset'
   assign class_item_animate = 'menu-drawer__item-animate'
   assign class_link_active = 'menu-drawer__menu-item--active'
+  assign keys = 'highlighted_item_,new_label_,sale_label_,hot_label_'
 -%}
 
 {%- capture icon_arrow -%}
@@ -126,9 +127,57 @@
         <div class="menu-drawer__navigation-container cus-scrollbar">
           <nav class="menu-drawer__navigation">
             <ul class="menu-drawer__menu has-submenu list-menu" role="list">
+              {%- liquid
+                assign mega_menu_1 = section.blocks | where: 'type', 'mega_menu_1'
+                assign mega_menu_2 = section.blocks | where: 'type', 'mega_menu_2'
+                assign mega_menu_3 = section.blocks | where: 'type', 'mega_menu_3'
+                assign mega_menu_4 = section.blocks | where: 'type', 'mega_menu_4'
+              -%}
               {%- for link in listmenu -%}
+                {%- liquid
+                  assign has_mega_menu = false
+                  assign menu_title = link.title | escape | downcase | handle
+                  assign mega_block = null
+                  assign mega_type = null
+
+                  for block in mega_menu_1
+                    assign block_title = block.settings.menu_item | escape | downcase | handle
+                    if block_title == menu_title
+                      assign mega_block = block
+                      assign mega_type = 'mega_menu_1'
+                      assign has_mega_menu = true
+                    endif
+                  endfor
+
+                  for block in mega_menu_2
+                    assign block_title = block.settings.menu_item | escape | downcase | handle
+                    if block_title == menu_title
+                      assign mega_block = block
+                      assign mega_type = 'mega_menu_2'
+                      assign has_mega_menu = true
+                    endif
+                  endfor
+
+                  for block in mega_menu_3
+                    assign block_title = block.settings.menu_item | escape | downcase | handle
+                    if block_title == menu_title
+                      assign mega_block = block
+                      assign mega_type = 'mega_menu_3'
+                      assign has_mega_menu = true
+                    endif
+                  endfor
+
+                  for block in mega_menu_4
+                    assign block_title = block.settings.menu_item | escape | downcase | handle
+                    if block_title == menu_title
+                      assign mega_block = block
+                      assign mega_type = 'mega_menu_4'
+                      assign has_mega_menu = true
+                    endif
+                  endfor
+                -%}
                 <menu-drawer class="menu-drawer__list-item" style="--menu-drawer-animation-index: {{ forloop.index }};">
-                  {%- if link.links != blank -%}
+                  {%- if link.links != blank or has_mega_menu -%}
                     <details id="Details-menu-drawer-menu-item-{{ forloop.index }}">
                       <summary
                         id="HeaderDrawer-{{ link.handle }}"
@@ -147,90 +196,104 @@
                             {{- icon_arrow -}}
                             {{ link.title | escape }}
                           </button>
-                          <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
-                            <li>
-                              <a
-                                id="Goto-HeaderDrawer-{{ link.handle }}"
-                                href="{{ link.url }}"
-                                class="{{ class_link }} link--go-to"
-                                {% if childlink.current %}
-                                  aria-current="page"
-                                {% endif %}
-                              >
-                                {{ 'content.go_to' | t: name: link.title }}
-                              </a>
-                            </li>
-                            {%- for childlink in link.links -%}
+                          {%- if has_mega_menu -%}
+                            <div class="menu-drawer__mega-menu-desktop" style="padding: 1.5rem 0;">
+                              {%- if mega_type == 'mega_menu_1' -%}
+                                {%- render 'header-mega-menu-1', section_fetch: true, forloopIndex: forloop.index, link: link, block: mega_block, icon_type: 'caret', keys: keys, sec_settings: section.settings, block_id: 'Drawer' -%}
+                              {%- elsif mega_type == 'mega_menu_2' -%}
+                                {%- render 'header-mega-menu-2', section_fetch: true, forloopIndex: forloop.index, link: link, block: mega_block, icon_type: 'caret', keys: keys, sec_settings: section.settings, block_id: 'Drawer' -%}
+                              {%- elsif mega_type == 'mega_menu_3' -%}
+                                {%- render 'header-mega-menu-3', section_fetch: true, forloopIndex: forloop.index, link: link, block: mega_block, icon_type: 'caret', keys: keys, sec_settings: section.settings, block_id: 'Drawer' -%}
+                              {%- elsif mega_type == 'mega_menu_4' -%}
+                                {%- render 'header-mega-menu-4', section_fetch: true, forloopIndex: forloop.index, link: link, block: mega_block, icon_type: 'caret', keys: keys, sec_settings: section.settings, block_id: 'Drawer' -%}
+                              {%- endif -%}
+                            </div>
+                          {%- else -%}
+                            <ul class="menu-drawer__menu list-menu" role="list" tabindex="-1">
                               <li>
-                                {%- if childlink.links == blank -%}
-                                  <a
-                                    id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
-                                    href="{{ childlink.url }}"
-                                    class="{{ class_link }}{% if childlink.current %} {{ class_link_active }}{% endif %}"
-                                    {% if childlink.current %}
-                                      aria-current="page"
-                                    {% endif %}
-                                  >
-                                    {{ childlink.title | escape }}
-                                  </a>
-                                {%- else -%}
-                                  <details id="Details-menu-drawer-{{ link.handle }}-{{ childlink.handle }}">
-                                    <summary
+                                <a
+                                  id="Goto-HeaderDrawer-{{ link.handle }}"
+                                  href="{{ link.url }}"
+                                  class="{{ class_link }} link--go-to"
+                                  {% if childlink.current %}
+                                    aria-current="page"
+                                  {% endif %}
+                                >
+                                  {{ 'content.go_to' | t: name: link.title }}
+                                </a>
+                              </li>
+                              {%- for childlink in link.links -%}
+                                <li>
+                                  {%- if childlink.links == blank -%}
+                                    <a
                                       id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
-                                      class="{{ class_link }}"
+                                      href="{{ childlink.url }}"
+                                      class="{{ class_link }}{% if childlink.current %} {{ class_link_active }}{% endif %}"
+                                      {% if childlink.current %}
+                                        aria-current="page"
+                                      {% endif %}
                                     >
                                       {{ childlink.title | escape }}
-                                      {{- icon_arrow -}}
-                                    </summary>
-                                    <div
-                                      id="childlink-{{ childlink.handle | escape }}"
-                                      class="menu-drawer__submenu has-submenu motion-reduce"
-                                    >
-                                      <button
-                                        class="menu-drawer__close-button link link--text focus-inset"
-                                        aria-expanded="true"
+                                    </a>
+                                  {%- else -%}
+                                    <details id="Details-menu-drawer-{{ link.handle }}-{{ childlink.handle }}">
+                                      <summary
+                                        id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
+                                        class="{{ class_link }}"
                                       >
-                                        {{- icon_arrow -}}
                                         {{ childlink.title | escape }}
-                                      </button>
-                                      <ul
-                                        class="menu-drawer__menu list-menu"
-                                        role="list"
-                                        tabindex="-1"
+                                        {{- icon_arrow -}}
+                                      </summary>
+                                      <div
+                                        id="childlink-{{ childlink.handle | escape }}"
+                                        class="menu-drawer__submenu has-submenu motion-reduce"
                                       >
-                                        <li>
-                                          <a
-                                            id="Goto-HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
-                                            href="{{ childlink.url }}"
-                                            class="{{ class_link }} link--go-to"
-                                            {% if grandchildlink.current %}
-                                              aria-current="page"
-                                            {% endif %}
-                                          >
-                                            {{ 'content.go_to' | t: name: childlink.title }}
-                                          </a>
-                                        </li>
-                                        {%- for grandchildlink in childlink.links -%}
+                                        <button
+                                          class="menu-drawer__close-button link link--text focus-inset"
+                                          aria-expanded="true"
+                                        >
+                                          {{- icon_arrow -}}
+                                          {{ childlink.title | escape }}
+                                        </button>
+                                        <ul
+                                          class="menu-drawer__menu list-menu"
+                                          role="list"
+                                          tabindex="-1"
+                                        >
                                           <li>
                                             <a
-                                              id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
-                                              href="{{ grandchildlink.url }}"
-                                              class="{{ class_link }}{% if grandchildlink.current %} {{ class_link_active }}{% endif %}"
+                                              id="Goto-HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}"
+                                              href="{{ childlink.url }}"
+                                              class="{{ class_link }} link--go-to"
                                               {% if grandchildlink.current %}
                                                 aria-current="page"
                                               {% endif %}
                                             >
-                                              {{ grandchildlink.title | escape }}
+                                              {{ 'content.go_to' | t: name: childlink.title }}
                                             </a>
                                           </li>
-                                        {%- endfor -%}
-                                      </ul>
-                                    </div>
-                                  </details>
-                                {%- endif -%}
-                              </li>
-                            {%- endfor -%}
-                          </ul>
+                                          {%- for grandchildlink in childlink.links -%}
+                                            <li>
+                                              <a
+                                                id="HeaderDrawer-{{ link.handle }}-{{ childlink.handle }}-{{ grandchildlink.handle }}"
+                                                href="{{ grandchildlink.url }}"
+                                                class="{{ class_link }}{% if grandchildlink.current %} {{ class_link_active }}{% endif %}"
+                                                {% if grandchildlink.current %}
+                                                  aria-current="page"
+                                                {% endif %}
+                                              >
+                                                {{ grandchildlink.title | escape }}
+                                              </a>
+                                            </li>
+                                          {%- endfor -%}
+                                        </ul>
+                                      </div>
+                                    </details>
+                                  {%- endif -%}
+                                </li>
+                              {%- endfor -%}
+                            </ul>
+                          {%- endif -%}
                         </div>
                       </div>
                     </details>
