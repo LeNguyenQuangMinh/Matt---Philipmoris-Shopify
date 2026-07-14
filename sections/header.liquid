@@ -240,9 +240,11 @@
     {% if sec_stts.show_line_separator %} header-wrapper--border-bottom{% endif %}
     {% if has_menu_tab %} has-menu-tab{% endif %}
     {% if sec_stts.custom_bubble_transparent_header %} custom-bubble-transparent-header{% endif %}
+    {% if sec_stts.sticky_header_layout == 'custom' %} sticky-header-layout-custom{% endif %}
   "
   {% if sticky %}
     data-sticky-type="{{ sticky }}"
+    data-sticky-layout="{{ sec_stts.sticky_header_layout }}"
   {% endif %}
   {% if transparent %}
     transparent="{{ transparent }}"
@@ -339,6 +341,61 @@
       {% endif %}
     {% endfor %}
   </div>
+
+  {% if sec_stts.sticky_header_layout == 'custom' %}
+    <style>
+      @media screen and (min-width: 990px) {
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] {
+          min-height: unset !important;
+        }
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] .row-group {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          flex-wrap: nowrap;
+          padding-block: 1rem;
+          background-color: var(--color-background);
+        }
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] .header__row,
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] .header__columns {
+          display: contents;
+        }
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] .header__column {
+          display: none !important;
+        }
+        
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] [data-testid="header-{{ sec_stts.logo_row }}-{{ sec_stts.logo_position }}"] {
+          display: flex !important;
+          order: 1;
+          margin-right: 3rem;
+          width: auto !important;
+        }
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] [data-testid="header-{{ sec_stts.menu_row }}-{{ sec_stts.menu_position }}"] {
+          display: flex !important;
+          order: 2;
+          flex-grow: 1;
+          justify-content: flex-start;
+          width: auto !important;
+        }
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] [data-testid="header-{{ sec_stts.search_row | default: 'top' }}-right"] {
+          display: flex !important;
+          order: 3;
+          align-items: center;
+          justify-content: flex-end;
+          width: auto !important;
+        }
+
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] .list-menu--inline {
+          flex-wrap: wrap;
+          row-gap: 0.5rem;
+          justify-content: flex-start;
+        }
+        header-component[data-sticky-layout="custom"][data-sticky-state="active"] .header-logo {
+          margin: 0;
+        }
+      }
+    </style>
+  {% endif %}
 </{{ header_wrapper }}>
 
 <script type="application/ld+json">
@@ -2879,6 +2936,32 @@
           }
         ],
         "default": "always"
+      },
+      {
+        "type": "select",
+        "id": "sticky_header_layout",
+        "label": "Sticky Header Layout",
+        "options": [
+          {
+            "value": "default",
+            "label": "Default"
+          },
+          {
+            "value": "custom",
+            "label": "Custom (Logo, Menu, Icons)"
+          }
+        ],
+        "default": "custom"
+      },
+      {
+        "type": "image_picker",
+        "id": "sticky_logo",
+        "label": "Sticky Header Logo"
+      },
+      {
+        "type": "liquid",
+        "id": "sticky_logo_svg",
+        "label": "Sticky Header SVG logo"
       },
       {
         "type": "range",

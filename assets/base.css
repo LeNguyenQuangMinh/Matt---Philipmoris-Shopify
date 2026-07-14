@@ -16531,6 +16531,12 @@ body:has(> #header-group:empty) {
   }
 }
 
+@media screen and (min-width: 1025px) {
+  header:has(.sticky-header-layout-custom) {
+    min-height: auto !important;
+  }
+}
+
 .header-section {
   position: relative;
 }

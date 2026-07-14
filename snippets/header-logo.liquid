@@ -123,6 +123,39 @@
         </span>
       {% endif %}
 
+      {% if sec_stts.sticky_logo != blank or sec_stts.sticky_logo_svg != blank %}
+        <span
+          class="header-logo__image-container header-logo__image-container--sticky{% unless preload_screen %}{% if sec_stts.sticky_logo == blank and sec_stts.sticky_logo_svg == blank %} is-empty{% endif %}{% endunless %}"
+          data-testid="header-logo-sticky"
+          style="{{ logo_style }}"
+        >
+          {%- if sec_stts.sticky_logo != blank -%}
+            {% render 'image',
+              image: sec_stts.sticky_logo,
+              class: 'header-logo__image',
+              height: block_settings.custom_height,
+              text_fallback: text_fallback,
+              style: logo_style,
+              preload: true
+            %}
+          {%- elsif sec_stts.sticky_logo_svg != blank -%}
+            {{ sec_stts.sticky_logo_svg }}
+          {%- else -%}
+            {{ text_fallback }}
+          {%- endif -%}
+        </span>
+        <style>
+          .header-logo__image-container--sticky { display: none; }
+          header-component[data-sticky-state="active"] .header-logo__image-container--original,
+          header-component[data-sticky-state="active"] .header-logo__image-container--inverse {
+            display: none !important;
+          }
+          header-component[data-sticky-state="active"] .header-logo__image-container--sticky {
+            display: block;
+          }
+        </style>
+      {% endif %}
+
       {% if preload_screen %}
         <div class="loading-bar overflow-hidden"></div>
       {% endif %}
