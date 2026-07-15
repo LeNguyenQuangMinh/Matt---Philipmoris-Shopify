@@ -10,7 +10,7 @@
 {% endcomment %}
 
 <side-drawer-opener
-  class="lg:none header__icon--menu"
+  class="lg:none header__icon--menu{% if header_settings.mobile_layout == 'custom' %} header__icon--menu-custom{% endif %}"
   data-side-drawer="#Drawer-Menu"
 >
   <button
@@ -24,11 +24,27 @@
       <span class="icon-hamburger-custom__line"></span>
       <span class="icon-hamburger-custom__line"></span>
     </span> {% endcomment %}
-    <span class="svg-wrapper">
+    <span class="svg-wrapper icon-hamburger">
       {{- 'icon-hamburger.svg' | inline_asset_content -}}
     </span>
+    {%- if header_settings.mobile_layout == 'custom' -%}
+    <span class="svg-wrapper icon-close" style="display: none;">
+      {{- 'icon-close.svg' | inline_asset_content -}}
+    </span>
+    {%- endif -%}
   </button>
 </side-drawer-opener>
+
+{%- if header_settings.mobile_layout == 'custom' -%}
+<style>
+  side-drawer-opener.header__icon--menu-custom button.active .icon-hamburger {
+    display: none !important;
+  }
+  side-drawer-opener.header__icon--menu-custom button.active .icon-close {
+    display: block !important;
+  }
+</style>
+{%- endif -%}
 
 {% if settings.enable_multi_tab_layout_mobile == false %}
   {% render 'header-drawer', color_scheme: section.settings.menu_mobile_color_scheme, section_id: section_id, mobile_layout: section.settings.mobile_layout %}

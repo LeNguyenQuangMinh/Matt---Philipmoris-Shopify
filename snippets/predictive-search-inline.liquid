@@ -14,7 +14,7 @@
       <div class="field{% if section.settings.search_underline_opacity > 0 %} field--has-underline {% endif %}" style="--search-underline-opacity: {{ section.settings.search_underline_opacity }};">
         <button class="search__button field__button z-2" aria-label="{{ 'content.search' | t }}" style="--header-search-button-pos-right: {{ section.settings.search_icon_pos_right }}px; --header-search-button-pos-top: {{ section.settings.search_icon_pos_top }}px;">
           <span class="svg-wrapper">
-            {{- 'icon-search.svg' | inline_asset_content -}}
+            {{- 'icon-search-custom.svg' | inline_asset_content -}}
           </span>
         </button>
         <input

@@ -27,12 +27,12 @@
 {%- endcapture -%}
 
 <side-drawer
-  class="drawer__container drawer drawer--menu fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden"
+  class="drawer__container drawer drawer--menu fixed top-0 left-0 w-screen h-full z-9 flex no-js-hidden{% if mobile_layout == 'custom' %} side-drawer-container--custom{% endif %}"
   id="Drawer-Menu"
   data-drawer-direction="left"
 >
   <div id="Drawer-Overlay-Menu" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-  <header-drawer class="side-drawer" data-drawer-content data-breakpoint="tablet">
+  <header-drawer class="side-drawer{% if mobile_layout == 'custom' %} side-drawer--custom{% endif %}" data-drawer-content data-breakpoint="tablet">
     <div
       class="drawer__inner d-flex flex-column h-full color-{{ color_scheme }}"
       role="dialog"
@@ -40,6 +40,7 @@
       aria-label="{{ 'accessibility.menu' | t }}"
       tabindex="-1"
     >
+    {%- if mobile_layout != 'custom' -%}
     <div class="drawer__header flex justify-between items-center relative" style="--p: var(--padding-xs) 0;">
       <h2 class="drawer__heading break m-0 h5">{{ 'content.menu' | t }}</h2>
       <button
@@ -53,6 +54,7 @@
         </span>
       </button>
     </div>
+    {%- endif -%}
       {% comment %} <div class="drawer__header flex justify-end items-center relative" style="--p: 0 0 1.5rem;">
       </div> {% endcomment %}
       {%- if mobile_layout == 'custom' -%}
@@ -76,7 +78,7 @@
                   type="search"
                   name="q"
                   value="{{ search.terms | escape }}"
-                  placeholder=" "
+                  placeholder="{% if mobile_layout == 'custom' %}SEARCH PRODUCT OR BRAND{% else %} {% endif %}"
                   {%- if settings.predictive_search_enabled -%}
                     role="combobox"
                     aria-expanded="false"
@@ -90,7 +92,9 @@
                     spellcheck="false"
                   {%- endif -%}
                 >
-                <label class="field__label" for="Search-In-Drawer">{{ 'content.search' | t }}</label>
+                {%- if mobile_layout != 'custom' -%}
+                  <label class="field__label" for="Search-In-Drawer">{{ 'content.search' | t }}</label>
+                {%- endif -%}
                 <input type="hidden" name="options[prefix]" value="last">
                 <button
                   type="reset"
@@ -324,3 +328,79 @@
     </div>
   </header-drawer>
 </side-drawer>
+
+<style>
+  .side-drawer--custom .drawer__inner {
+    background-color: #f4f1ea;
+  }
+  .side-drawer--custom .drawer__search-bar {
+    padding: 2rem 2rem 1rem !important;
+  }
+  .side-drawer--custom .drawer__wrapper {
+    padding: 0 !important;
+  }
+  .side-drawer--custom .search-drawer__form .field {
+    background-color: #ffffff;
+    border-radius: 2px;
+  }
+  .side-drawer--custom .search-drawer__form .field:before,
+  .side-drawer--custom .search-drawer__form .field:after {
+    display: none;
+  }
+  .side-drawer--custom .search-drawer__form .field__input {
+    padding: 1.2rem 1.5rem;
+    font-size: 1.3rem;
+  }
+  .side-drawer--custom .search-drawer__form .search__button {
+    display: none;
+  }
+  .side-drawer--custom .menu-drawer__menu-item {
+    padding: 1.2rem 2rem;
+    font-size: 1.4rem;
+    color: #1a2a3a;
+  }
+  .side-drawer--custom .menu-drawer__menu-item > .svg-wrapper {
+    right: 2rem;
+  }
+  
+  .side-drawer-container--custom {
+    top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px))) !important;
+    height: calc(100vh - var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)))) !important;
+  }
+  .side-drawer-container--custom .drawer__overlay {
+    display: none !important;
+  }
+  .side-drawer-container--custom .side-drawer--custom {
+    width: 100vw !important;
+    max-width: 100% !important;
+  }
+</style>
+
+{%- if mobile_layout == 'custom' -%}
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const setAnnouncementHeight = () => {
+      const announcementBar = document.querySelector('.section-announcement-bar');
+      if (announcementBar) {
+        document.documentElement.style.setProperty('--announcement-bar-height', `${announcementBar.offsetHeight}px`);
+      } else {
+        document.documentElement.style.setProperty('--announcement-bar-height', '0px');
+      }
+    };
+    setAnnouncementHeight();
+    window.addEventListener('resize', setAnnouncementHeight);
+
+    const opener = document.querySelector('side-drawer-opener[data-side-drawer="#Drawer-Menu"] button');
+    const container = document.querySelector('#Drawer-Menu.side-drawer-container--custom');
+    if (opener && container) {
+      opener.addEventListener('click', () => {
+        const header = document.querySelector('.header-wrapper') || document.querySelector('header');
+        if (header) {
+          const rect = header.getBoundingClientRect();
+          container.style.setProperty('--header-bottom-offset', `${rect.bottom}px`);
+        }
+      });
+    }
+  });
+</script>
+{%- endif -%}

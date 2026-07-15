@@ -158,7 +158,7 @@
             <span class="visually-hidden" data-cart-text>{{ 'content.cart_count' | t: count: cart.item_count }}</span>
           </span>
         {%- endif -%}
-        {%- if cart != empty and actions_type != 'text' and actions_type != 'both' -%}
+        {%- if actions_type != 'text' and actions_type != 'both' -%}
           <div class="cart-count-bubble">
             <span aria-hidden="true" data-cart-count>
               {%- if cart.item_count < 100 -%}
@@ -188,7 +188,7 @@
             {{ 'icon-cart.svg' | inline_asset_content }}
           </span>
 
-          {%- if cart != empty and actions_type != 'text' and actions_type != 'both' -%}
+          {%- if actions_type != 'text' and actions_type != 'both' -%}
             <div class="cart-count-bubble">
               <span aria-hidden="true" data-cart-count>
                 {%- if cart.item_count < 100 -%}
@@ -233,7 +233,7 @@
           {{ 'icon-cart.svg' | inline_asset_content }}
         </span>
 
-        {%- if cart != empty and actions_type != 'text' and actions_type != 'both' -%}
+        {%- if actions_type != 'text' and actions_type != 'both' -%}
           <div class="cart-count-bubble">
             <span aria-hidden="true" data-cart-count>
               {%- if cart.item_count < 100 -%}

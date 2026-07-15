@@ -1484,9 +1484,7 @@ class HeaderComponent extends HTMLElement {
 
       const { isIntersecting } = entry;
 
-      if (alwaysSticky) {
-        this.dataset.stickyState = isIntersecting ? "inactive" : "active";
-      } else {
+      if (!alwaysSticky) {
         this.offscreen =
           !isIntersecting || this.dataset.stickyState === "active";
       }
@@ -1507,14 +1505,27 @@ class HeaderComponent extends HTMLElement {
     }
 
     if (this.stickyMode === "always") {
-      const isAtTop = this.getBoundingClientRect().top >= this.getBoundingClientRect().height;
+      const headerHeight = this.offsetHeight || 100;
+      const announcementBarHeight = parseInt(document.documentElement.style.getPropertyValue('--announcement-bar-height')) || 0;
+      const triggerHeight = headerHeight + announcementBarHeight;
+      const isPastHeader = scrollTop > triggerHeight;
 
-      if (isAtTop) {
-        this.dataset.scrollDirection = "none";
-      } else if (isScrollingUp) {
-        this.dataset.scrollDirection = "up";
+      if (!isPastHeader) {
+        if (this.dataset.stickyState !== "inactive") this.dataset.stickyState = "inactive";
+        if (scrollTop === 0) {
+          if (this.dataset.scrollDirection !== "none") this.dataset.scrollDirection = "none";
+        } else if (isScrollingUp) {
+          if (this.dataset.scrollDirection !== "up") this.dataset.scrollDirection = "up";
+        } else {
+          if (this.dataset.scrollDirection !== "down") this.dataset.scrollDirection = "down";
+        }
       } else {
-        this.dataset.scrollDirection = "down";
+        if (this.dataset.stickyState !== "active") this.dataset.stickyState = "active";
+        if (isScrollingUp) {
+          if (this.dataset.scrollDirection !== "up") this.dataset.scrollDirection = "up";
+        } else {
+          if (this.dataset.scrollDirection !== "down") this.dataset.scrollDirection = "down";
+        }
       }
 
       this.lastScrollTop = scrollTop;
@@ -1522,27 +1533,27 @@ class HeaderComponent extends HTMLElement {
     }
 
     if (isScrollingUp) {
-      this.removeAttribute("data-animating");
+      if (this.hasAttribute("data-animating")) this.removeAttribute("data-animating");
 
       if (this.getBoundingClientRect().top >= 0) {
         this.offscreen = false;
-        this.dataset.stickyState = "inactive";
-        this.dataset.scrollDirection = "none";
+        if (this.dataset.stickyState !== "inactive") this.dataset.stickyState = "inactive";
+        if (this.dataset.scrollDirection !== "none") this.dataset.scrollDirection = "none";
       } else {
-        this.dataset.stickyState = "active";
-        this.dataset.scrollDirection = "up";
+        if (this.dataset.stickyState !== "active") this.dataset.stickyState = "active";
+        if (this.dataset.scrollDirection !== "up") this.dataset.scrollDirection = "up";
       }
     } else if (this.dataset.stickyState === "active") {
-      this.dataset.scrollDirection = "none";
-      this.setAttribute("data-animating", "");
+      if (this.dataset.scrollDirection !== "none") this.dataset.scrollDirection = "none";
+      if (!this.hasAttribute("data-animating")) this.setAttribute("data-animating", "");
 
       this.timeout = setTimeout(() => {
-        this.dataset.stickyState = "idle";
-        this.removeAttribute("data-animating");
+        if (this.dataset.stickyState !== "idle") this.dataset.stickyState = "idle";
+        if (this.hasAttribute("data-animating")) this.removeAttribute("data-animating");
       }, this.animationDelay);
     } else {
-      this.dataset.scrollDirection = "none";
-      this.dataset.stickyState = "idle";
+      if (this.dataset.scrollDirection !== "none") this.dataset.scrollDirection = "none";
+      if (this.dataset.stickyState !== "idle") this.dataset.stickyState = "idle";
     }
 
     this.lastScrollTop = scrollTop;
