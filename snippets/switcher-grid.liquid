@@ -8,18 +8,7 @@
   {% render 'switcher-grid', columns_desktop: columns_desktop, filter_type: 'vertical' %}
 {% endcomment %}
 
-{% case section.settings.product_card_size %}
-  {% when 'small' %}
-    {% assign columns_desktop = 5 %}
-  {% when 'medium' %}
-    {% assign columns_desktop = 4 %}
-  {% when 'large' %}
-    {% assign columns_desktop = 3 %}
-  {% when 'extra-large' %}
-    {% assign columns_desktop = 2 %}
-  {% when 'extra-extra-large' %}
-    {% assign columns_desktop = 1 %}
-{% endcase %}
+{% assign columns_desktop = 4 %}
 
 <grid-view class="switcher-grid flex items-center {{ class }}">
   <span class="switcher-grid__label facet-filters__field-label block {{ text_label_case }}" style="--font-size: {{ heading_label_font_size }};">{{ 'content.view_as' | t }}</span>
@@ -37,7 +26,7 @@
         style="--p: 1rem;--w: 4rem;--h: 4rem;"
       ></button>
     </li>
-    <li class="grid-view--item grid-view-2">
+    <li class="grid-view--item grid-view-2 hidden">
       <button
         class="button--grid-view t-button flex items-center justify-center{% if columns_desktop == 2 %} active{% else %} cursor-pointer{% endif %}"
         type="button"
@@ -46,7 +35,7 @@
         style="--p: 1rem;--w: 4rem;--h: 4rem;"
       ></button>
     </li>
-    <li class="grid-view--item grid-view-3">
+    <li class="grid-view--item grid-view-3 hidden">
       <button
         class="button--grid-view t-button flex items-center justify-center{% if columns_desktop == 3 %} active{% else %} cursor-pointer{% endif %}"
         type="button"
@@ -64,7 +53,7 @@
         style="--p: 1rem;--w: 4rem;--h: 4rem;"
       ></button>
     </li>
-    <li class="grid-view--item grid-view-5">
+    <li class="grid-view--item grid-view-5 hidden">
       <button
         class="button--grid-view t-button flex items-center justify-center{% if columns_desktop == 5 %} active{% else %} cursor-pointer{% endif %}"
         type="button"

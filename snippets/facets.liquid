@@ -83,9 +83,8 @@
           {% comment %} Heading is the first tabbable element on filter type horizontal {% endcomment %}
           <div
             id="FacetsWrapperDesktop"
-            {% if filter_type == 'horizontal' %}
-              class="facets__form-wrapper small-hide medium-hide"
-            {% endif %}
+            class="{% if filter_type == 'horizontal' %}facets__form-wrapper small-hide medium-hide{% endif %}"
+            {% if filters_sidebar_layout %}style="display: none !important;"{% endif %}
           >
             {%- if filter_type == 'horizontal' and results.filters != empty -%}
               <h2
@@ -938,11 +937,11 @@
 
     {% comment %}  Drawer and mobile filter {% endcomment %}
     <menu-drawer
-      class="mobile-facets__wrapper flex{% if filter_type == 'horizontal' or filter_type == 'vertical' %} large-up-hide{% endif %}"
+      class="mobile-facets__wrapper flex{% if filter_type == 'horizontal' or filter_type == 'vertical' %}{% unless filters_sidebar_layout %} large-up-hide{% endunless %}{% endif %}"
       data-breakpoint="mobile"
     >
       <details class="mobile-facets__disclosure{% if filter_type == 'drawer' %} facets__disclosure-drawer{% endif %} disclosure-has-popup relative flex justify-end">
-        <summary class="mobile-facets__open-wrapper focus-offset">
+        <summary class="mobile-facets__open-wrapper focus-offset{% if filters_sidebar_layout %} large-up-hide{% endif %}">
           <side-drawer-opener
             class="mobile-facets__open{% if filter_type == 'drawer' and enable_filtering == false %} large-up-hide{% endif %}"
             data-toggle-drawer="Drawer-Facets"
@@ -971,12 +970,12 @@
             id="FacetFiltersFormMobile"
             class="mobile-facets drawer__container fixed inset-0 z-9 pointer-events-none"
             data-drawer-target="Drawer-Facets"
-            data-drawer-direction="right"
+            data-drawer-direction="left"
           >
             <div
               id="Drawer-Facets-Overlay"
               data-drawer-overlay
-              class="drawer__overlay fixed inset-0 cursor-pointer lg:none"
+              class="drawer__overlay fixed inset-0 cursor-pointer{% if filter_type != 'drawer' and filters_sidebar_layout != true %} lg:none{% endif %}"
             ></div>
             <div class="mobile-facets__inner" data-drawer-content>
               <div class="mobile-facets__header flex sticky top-0 z-2">

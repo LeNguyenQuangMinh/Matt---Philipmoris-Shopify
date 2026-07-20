@@ -4171,13 +4171,20 @@ class InfiniteScrolling extends HTMLElement {
   }
 
   bindEvents() {
-    const infiniteButton = document.querySelector('[data-infinite-scrolling]');
+    const infiniteButton = this.querySelector('[data-infinite-scrolling]');
+    const paginationType = this.getAttribute('data-pagination-type') || 'infinite';
+
     if (infiniteButton) {
-
-      this.setupIntersectionObserver(infiniteButton);
+      if (paginationType === 'viewmore') {
+        infiniteButton.addEventListener('click', (e) => {
+          e.preventDefault();
+          this.loadNextPage();
+        });
+      } else {
+        this.setupIntersectionObserver(infiniteButton);
+        window.addEventListener('scroll', theme.utils.rafThrottle(this.handleScroll.bind(this)));
+      }
     }
-
-    window.addEventListener('scroll', theme.utils.rafThrottle(this.handleScroll.bind(this)));
   }
 
   setupIntersectionObserver(target) {

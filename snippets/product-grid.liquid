@@ -13,18 +13,7 @@
 {% endcapture %}
 {% assign product_card_size = product_card_size | strip %}
 
-{% case section.settings.product_card_size %}
-  {% when 'small' %}
-    {% assign columns_desktop = 5 %}
-  {% when 'medium' %}
-    {% assign columns_desktop = 4 %}
-  {% when 'large' %}
-    {% assign columns_desktop = 3 %}
-  {% when 'extra-large' %}
-    {% assign columns_desktop = 2 %}
-  {% when 'extra-extra-large' %}
-    {% assign columns_desktop = 1 %}
-{% endcase %}
+{% assign columns_desktop = 4 %}
 
 {%- style -%}
   @media (min-width: 750px) {

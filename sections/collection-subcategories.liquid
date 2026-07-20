@@ -1,0 +1,637 @@
+{%- liquid
+  assign sec_stts = section.settings
+  assign title = sec_stts.title
+  assign description = sec_stts.description
+  
+  assign is_metafield = false
+  assign is_empty = false
+  assign sub_links = blank
+  
+  if sec_stts.data_source == 'metafield'
+    assign is_metafield = true
+    assign sub_collections = collection.metafields.custom.subcategories.value
+    if sub_collections == blank or sub_collections.count == 0
+      assign is_empty = true
+    endif
+  else
+    assign main_menu = sec_stts.fallback_menu
+    if main_menu == blank or main_menu.links == blank
+      assign main_menu = linklists['main-menu']
+    endif
+    
+    if main_menu != blank and main_menu.links != blank
+      assign coll_title = collection.title | downcase
+      
+      for link in main_menu.links
+        assign link_url = link.url | split: '?' | first
+        assign coll_url = collection.url | split: '?' | first
+        assign link_title = link.title | downcase
+        
+        if link.active
+          assign sub_links = link.links
+          break
+        elsif link.type == 'collection_link' and link.object.handle == collection.handle
+          assign sub_links = link.links
+          break
+        elsif link_url == coll_url and coll_url != blank
+          assign sub_links = link.links
+          break
+        elsif link.handle == collection.handle
+          assign sub_links = link.links
+          break
+        elsif link_title == coll_title
+          assign sub_links = link.links
+          break
+        endif
+        
+        if link.links != blank
+          for child_link in link.links
+            assign child_link_url = child_link.url | split: '?' | first
+            assign child_link_title = child_link.title | downcase
+            
+            if child_link.active
+              assign sub_links = child_link.links
+              break
+            elsif child_link.type == 'collection_link' and child_link.object.handle == collection.handle
+              assign sub_links = child_link.links
+              break
+            elsif child_link_url == coll_url and coll_url != blank
+              assign sub_links = child_link.links
+              break
+            elsif child_link.handle == collection.handle
+              assign sub_links = child_link.links
+              break
+            elsif child_link_title == coll_title
+              assign sub_links = child_link.links
+              break
+            endif
+          endfor
+        endif
+        
+        if sub_links != blank
+          break
+        endif
+      endfor
+    endif
+    
+    if sub_links == blank
+      assign sub_links = linklists[collection.handle].links
+    endif
+    
+    if sub_links == blank or sub_links.size == 0
+      assign is_empty = true
+    endif
+  endif
+
+  
+  if title != blank or description != blank or sec_stts.button_label != blank
+    assign has_info = true
+  else
+    assign has_info = false
+  endif
+  
+  assign column_desktop = sec_stts.column_desktop
+  assign column_tablet = sec_stts.column_tablet
+  assign column_mobile = sec_stts.column_mobile
+-%}
+
+{% if is_empty == false or request.design_mode %}
+  {% style %}
+    #collection-subcategories-{{ section.id }} {
+      --padding-block-start: {{ sec_stts.padding_top }}px;
+      --padding-block-end: {{ sec_stts.padding_bottom }}px;
+    }
+    
+    #collection-subcategories-{{ section.id }} .category-item {
+      --border-width: {{ sec_stts.border_width }}px;
+      --border-style: solid;
+      --border-color: var(--color-border);
+      --border-radius: {{ sec_stts.border_radius }}px;
+      {% if sec_stts.border_radius > 0 %} overflow: hidden; {% endif %}
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      width: calc(100% / {{ column_desktop }} - ({{ sec_stts.gap }}px * ({{ column_desktop }} - 1) / {{ column_desktop }}));
+    }
+    
+    @media screen and (max-width: 989px) {
+      #collection-subcategories-{{ section.id }} .category-item {
+        width: calc(100% / {{ column_tablet }} - ({{ sec_stts.gap }}px * ({{ column_tablet }} - 1) / {{ column_tablet }}));
+      }
+    }
+    @media screen and (max-width: 767px) {
+      #collection-subcategories-{{ section.id }} .category-item {
+        width: calc(100% / {{ column_mobile }} - ({{ sec_stts.gap }}px * ({{ column_mobile }} - 1) / {{ column_mobile }}));
+      }
+    }
+
+    #collection-subcategories-{{ section.id }} .category-item:hover {
+      transform: translateY(-{{ sec_stts.hover_lift }}px);
+      box-shadow: 0 {{ sec_stts.shadow_blur }}px {{ sec_stts.shadow_spread }}px {{ sec_stts.shadow_color }};
+    }
+    
+    #collection-subcategories-{{ section.id }} .category-item__image {
+      --ratio: {{ sec_stts.image_ratio }};
+      width: {{ sec_stts.image_width }}px;
+      height: auto;
+    }
+
+    .collection-subcategories__layout {
+      display: flex;
+      gap: 30px;
+    }
+    
+    {% if has_info %}
+      .collection-subcategories__info {
+        width: 25%;
+        flex-shrink: 0;
+        border: 1px solid #dddedd;
+        padding: 18px 20px 10px;
+        -webkit-box-shadow: 2px 2px 3.96px .04px rgba(0, 0, 0, .09);
+        box-shadow: 2px 2px 3.96px .04px rgba(0, 0, 0, .09);
+      }
+      .collection-subcategories__title {
+        color: #72253d;
+        font-weight: 400;
+        font-size: 24px;
+        margin-bottom: 0.75rem;
+        letter-spacing: 0;
+      }
+      .collection-subcategories__description {
+        font-size: 16px;
+        line-height: 1.5;
+        color: #3e3e3e;
+      }
+      .collection-subcategories__description p {
+        margin-bottom: 1.5rem;
+      }
+      #read-more-btn-{{ section.id }} {
+        margin-top: 22px;
+        padding: 8px 0;
+        text-align: center;
+        justify-content: center;
+        width: 100%;
+        -webkit-box-shadow: rgba(0, 0, 0, .16) 0 1px 4px;
+        box-shadow: rgba(0, 0, 0, .16) 0 1px 4px;
+        background-color: #ffffff;
+        text-transform: unset;
+        color: #3e3e3e;
+        border: none;
+      }
+      #read-more-btn-{{ section.id }}:hover,
+      #read-more-btn-{{ section.id }}:focus {
+        border-color: #474747;
+        color: #333;
+      }
+
+      .collection-subcategories__grid {
+        width: 75%;
+        display: flex;
+        flex-wrap: wrap;
+        gap: {{ sec_stts.gap }}px;
+        height: fit-content;
+      }
+    {% else %}
+      .collection-subcategories__grid {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        height: fit-content;
+        gap: {{ sec_stts.gap }}px;
+      }
+    {% endif %}
+
+    #collection-subcategories-{{ section.id }} .category-item {
+      background: transparent;
+      text-decoration: none;
+      color: var(--color-foreground, #333);
+      display: flex;
+      justify-content: flex-start;
+      align-items: stretch;
+    }
+    
+    #collection-subcategories-{{ section.id }} .category-item__image {
+      width: 40%;
+      min-height: 80px;
+      position: relative;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    #collection-subcategories-{{ section.id }} .category-item__image::after {
+      content: "";
+      display: block;
+      height: 0;
+      padding-bottom: 85%;
+      width: 100%;
+    }
+
+    #collection-subcategories-{{ section.id }} .category-item__img,
+    #collection-subcategories-{{ section.id }} .category-item__image img,
+    #collection-subcategories-{{ section.id }} .category-item__image svg {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      margin: auto;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: unset;
+    }
+
+    #collection-subcategories-{{ section.id }} .category-item__content {
+      flex: 1;
+      background-color: #f1f1f1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 15px;
+      text-align: center;
+    }
+
+    #collection-subcategories-{{ section.id }} .category-item__title {
+      font-size: 1.4rem;
+      font-weight: 600;
+      margin: 0;
+    }
+    
+    @media screen and (max-width: 989px) {
+      .collection-subcategories__layout {
+        flex-direction: column;
+      }
+      .collection-subcategories__info,
+      .collection-subcategories__grid {
+        width: 100%;
+      }
+    }
+  {% endstyle %}
+
+  <div id="collection-subcategories-{{ section.id }}" class="section--collection-subcategories section--{{ sec_stts.page_width }} color-{{ sec_stts.color_scheme }} spacing-style">
+    <div class="custom-section-content">
+      <div class="collection-subcategories__layout">
+        {% if has_info %}
+          <div class="collection-subcategories__info">
+            {% if title != blank %}
+              <h2 class="collection-subcategories__title h3 mb-10">{{ title }}</h2>
+            {% endif %}
+            
+            {% if description != blank %}
+              <div class="collection-subcategories__description-wrapper relative overflow-hidden" id="desc-wrapper-{{ section.id }}" style="max-height: {{ sec_stts.description_max_height }}px; transition: max-height 0.3s ease;">
+                <div class="collection-subcategories__description rte mb-20 text-body">
+                  {{ description }}
+                </div>
+                <div class="collection-subcategories__description-overlay absolute bottom-0 left-0 w-full pointer-events-none" style="height: 50px; background: linear-gradient(to top, var(--scheme-background, #fff), transparent);"></div>
+              </div>
+            {% endif %}
+            
+            {% if sec_stts.button_label != blank %}
+              <button type="button" class="button button--primary mt-10" id="read-more-btn-{{ section.id }}" style="display: none;">
+                <span class="read-more-text">{{ sec_stts.button_label }}</span>
+                <span class="read-less-text" style="display: none;">View Less</span>
+              </button>
+            {% endif %}
+          </div>
+        {% endif %}
+        
+        <div class="collection-subcategories__grid">
+          {% if is_empty and request.design_mode %}
+            {% for i in (1..4) %}
+              <a href="#" class="category-item relative flex items-stretch color-scheme-custom"
+                style="{% render 'color-scheme-style', settings: sec_stts.item_color_scheme %}"
+              >
+                <div class="category-item__image relative shrink-0 overflow-hidden">
+                  <div class="category-item__placeholder w-full flex-center bg-gray-100">
+                    {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                  </div>
+                </div>
+                <div class="category-item__content w-full">
+                  <h5 class="category-item__title">Example Category</h5>
+                </div>
+              </a>
+            {% endfor %}
+          {% else %}
+            {% assign items_array = sub_links %}
+            {% if is_metafield %}
+              {% assign items_array = sub_collections %}
+            {% endif %}
+            
+            {% for item in items_array %}
+              {% if is_metafield %}
+                {% assign sub_collection = item %}
+                {% assign item_title = sub_collection.title %}
+                {% assign item_url = sub_collection.url %}
+              {% else %}
+                {% assign sub_collection = item.object %}
+                {% assign item_title = sub_collection.title | default: item.title %}
+                {% assign item_url = sub_collection.url | default: item.url %}
+              {% endif %}
+              
+              <a href="{{ item_url }}" class="category-item relative flex items-stretch color-scheme-custom"
+                style="{% render 'color-scheme-style', settings: sec_stts.item_color_scheme %}"
+              >
+                  <div class="category-item__image relative shrink-0 overflow-hidden">
+                    {% if sub_collection.image %}
+                      {%- render 'image', image: sub_collection.image, class: 'category-item__img w-full h-full object-cover' -%}
+                    {% elsif sub_collection.products.first.featured_image %}
+                      {%- render 'image', image: sub_collection.products.first.featured_image, class: 'category-item__img w-full h-full object-cover' -%}
+                    {% else %}
+                      <div class="category-item__placeholder w-full flex-center bg-gray-100">
+                        {{ 'collection-1' | placeholder_svg_tag: 'placeholder-svg' }}
+                      </div>
+                    {% endif %}
+                  </div>
+                  
+                  <div class="category-item__content w-full">
+                    <h5 class="category-item__title">
+                      {{ item_title }}
+                    </h5>
+                  </div>
+              </a>
+            {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Collection Categories",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "paragraph",
+      "content": "This section automatically displays sub-categories based on a Navigation Menu that matches the collection handle, or via a specific Metafield."
+    },
+    {
+      "type": "select",
+      "id": "data_source",
+      "label": "Data Source",
+      "options": [
+        {
+          "value": "auto",
+          "label": "Auto (From Main Menu)"
+        },
+        {
+          "value": "metafield",
+          "label": "Metafield (Custom List)"
+        }
+      ],
+      "default": "auto",
+      "info": "Choose how sub-categories are loaded. If 'Metafield' is selected, make sure to set up a 'Collection List' metafield with namespace and key: custom.subcategories"
+    },
+    {
+      "type": "header",
+      "content": "Content"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Heading",
+      "info": "Leave blank to hide the left panel."
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description",
+      "info": "Leave blank to hide the left panel."
+    },
+    {
+      "type": "range",
+      "id": "description_max_height",
+      "min": 50,
+      "max": 500,
+      "step": 10,
+      "unit": "px",
+      "label": "Description Max Height",
+      "default": 150
+    },
+    {
+      "type": "text",
+      "id": "button_label",
+      "label": "Button Label",
+      "default": "Read More"
+    },
+    {
+      "type": "link_list",
+      "id": "fallback_menu",
+      "label": "Main Menu",
+      "info": "Select the parent menu. The section will automatically find the active menu item and display its sub-menu."
+    },
+    {
+      "type": "header",
+      "content": "Layout"
+    },
+    {
+      "type": "select",
+      "id": "page_width",
+      "label": "Section Width",
+      "options": [
+        { "value": "page-width", "label": "Page Width" },
+        { "value": "full-width", "label": "Full Width" }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "column_desktop",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "label": "Columns (Desktop)",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "column_tablet",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "label": "Columns (Tablet)",
+      "default": 2
+    },
+    {
+      "type": "range",
+      "id": "column_mobile",
+      "min": 1,
+      "max": 3,
+      "step": 1,
+      "label": "Columns (Mobile)",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "gap",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between items",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Item Style"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Section Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "color_scheme",
+      "id": "item_color_scheme",
+      "label": "Item Color Scheme",
+      "default": "scheme-2"
+    },
+    {
+      "type": "range",
+      "id": "image_width",
+      "label": "Image Width",
+      "min": 50,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "select",
+      "id": "image_ratio",
+      "label": "Image Ratio",
+      "options": [
+        { "value": "1 / 1", "label": "Square (1:1)" },
+        { "value": "3 / 4", "label": "Portrait (3:4)" },
+        { "value": "4 / 3", "label": "Landscape (4:3)" }
+      ],
+      "default": "1 / 1"
+    },
+    {
+      "type": "range",
+      "id": "border_radius",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Border Radius",
+      "default": 8
+    },
+    {
+      "type": "range",
+      "id": "border_width",
+      "min": 0,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "label": "Border Thickness",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "hover_lift",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Hover Lift",
+      "default": 4
+    },
+    {
+      "type": "range",
+      "id": "shadow_blur",
+      "min": 0,
+      "max": 30,
+      "step": 2,
+      "unit": "px",
+      "label": "Shadow Blur",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "shadow_spread",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "Shadow Spread",
+      "default": 4
+    },
+    {
+      "type": "color",
+      "id": "shadow_color",
+      "label": "Shadow Color",
+      "default": "#0000001a"
+    },
+    {
+      "type": "header",
+      "content": "Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 5,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection Categories",
+      "category": "Collection"
+    }
+  ],
+  "templates": ["collection"]
+}
+{% endschema %}
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    var wrapper = document.getElementById('desc-wrapper-{{ section.id }}');
+    var btn = document.getElementById('read-more-btn-{{ section.id }}');
+    var maxHeight = {{ sec_stts.description_max_height | default: 150 }};
+    
+    if (wrapper && btn) {
+      var overlay = wrapper.querySelector('.collection-subcategories__description-overlay');
+      
+      if (wrapper.scrollHeight > maxHeight + 10) {
+        btn.style.display = 'inline-flex';
+        
+        btn.addEventListener('click', function() {
+          var isExpanded = wrapper.classList.contains('is-expanded');
+          
+          if (isExpanded) {
+            wrapper.classList.remove('is-expanded');
+            wrapper.style.maxHeight = maxHeight + 'px';
+            btn.querySelector('.read-more-text').style.display = 'inline-block';
+            btn.querySelector('.read-less-text').style.display = 'none';
+            if(overlay) overlay.style.display = 'block';
+          } else {
+            wrapper.classList.add('is-expanded');
+            wrapper.style.maxHeight = wrapper.scrollHeight + 'px';
+            btn.querySelector('.read-more-text').style.display = 'none';
+            btn.querySelector('.read-less-text').style.display = 'inline-block';
+            if(overlay) overlay.style.display = 'none';
+          }
+        });
+      } else {
+        wrapper.style.maxHeight = 'none';
+        if(overlay) overlay.style.display = 'none';
+      }
+    }
+  });
+</script>

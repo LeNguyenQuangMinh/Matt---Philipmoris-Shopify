@@ -9,18 +9,7 @@
 {%- liquid
   assign bl_stts = block.settings
 
-  case section.settings.product_card_size
-    when 'small'
-      assign columns_desktop = 5
-    when 'medium'
-      assign columns_desktop = 4
-    when 'large'
-      assign columns_desktop = 3
-    when 'extra-large'
-      assign columns_desktop = 2
-    when 'extra-extra-large'
-      assign columns_desktop = 1
-  endcase
+  assign columns_desktop = 4
 
   # Calculate facets margin style
   capture facets_margin_style
@@ -53,6 +42,7 @@
   assign enable_products_per_page = bl_stts.enable_items_per_page
   assign enable_sorting = bl_stts.enable_sorting
   assign filter_type = bl_stts.filter_style
+
   assign filter_variant_pill = bl_stts.filter_variant_pill
   assign enable_hover_reveal = bl_stts.enable_hover_reveal
   assign heading_label_case = bl_stts.heading_label_case
@@ -75,14 +65,28 @@
 {{ 'component-facets.css' | asset_url | stylesheet_tag }}
 <script src="{{ 'facets.js' | asset_url }}" defer="defer"></script>
 
+<style>
+  {% if filter_type == 'vertical' and bl_stts.filters_sidebar_layout %}
+    @media screen and (min-width: 990px) {
+      .facets-block-wrapper--drawer {
+        position: absolute;
+        width: 0;
+        height: 0;
+        pointer-events: none;
+      }
+      .facets-block-wrapper--drawer * {
+        pointer-events: auto;
+      }
+    }
+  {% endif %}
+</style>
 <div
   class="
     facets-block-wrapper
-    facets-block-wrapper--{{ filter_type }}
+    facets-block-wrapper--{% if filter_type == 'vertical' and bl_stts.filters_sidebar_layout %}drawer{% else %}{{ filter_type }}{% endif %}
     facets-block-wrapper--{{ filter_position }}
     {%- if block.settings.filter_width == 'full-width' %} facets-block-wrapper--full-width{% endif %}
     {% if block.settings.inherit_color_scheme == false %}color-scheme-custom{% endif %}
-
   "
   style="
     --grid-column--desktop:
@@ -124,7 +128,7 @@
     {%- capture sidebar_categories -%}
       {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case, heading_label_font_size: heading_label_font_size, text_label_font_size: text_label_font_size -%}
     {%- endcapture -%}
-    {%- if filter_type == 'vertical' -%}
+    {%- if filter_type == 'vertical' and bl_stts.filters_sidebar_layout == false -%}
       {{ sidebar_categories }}
     {%- endif -%}
 
@@ -140,6 +144,7 @@
       enable_products_per_page: enable_products_per_page,
       enable_grid_view: enable_grid_view,
       filter_type: filter_type,
+      filters_sidebar_layout: bl_stts.filters_sidebar_layout,
       filter_variant_pill: filter_variant_pill,
       paginate: paginate,
       enable_hover_reveal: enable_hover_reveal,
@@ -173,41 +178,97 @@
     assign padding_block_end = bl_stts.sorting_vertical_padding_block_end
   -%}
 
-  <facet-filters-form class="facets facets-vertical-sort facets-vertical-sort--vertical{% if enable_divider_sorting_vertical %} facets-vertical-sort--vertical-divider{% endif %}">
+  <facet-filters-form class="facets facets-vertical-sort facets-vertical-sort--vertical{% if enable_divider_sorting_vertical %} facets-vertical-sort--vertical-divider{% endif %}" {% if bl_stts.filters_sidebar_layout %}style="grid-column: 1 / -1;"{% endif %}>
     <form
       class="facets-vertical-form"
       id="FacetSortForm"
       style="--pt: {{ padding_block_start }}px; --pb: {{ padding_block_end }}px;"
     >
-      <div class="sorting-wrapper flex items-center gap-lg">
-        {%- if enable_grid_view -%}
-          {% render 'switcher-grid',
-            columns_desktop: columns_desktop,
-            filter_type: filter_type,
-            style: style,
-            enable_hover_reveal: enable_hover_reveal,
-            heading_label_case: heading_label_case,
-            heading_label_font_size: heading_label_font_size,
-            text_label_case: text_label_case,
-            text_label_font_size: text_label_font_size
-          %}
-        {%- endif -%}
-
-        <div class="sorting-wrapper-rightcol flex justify-end gap-lg small-hide medium-hide">
-          {%- if enable_products_per_page -%}
-            <div class="facet-per-page products-per-page caption">
-              {% render 'products-per-page',
-                limit: limit,
-                style: style,
-                enable_hover_reveal: enable_hover_reveal,
-                heading_label_case: heading_label_case,
-                heading_label_font_size: heading_label_font_size,
-                text_label_case: text_label_case,
-                text_label_font_size: text_label_font_size,
-              %}
+      {%- if bl_stts.filters_sidebar_layout -%}
+        <style>
+          /* .custom-toolbar {
+            padding: 10px 0;
+            margin-bottom: 20px;
+          }
+          .custom-toolbar .switcher-grid__label {
+            display: none !important;
+          }
+          .custom-toolbar .button--grid-view {
+            padding: 5px !important;
+            width: auto !important;
+            height: auto !important;
+            background: transparent !important;
+            border: none !important;
+          }
+          .custom-toolbar .button--grid-view svg {
+            width: 18px;
+            height: 18px;
+            fill: #333;
+          }
+          .custom-toolbar .button--grid-view.active svg {
+            fill: #6d3f49;
+          } */
+        </style>
+        <div class="custom-toolbar flex items-center justify-between w-full" style="flex-wrap: wrap;">
+            <div class="sidebar-label">
+                <a href="javascript:void(0)" class="categorySidebar-btn flex items-center justify-center gap-xs" data-page-type="category" onclick="document.querySelector('.mobile-facets__wrapper summary').click();" style="text-decoration: none; color: #fff; background-color: #6d3f49; padding: 12px 24px; font-weight: normal; font-size: 1.4rem; text-transform: uppercase;">
+                    <span class="sidebar_more">SHOW FILTERS</span>
+                    <span class="icon-filter flex items-center justify-center" style="margin-left: 5px;">
+                        <svg class="icon" aria-label="Button Show Sidebar" viewBox="0 0 24 24" style="width: 16px; height: 16px; fill: #fff;"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"></path></svg>
+                    </span>
+                </a>
             </div>
-          {%- endif -%}
+            <div class="actionBar" data-sort-by="product">
+                <fieldset class="form-fieldset actionBar-section" style="border: none; margin: 0; padding: 0;">
+                <div class="form-field flex items-center" style="margin: 0; border: 1px solid #c0b9b2; border-radius: 4px; padding: 0; height: 44px; background-color: #fff; width: 280px; box-sizing: border-box;">
+                    <label class="form-label" for="sort" style="margin: 0; color: #757575; font-size: 1.4rem; white-space: nowrap; font-weight: normal; padding-left: 15px;">Sort By:</label>
+                    <select class="form-select form-select--small" name="sort_by" id="sort" role="listbox" style="border: none; background: transparent; padding: 0 30px 0 10px; font-size: 1.4rem; color: #333; outline: none; cursor: pointer; height: 100%; box-shadow: none; width: 100%; text-overflow: ellipsis; white-space: nowrap; overflow: hidden; appearance: none; -webkit-appearance: none; background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZlcnNpb249IjEuMSIgeD0iMTJweCIgeT0iMHB4IiB3aWR0aD0iMjRweCIgaGVpZ2h0PSIzcHgiIHZpZXdCb3g9IjAgMCA2IDMiIGVuYWJsZS1iYWNrZ3JvdW5kPSJuZXcgMCAwIDYgMyIgeG1sOnNwYWNlPSJwcmVzZXJ2ZSI+PHBvbHlnb24gcG9pbnRzPSI1Ljk5MiwwIDIuOTkyLDMgLTAuMDA4LDAgIi8+PC9zdmc+'); background-repeat: no-repeat; background-position: right 10px center;">
+                        {%- for option in results.sort_options -%}
+                          <option value="{{ option.value }}" {% if option.value == sort_by %}selected="selected"{% endif %}>{{ option.name }}</option>
+                        {%- endfor -%}
+                    </select>
+                </div>
+                </fieldset>
+            </div>
+            <div class="view-as-btn flex items-center gap-lg">
+                <div class="pagination-info caption" style="color: #333; font-size: 1.4rem;">
+                  {%- liquid
+                    assign current_page = current_page | default: 1
+                    assign limit_val = limit | default: 32
+                    assign start_item = current_page | minus: 1 | times: limit_val | plus: 1
+                    assign end_item = current_page | times: limit_val
+                    assign total_count = results.results_count | default: results.products_count
+                    if end_item > total_count
+                      assign end_item = total_count
+                    endif
+                    if total_count == 0
+                      assign start_item = 0
+                    endif
+                  -%}
+                  Showing <span class="start">{{ start_item }}</span>-<span class="end">{{ end_item }}</span> of <span class="total">{{ total_count }}</span> items
+                </div>
+                <div class="form-group flex items-center gap-sm">
+                  {%- if enable_grid_view -%}
+                    {% render 'switcher-grid',
+                      columns_desktop: columns_desktop,
+                      filter_type: filter_type,
+                      style: style,
+                      enable_hover_reveal: enable_hover_reveal,
+                      heading_label_case: heading_label_case,
+                      heading_label_font_size: heading_label_font_size,
+                      text_label_case: text_label_case,
+                      text_label_font_size: text_label_font_size
+                    %}
+                  {%- endif -%}
+                </div>
+            </div>
+        </div>
+      {%- else -%}
+      <div class="sorting-wrapper flex items-center justify-between gap-lg w-full">
+        <div class="sorting-wrapper-left flex items-center gap-lg">
+        </div>
 
+        <div class="sorting-wrapper-middle flex items-center gap-lg small-hide medium-hide">
           {%- if enable_sorting -%}
             {% render 'facets-sort-by',
               results: results,
@@ -223,7 +284,35 @@
             %}
           {%- endif -%}
         </div>
+
+        <div class="sorting-wrapper-rightcol flex justify-end items-center gap-lg small-hide medium-hide">
+          {%- if enable_count -%}
+            <div class="results-count caption">
+              {%- if results.results_count -%}
+                {{ 'content.results_with_count' | t: terms: results.terms, count: results.results_count }}
+              {%- elsif results.products_count == results.all_products_count -%}
+                {{ 'products.facets.product_count_simple' | t: count: results.products_count }}
+              {%- else -%}
+                {{ 'products.facets.product_count' | t: product_count: results.products_count, count: results.all_products_count }}
+              {%- endif -%}
+            </div>
+          {%- endif -%}
+
+          {%- if enable_grid_view -%}
+            {% render 'switcher-grid',
+              columns_desktop: columns_desktop,
+              filter_type: filter_type,
+              style: style,
+              enable_hover_reveal: enable_hover_reveal,
+              heading_label_case: heading_label_case,
+              heading_label_font_size: heading_label_font_size,
+              text_label_case: text_label_case,
+              text_label_font_size: text_label_font_size
+            %}
+          {%- endif -%}
+        </div>
       </div>
+      {%- endif -%}
     </form>
   </facet-filters-form>
 {%- endif -%}
@@ -249,6 +338,12 @@
       "content": "t:content.layout"
     },
     {
+      "type": "checkbox",
+      "id": "filters_sidebar_layout",
+      "label": "Filter custom layout",
+      "default": true
+    },
+    {
       "type": "select",
       "id": "filter_style",
       "label": "t:settings.direction",
@@ -263,8 +358,9 @@
         }
       ],
       "default": "horizontal",
-      "visible_if": "{{ block.settings.enable_filtering == true }}"
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.filters_sidebar_layout == false }}"
     },
+
     {
       "type": "select",
       "id": "filter_position",
@@ -280,7 +376,7 @@
         }
       ],
       "default": "left",
-      "visible_if": "{{ block.settings.filter_style == 'vertical' }}"
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.filters_sidebar_layout == false }}"
     },
     {
       "type": "select",
@@ -425,13 +521,15 @@
           "label": "t:options.underline"
         }
       ],
-      "default": "default"
+      "default": "default",
+      "visible_if": "{{ block.settings.enable_filtering == true and block.settings.filters_sidebar_layout == false }}"
     },
     {
       "type": "checkbox",
       "id": "enable_sticky_filters",
       "label": "t:settings.make_details_sticky_desktop",
-      "default": true
+      "default": true,
+      "visible_if": "{{ block.settings.filters_sidebar_layout == false }}"
     },
     {
       "type": "checkbox",

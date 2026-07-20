@@ -2570,6 +2570,15 @@ a.active-facets__button.focused .active-facets__button-inner {
   transform: translateX(100%);
 }
 
+.mobile-facets[data-drawer-direction="left"] .mobile-facets__inner {
+  margin-left: 0;
+  margin-right: auto;
+}
+
+.js .disclosure-has-popup:not(.menu-opening) .mobile-facets[data-drawer-direction="left"] .mobile-facets__inner {
+  transform: translateX(-100%);
+}
+
 .mobile-facets__header {
   padding: var(--padding-xs) var(--facets-inner-padding-inline);
 }
