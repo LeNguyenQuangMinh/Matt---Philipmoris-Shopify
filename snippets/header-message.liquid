@@ -1,5 +1,16 @@
 {% if settings.show_message %}
-  <div class="header-message custom-typography custom-font-size max-md:hidden" style="{% render 'typography-style', settings: settings, preset: 'custom', case: settings.message_case %}">
+  <div class="header-message custom-typography custom-font-size max-md:hidden flex items-center gap-sm" style="{% render 'typography-style', settings: settings, preset: 'custom', case: settings.message_case %}">
+    {%- if settings.message_icon != 'none' or settings.message_icon_custom != 'none' -%}
+      <span class="message-icon flex items-center shrink-0">
+        {% render 'icon-or-image', 
+          icon: settings.message_icon,
+          icon_custom: settings.message_icon_custom,
+          svg_upload: settings.message_svg_upload,
+          image_upload: settings.message_image_upload,
+          width: settings.message_icon_width 
+        %}
+      </span>
+    {%- endif -%}
     {{ settings.message }}
   </div>
 {% endif %}

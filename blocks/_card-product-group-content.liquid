@@ -1,5 +1,5 @@
 <div
-  class="card--block-content lg:absolute left-0 right-0 bottom-0 flex flex-column items-{{ block.settings.alignment }}"
+  class="card--block-content lg:absolute left-0 right-0 bottom-0 flex flex-column h-full items-{{ block.settings.alignment }} justify-{{ block.settings.justify }}{% if block.settings.hide_on_mobile %} max-sm:hidden{% endif %}{% if block.settings.hide_on_tablet %} medium-hide{% endif %}"
   style="
     --max-sm-p: 1rem 0;
     --pl:{{ block.settings.padding_left }}px;
@@ -19,10 +19,23 @@
       { "type": "spacer" },
       { "type": "_card-product-vendor-flex" },
       { "type": "_card-product-button-flex" },
+      { "type": "_card-product-quickview-flex" },
       { "type": "_card-product-title-flex" },
       { "type": "_card-product-price-flex" }
     ],
     "settings": [
+      {
+        "type": "checkbox",
+        "id": "hide_on_tablet",
+        "label": "Hide on tablet",
+        "default": false
+      },
+      {
+        "type": "checkbox",
+        "id": "hide_on_mobile",
+        "label": "t:settings.hide_on_mobile",
+        "default": false
+      },
       {
         "type": "product",
         "id": "product",
@@ -47,6 +60,38 @@
           }
         ],
         "default": "start"
+      },
+      {
+        "type": "select",
+        "id": "justify",
+        "options": [
+          {
+            "value": "start",
+            "label": "t:options.start"
+          },
+          {
+            "value": "center",
+            "label": "t:options.center"
+          },
+          {
+            "value": "end",
+            "label": "t:options.end"
+          },
+          {
+            "value": "between",
+            "label": "t:options.space_between"
+          },
+          {
+            "value": "around",
+            "label": "t:options.space_around"
+          },
+          {
+            "value": "evenly",
+            "label": "t:options.space_evenly"
+          }
+        ],
+        "default": "center",
+        "label": "t:settings.justify"
       },
       {
         "type": "header",

@@ -15,11 +15,7 @@
   assign terms = search.terms | escape
   assign search_url = '?q=' | append: terms | append: '&options%5Bprefix%5D=last&sort_by=' | append: sort_by
 
-  if cart.attributes.pagination != blank and cart.attributes.pagination
-    assign paginate_by = cart.attributes.pagination
-  else
-    assign paginate_by = section.settings.products_per_page
-  endif
+  assign paginate_by = section.settings.products_per_page
   assign limit = paginate_by
 
   assign columns_tablet = 2

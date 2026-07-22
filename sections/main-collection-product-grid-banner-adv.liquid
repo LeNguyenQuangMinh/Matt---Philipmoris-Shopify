@@ -6,12 +6,7 @@
 {% endif %}
 
 {% liquid
-  if cart.attributes.pagination != blank and cart.attributes.pagination
-    assign paginate_by = cart.attributes.pagination
-  else
-    assign paginate_by = section.settings.products_per_page
-  endif
-
+  assign paginate_by = section.settings.products_per_page
   assign limit = paginate_by
 %}
 

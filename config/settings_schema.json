@@ -2532,6 +2532,13 @@
       },
       {
         "type": "checkbox",
+        "id": "show_badge_arrow",
+        "label": "Show badge arrow",
+        "default": true,
+        "info": "Display a small arrow under the badges"
+      },
+      {
+        "type": "checkbox",
         "id": "show_custom_badge",
         "label": "Show custom badge",
         "default": true

@@ -3777,6 +3777,27 @@ details[open] > .share-button__fallback {
   --color-badge-foreground: var(--color-sale-badge-foreground);
 }
 
+.badge.has-arrow {
+  position: relative;
+  overflow: visible;
+}
+
+.badge.has-arrow::after {
+  position: absolute;
+  top: 100%;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--color-badge-background) transparent transparent transparent;
+  border-width: 6px;
+  border-style: solid;
+  border-color: var(--color-badge-background) transparent transparent transparent;
+  bottom: -5px;
+  content: " ";
+  right: 8px;
+  width: 0;
+  z-index: 9;
+}
+
 .custom-badge {
   --color-badge-background: var(--color-custom-badge-background);
   --color-badge-border: var(--color-custom-badge-border);
@@ -19467,6 +19488,17 @@ details-disclosure > details {
   box-shadow: 0 7px 0 var(--color-inactive), 0 14px 0 var(--color-inactive);
 }
 
+.switcher-grid .grid-view--list .grid-view--item .button--grid-view.has-custom-icon:before {
+  content: none !important;
+  box-shadow: none !important;
+}
+
+.switcher-grid .grid-view--list .grid-view--item .button--grid-view.has-custom-icon svg {
+  width: 2.2rem;
+  height: auto;
+  fill: var(--color-inactive);
+}
+
 @media (min-width: 360px) {
   .switcher-grid .grid-view--list .grid-view--item.grid-view-2 .button--grid-view:before {
     box-shadow: 7px 0 0 var(--color-inactive);
@@ -20191,4 +20223,8 @@ ul.items-same-height > li {
   font-style: normal;
   font-weight: 400;
   line-height: 22px;
+}
+
+.header-message p {
+  margin: 0;
 }

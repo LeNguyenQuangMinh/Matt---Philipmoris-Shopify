@@ -27,7 +27,7 @@
         -%}
         {%- if vendor_image != blank -%}
           <a href="{{ card_product.vendor | url_for_vendor }}" title="{{ card_product.vendor | escape }}" class="vendor-image-link flex-center" style="max-width: {{ vendor_image.width }}px; max-height: {{ vendor_image.height }}px;">
-            <img src="{{ vendor_image | image_url }}" alt="{{ card_product.vendor | escape }}" loading="lazy" class="vendor-image" width="{{ vendor_image.width }}" height="{{ vendor_image.height }}">
+            <img src="{{ vendor_image | image_url }}" alt="{{ card_product.vendor | escape }}" loading="lazy" class="vendor-image" width="{{ vendor_image.width }}" height="{{ vendor_image.height }}" style="max-height: 3rem;">
           </a>
         {%- else -%}
           {{ card_product.vendor | link_to_vendor }}

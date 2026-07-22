@@ -154,6 +154,8 @@
         font-size: 24px;
         margin-bottom: 0.75rem;
         letter-spacing: 0;
+        text-transform: none;
+        font-size: 24px;
       }
       .collection-subcategories__description {
         font-size: 16px;
@@ -287,7 +289,7 @@
             {% if sec_stts.button_label != blank %}
               <button type="button" class="button button--primary mt-10" id="read-more-btn-{{ section.id }}" style="display: none;">
                 <span class="read-more-text">{{ sec_stts.button_label }}</span>
-                <span class="read-less-text" style="display: none;">View Less</span>
+                <span class="read-less-text" style="display: none;">Read Less</span>
               </button>
             {% endif %}
           </div>

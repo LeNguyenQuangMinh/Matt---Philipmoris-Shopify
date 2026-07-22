@@ -13,6 +13,11 @@
   else
     assign padding_block = block.settings.padding_block | times: 0.1 | append: 'rem'
     assign padding_inline = block.settings.padding_inline | times: 0.1 | append: 'rem'
+    if block.settings.custom_padding_button
+      assign btn_padding_block = block.settings.button_padding_block | times: 0.1 | append: 'rem'
+      assign btn_padding_inline = block.settings.button_padding_inline | times: 0.1 | append: 'rem'
+      assign btn_padding_style = 'padding: ' | append: btn_padding_block | append: ' ' | append: btn_padding_inline | append: ' !important;'
+    endif
   endif
 
   assign style_class = block.settings.style_class
@@ -56,6 +61,7 @@
               type="submit"
               name="add"
               class="quick-add__submit quick-add__submit--{{ settings.quick_add_type }} {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %} {{ class_button }}"
+              style="{{ btn_padding_style }}"
               aria-haspopup="dialog"
               aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
               data-product-url="{{ card_product.url }}"
@@ -119,6 +125,7 @@
                 type="submit"
                 name="add"
                 class="add-to-cart-button quick-add__submit quick-add__submit--{{ settings.quick_add_type }} {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %} {{ class_button }}"
+                style="{{ btn_padding_style }}"
                 aria-haspopup="dialog"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 aria-live="polite"
@@ -175,6 +182,7 @@
               type="submit"
               name="add"
               class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %}"
+              style="{{ btn_padding_style }}"
               aria-haspopup="dialog"
               aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
               data-product-url="{{ card_product.url }}"
@@ -213,6 +221,7 @@
                 type="submit"
                 name="add"
                 class="quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class != 'link' %} button--full-width{% endif %}"
+                style="{{ btn_padding_style }}"
                 aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                 data-sold-out-message="true"
                 disabled
@@ -249,6 +258,7 @@
                   type="submit"
                   name="add"
                   class="add-to-cart-button quick-add__submit {{ style_class }}{% if link_underline %} link--underline{% endif %}{% if style_class == 'button' %} button--full-width{% endif %}"
+                  style="{{ btn_padding_style }}"
                   aria-haspopup="dialog"
                   aria-labelledby="{{ product_form_id }}-submit title-{{ section_id }}-{{ card_product.id }}"
                   aria-live="polite"
@@ -581,6 +591,40 @@
       "label": "t:settings.padding_left_right",
       "unit": "px",
       "visible_if": "{{ settings.quick_add_type == 'text' }}"
+    },
+    {
+      "type": "header",
+      "content": "Button padding",
+      "visible_if": "{{ settings.quick_add_type == 'text' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_padding_button",
+      "label": "Custom padding button",
+      "default": false,
+      "visible_if": "{{ settings.quick_add_type == 'text' }}"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_block",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings.padding_top_bottom",
+      "unit": "px",
+      "visible_if": "{{ settings.quick_add_type == 'text' and block.settings.custom_padding_button }}"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_inline",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 20,
+      "label": "t:settings.padding_left_right",
+      "unit": "px",
+      "visible_if": "{{ settings.quick_add_type == 'text' and block.settings.custom_padding_button }}"
     }
   ],
   "presets": [

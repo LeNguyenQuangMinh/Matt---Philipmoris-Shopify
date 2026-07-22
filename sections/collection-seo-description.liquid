@@ -1,0 +1,237 @@
+<style>
+  #shopify-section-{{ section.id }} .collection-seo-description .rte p,
+  #shopify-section-{{ section.id }} .collection-seo-description .rte li {
+    font-size: {{ section.settings.font_size_p }}px;
+  }
+  #shopify-section-{{ section.id }} .collection-seo-description .rte h1 {
+    font-size: {{ section.settings.font_size_h1 }}px;
+    text-transform: none;
+  }
+  #shopify-section-{{ section.id }} .collection-seo-description .rte h2 {
+    font-size: {{ section.settings.font_size_h2 }}px;
+    text-transform: none;
+  }
+  #shopify-section-{{ section.id }} .collection-seo-description .rte h3 {
+    font-size: {{ section.settings.font_size_h3 }}px;
+    text-transform: none;
+  }
+  #shopify-section-{{ section.id }} .collection-seo-description .rte h4 {
+    font-size: {{ section.settings.font_size_h4 }}px;
+    text-transform: none;
+  }
+  #shopify-section-{{ section.id }} .collection-seo-description .rte h5 {
+    font-size: {{ section.settings.font_size_h5 }}px;
+    text-transform: none;
+  }
+  #shopify-section-{{ section.id }} .collection-seo-description .rte h6 {
+    font-size: {{ section.settings.font_size_h6 }}px;
+    text-transform: none;
+  }
+</style>
+
+<div class="section collection-seo-description color-{{ section.settings.color_scheme }} gradient section--{{ section.settings.section_width }}" style="{% if section.settings.section_width == 'custom' %}--page-content-width: {{ section.settings.page_width_custom | divided_by: 10 }}rem; --page-width: calc(var(--page-content-width) + var(--page-margin) * 2);{% endif %} --pr: {{ section.settings.padding_right }}px; --pt: {{ section.settings.padding_top }}px; --pb: {{ section.settings.padding_bottom }}px; --pl: {{ section.settings.padding_left }}px;">
+  <div class="{% if section.settings.section_width == 'full-width' %}w-full{% else %}page-width{% endif %}{% if section.settings.narrow_width %} page-width--narrow{% endif %}">
+    {%- if section.settings.description != blank -%}
+      <div class="rte" style="text-align: {{ section.settings.text_alignment }};">
+        {{ section.settings.description }}
+      </div>
+    {%- endif -%}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Collection SEO Text",
+  "tag": "section",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.size"
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "t:settings.width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "t:options.page"
+        },
+        {
+          "value": "full-width",
+          "label": "t:options.full"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "range",
+      "id": "page_width_custom",
+      "min": 1000,
+      "max": 2000,
+      "step": 10,
+      "default": 1570,
+      "unit": "px",
+      "label": "t:settings.page_width",
+      "visible_if": "{{ section.settings.section_width == 'custom' }}"
+    },
+    {
+      "type": "richtext",
+      "id": "description",
+      "label": "Description text",
+      "default": "<p>Add your rich text here.</p>"
+    },
+    {
+      "type": "select",
+      "id": "text_alignment",
+      "label": "Text alignment",
+      "options": [
+        { "value": "left", "label": "Left" },
+        { "value": "center", "label": "Center" },
+        { "value": "right", "label": "Right" }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "checkbox",
+      "id": "narrow_width",
+      "label": "Use narrow width",
+      "default": false
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color scheme",
+      "default": "background-1"
+    },
+    {
+      "type": "header",
+      "content": "Typography"
+    },
+    {
+      "type": "range",
+      "id": "font_size_p",
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Text (Paragraph) size",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "font_size_h1",
+      "min": 12,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading 1 (H1) size",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "font_size_h2",
+      "min": 12,
+      "max": 80,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading 2 (H2) size",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "font_size_h3",
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading 3 (H3) size",
+      "default": 28
+    },
+    {
+      "type": "range",
+      "id": "font_size_h4",
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading 4 (H4) size",
+      "default": 24
+    },
+    {
+      "type": "range",
+      "id": "font_size_h5",
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading 5 (H5) size",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "font_size_h6",
+      "min": 12,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Heading 6 (H6) size",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Section Padding"
+    },
+    {
+      "type": "range",
+      "id": "padding_top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Top",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Bottom",
+      "default": 36
+    },
+    {
+      "type": "range",
+      "id": "padding_left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Left",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "padding_right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "Padding Right",
+      "default": 25
+    }
+  ],
+  "presets": [
+    {
+      "name": "Collection SEO Text",
+      "category": "Text"
+    }
+  ]
+}
+{% endschema %}

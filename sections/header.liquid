@@ -366,7 +366,11 @@
           flex-wrap: nowrap;
           padding-block: 1rem;
           padding-inline: var(--page-margin);
+          {% if sec_stts.section_width == 'full-width' %}
+          max-width: 100%;
+          {% else %}
           max-width: var(--page-width);
+          {% endif %}
           margin-inline: auto;
           width: 100%;
         }
@@ -2036,6 +2040,41 @@
         "id": "message",
         "label": "t:settings.message",
         "default": "<p>Summer Sale – Up to 30% OFF</p>",
+        "visible_if": "{{ section.settings.show_message }}"
+      },
+      {
+        "type": "select",
+        "id": "message_icon_custom",
+        "label": "t:settings.custom_icon",
+        "options": [
+          { "value": "none", "label": "t:options.none" },
+          { "value": "svg", "label": "SVG" },
+          { "value": "image", "label": "t:options.image" }
+        ],
+        "default": "none",
+        "visible_if": "{{ section.settings.show_message }}"
+      },
+      {
+        "type": "liquid",
+        "id": "message_svg_upload",
+        "label": "t:settings.svg_icon",
+        "visible_if": "{{ section.settings.show_message and section.settings.message_icon_custom == 'svg' }}"
+      },
+      {
+        "type": "image_picker",
+        "id": "message_image_upload",
+        "label": "t:settings.image_icon",
+        "visible_if": "{{ section.settings.show_message and section.settings.message_icon_custom == 'image' }}"
+      },
+      {
+        "type": "range",
+        "id": "message_icon_width",
+        "label": "Icon width",
+        "min": 12,
+        "max": 60,
+        "step": 1,
+        "unit": "px",
+        "default": 24,
         "visible_if": "{{ section.settings.show_message }}"
       },
       {

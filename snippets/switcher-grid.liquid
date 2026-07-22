@@ -9,22 +9,27 @@
 {% endcomment %}
 
 {% assign columns_desktop = 4 %}
+{% assign show_custom_icons = block.settings.show_custom_icons %}
 
-<grid-view class="switcher-grid flex items-center {{ class }}">
-  <span class="switcher-grid__label facet-filters__field-label block {{ text_label_case }}" style="--font-size: {{ heading_label_font_size }};">{{ 'content.view_as' | t }}</span>
+<grid-view class="switcher-grid{% if show_custom_icons %} custom-icon{% endif %} flex items-center {{ class }}">
+  <span class="hidden switcher-grid__label facet-filters__field-label block {{ text_label_case }}" style="--font-size: {{ heading_label_font_size }};">{{ 'content.view_as' | t }}</span>
   <ul
     class="grid-view--list desktop-grid-view flex justify-center list-unstyled"
     role="list"
-    style="--p: 1.3rem 2rem;"
+    style="--p: 1.3rem 0;"
   >
     <li class="grid-view--item grid-view-list">
       <button
-        class="button--grid-view t-button flex items-center justify-center{% if columns_desktop == 1 %} active{% else %} cursor-pointer{% endif %}"
+        class="button--grid-view t-button flex items-center justify-center{% if columns_desktop == 1 %} active{% else %} cursor-pointer{% endif %}{% if show_custom_icons %} has-custom-icon{% endif %}"
         type="button"
         aria-label="list"
         data-grid="1"
         style="--p: 1rem;--w: 4rem;--h: 4rem;"
-      ></button>
+      >
+        {%- if show_custom_icons -%}
+          <svg class="icon icon-list-view" viewBox="0 0 112 88.95" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><g id="Layer_2-2" data-name="Layer 2"><g id="Layer_2-2-2" data-name="Layer 2-2"><rect width="32" height="23.95"/><rect x="40" width="72" height="23.95"/><rect y="32.83" width="32" height="23.95"/><rect x="40" y="32.83" width="72" height="23.95"/><rect y="65" width="32" height="23.95"/><rect x="40" y="65" width="72" height="23.95"/></g></g></g></g></svg>
+        {%- endif -%}
+      </button>
     </li>
     <li class="grid-view--item grid-view-2 hidden">
       <button
@@ -46,12 +51,16 @@
     </li>
     <li class="grid-view--item grid-view-4">
       <button
-        class="button--grid-view t-button flex items-center justify-center{% if columns_desktop == 4 %} active{% else %} cursor-pointer{% endif %}"
+        class="button--grid-view t-button flex items-center justify-center{% if columns_desktop == 4 %} active{% else %} cursor-pointer{% endif %}{% if show_custom_icons %} has-custom-icon{% endif %}"
         type="button"
         aria-label="4"
         data-grid="4"
         style="--p: 1rem;--w: 4rem;--h: 4rem;"
-      ></button>
+      >
+        {%- if show_custom_icons -%}
+          <svg class="icon icon-grid-view" viewBox="0 0 112 88.95" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><g id="Layer_2" data-name="Layer 2"><g id="Layer_1-2" data-name="Layer 1"><g id="Layer_2-2" data-name="Layer 2"><g id="Layer_2-2-2" data-name="Layer 2-2"><rect width="32" height="23.95"/><rect x="40" width="32" height="23.95"/><rect x="80" width="32" height="23.95"/><rect y="32.83" width="32" height="23.95"/><rect x="40" y="32.83" width="32" height="23.95"/><rect x="80" y="32.83" width="32" height="23.95"/><rect y="65" width="32" height="23.95"/><rect x="40" y="65" width="32" height="23.95"/><rect x="80" y="65" width="32" height="23.95"/></g></g></g></g></svg>
+        {%- endif -%}
+      </button>
     </li>
     <li class="grid-view--item grid-view-5 hidden">
       <button
