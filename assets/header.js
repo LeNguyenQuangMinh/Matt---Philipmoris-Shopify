@@ -43,8 +43,14 @@ class HeaderComponent extends HTMLElement {
     if (!entry) return;
     cancelAnimationFrame(this._resizeRaf);
     this._resizeRaf = requestAnimationFrame(() => {
+      if (this.dataset.stickyState === "active" || this.hasAttribute("data-animating")) {
+        return;
+      }
       const { height } = entry.target.getBoundingClientRect();
-      document.body.style.setProperty("--header-height", `${height}px`);
+      const currentHeight = parseFloat(document.body.style.getPropertyValue("--header-height")) || 0;
+      if (Math.abs(currentHeight - height) > 1) {
+        document.body.style.setProperty("--header-height", `${height}px`);
+      }
     });
   });
 
@@ -81,7 +87,7 @@ class HeaderComponent extends HTMLElement {
     }
 
     if (this.stickyMode === "always") {
-      const headerHeight = this.offsetHeight || 100;
+      const headerHeight = parseFloat(document.body.style.getPropertyValue("--header-height")) || this.offsetHeight || 100;
       const announcementBarHeight = parseInt(document.documentElement.style.getPropertyValue('--announcement-bar-height')) || 0;
       const triggerHeight = headerHeight + announcementBarHeight;
       const isPastHeader = scrollTop > triggerHeight;
