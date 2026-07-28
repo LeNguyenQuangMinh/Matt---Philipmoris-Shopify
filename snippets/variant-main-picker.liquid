@@ -47,7 +47,7 @@
     {%- if show_combined_products_listing -%}
       <div class="swatch-custom product-form__input">
         <p class="form__label-combined form__label">{{ 'products.product.color' | t }}<span>{{ product.metafields.custom.combined_products_listing_name_color }}</span></p>
-        <ul class="list-unstyled flex flex-align-center flex-wrap">
+        <ul class="list-unstyled flex items-center flex-wrap">
           {%- for referenced_product in custom_fields.value -%}
             {%- liquid
               assign image_custom = referenced_product.metafields.custom.combined_products_listing_image.value
@@ -101,12 +101,17 @@
       -%}
       {%- unless skip_combined_color_option -%}
       {%- if variant_style == 'pills' or variant_style == 'swatch' -%}
-        <fieldset  class="js product-form__input variant-option variant-option--buttons{% if is_color %} product-form__input--swatch variant-option--swatches{% else %} product-form__input--pill variant-option--pill{% endif %}">
-          <legend class="form__label">
-            {{ product_option.name  | escape }}:
-            <span data-selected-value>
-              {{- product_option.selected_value -}}
+        <fieldset class="js product-form__input variant-option variant-option--buttons{% if is_color %} product-form__input--swatch variant-option--swatches{% else %} product-form__input--pill variant-option--pill{% endif %}">
+          <legend class="form__label flex items-center justify-between w-full">
+            <span>
+              {{ product_option.name  | escape }}:
+              <span data-selected-value>
+                {{- product_option.selected_value -}}
+              </span>
             </span>
+            {%- if option_name contains 'size' -%}
+              {% render 'size-chart-inline', product: product_resource %}
+            {%- endif -%}
           </legend>
           {% render 'product-variant-options',
             option: product_option,
@@ -129,11 +134,16 @@
           endif
         %}
         <div class="product-form__input product-form__input--dropdown variant-option variant-option--dropdowns">
-          <label class="form__label" for="Option-{{ block.id }}-{{ forloop.index0 }}">
-            {{ product_option.name  | escape }}:
-            <span data-selected-value>
-              {{- product_option.selected_value -}}
+          <label class="form__label flex items-center justify-between w-full" for="Option-{{ block.id }}-{{ forloop.index0 }}">
+            <span>
+              {{ product_option.name  | escape }}:
+              <span data-selected-value>
+                {{- product_option.selected_value -}}
+              </span>
             </span>
+            {%- if option_name contains 'size' -%}
+              {% render 'size-chart-inline', product: product_resource %}
+            {%- endif -%}
           </label>
           <div
             class="select variant-option__select-wrapper"

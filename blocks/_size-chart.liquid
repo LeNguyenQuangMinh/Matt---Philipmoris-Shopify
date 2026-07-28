@@ -15,11 +15,47 @@
 
   assign has_size_chart = false
   assign size_chart_type = bl_stts.size_chart_type
+  assign is_image = false
+  assign is_image_url = false
 
-  if size_chart_type == 'metafield'
-    if product.metafields.custom.size_chart
+  # Check if product has size option
+  assign has_size_option = false
+  for option in product.options_with_values
+    assign option_name_downcase = option.name | downcase
+    if option_name_downcase contains 'size'
+      assign has_size_option = true
+      break
+    endif
+  endfor
+
+  if has_size_option
+    if size_chart_type == 'metafield'
+      if product.metafields.custom.size_chart
       assign has_size_chart = true
-      assign size_chart_details = product.metafields.custom.size_chart
+      assign size_chart_metafield = product.metafields.custom.size_chart
+      assign size_chart_value = size_chart_metafield.value | default: size_chart_metafield
+
+      if size_chart_metafield.type == 'file_reference' or size_chart_value.width != blank or size_chart_value.aspect_ratio != blank or size_chart_value.src != blank
+        assign is_image = true
+        assign size_chart_image = size_chart_value
+      else
+        capture size_chart_str
+          echo size_chart_value
+        endcapture
+        assign size_chart_str_clean = size_chart_str | strip
+        if size_chart_str_clean contains 'http' or size_chart_str_clean contains '//cdn.shopify' or size_chart_str_clean contains '/files/' or size_chart_str_clean contains '.jpg' or size_chart_str_clean contains '.png' or size_chart_str_clean contains '.webp'
+          assign is_image_url = true
+          assign size_chart_image_url = size_chart_str_clean
+        else
+          assign size_chart_details = size_chart_value
+        endif
+      endif
+    endif
+  elsif size_chart_type == 'image'
+    if bl_stts.size_chart_image != blank
+      assign has_size_chart = true
+      assign is_image = true
+      assign size_chart_image = bl_stts.size_chart_image
     endif
   elsif size_chart_type == 'page'
     if bl_stts.size_chart_page != blank
@@ -27,6 +63,7 @@
       assign size_chart_heading = bl_stts.size_chart_page.title
       assign size_chart_details = bl_stts.size_chart_page.content
     endif
+  endif
   endif
 -%}
 
@@ -86,23 +123,31 @@
             {{ size_chart_heading | default: 'products.product.size_chart.name_popup' }}
           </h5>
         </div>
-        <div class="size-chart-popup-modal__content-info m-auto">
-          <picture class="size-chart-details center">
-            {%- if size_chart_details != '' -%}
-              {%- if size_chart_type == 'metafield' -%}
-                <img
-                  srcset="{{ size_chart_details }}"
-                  src="{{ size_chart_details }}"
-                  alt="{{ shop.name | escape }}"
-                  loading="lazy"
-                  width="100%"
-                  height="auto"
-                >
-              {%- elsif size_chart_type == 'page' -%}
+        <div class="size-chart-popup-modal__content-info m-auto w-full">
+          <div class="size-chart-details center w-full flex justify-center">
+            {%- if is_image and size_chart_image != blank -%}
+              {{
+                size_chart_image
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'lazy',
+                  class: 'w-full h-auto object-contain m-auto',
+                  widths: '375, 550, 750, 1100, 1400',
+                  alt: size_chart_heading | default: 'Size chart'
+              }}
+            {%- elsif is_image_url -%}
+              <img
+                src="{{ size_chart_image_url }}"
+                alt="{{ size_chart_heading | default: 'Size chart' | escape }}"
+                loading="lazy"
+                class="w-full h-auto object-contain m-auto"
+              >
+            {%- elsif size_chart_details != blank -%}
+              <div class="rte w-full">
                 {{ size_chart_details }}
-              {%- endif -%}
+              </div>
             {%- endif -%}
-          </picture>
+          </div>
         </div>
       </div>
     </div>
@@ -418,6 +463,10 @@
         {
           "value": "page",
           "label": "t:options.page"
+        },
+        {
+          "value": "image",
+          "label": "t:options.image"
         }
       ],
       "label": "t:settings.type",
@@ -427,6 +476,11 @@
       "type": "page",
       "id": "size_chart_page",
       "label": "t:settings.page"
+    },
+    {
+      "type": "image_picker",
+      "id": "size_chart_image",
+      "label": "t:settings.image"
     },
     {
       "type": "header",

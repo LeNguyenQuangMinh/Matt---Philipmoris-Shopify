@@ -3264,6 +3264,10 @@ details[open] > .share-button__fallback {
   margin-bottom: 0.6rem;
 }
 
+.form__label.flex {
+  display: flex;
+}
+
 .form__message {
   align-items: center;
   display: flex;

@@ -277,7 +277,7 @@
             {%- if show_combined_products_listing -%}
             <div class="swatch-custom product-form__input">
                 <p class="form__label-combined form__label">{{ 'products.product.color' | t }}<span>{{ product.metafields.custom.combined_products_listing_name_color }}</span></p>
-                <ul class="list-unstyled flex flex-align-center flex-wrap">
+                <ul class="list-unstyled flex items-center flex-wrap">
                     {%- for referenced_product in custom_fields.value -%}
                         {%- liquid
                             assign image_custom = referenced_product.metafields.custom.combined_products_listing_image.value

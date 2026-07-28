@@ -1,0 +1,120 @@
+{% liquid
+  assign has_size_chart = false
+  assign is_image = false
+  assign is_image_url = false
+
+  # Check if product has size option
+  assign has_size_option = false
+  for option in product.options_with_values
+    assign option_name_downcase = option.name | downcase
+    if option_name_downcase contains 'size'
+      assign has_size_option = true
+      break
+    endif
+  endfor
+
+  if has_size_option
+    if product.metafields.custom.size_chart
+      assign has_size_chart = true
+      assign size_chart_metafield = product.metafields.custom.size_chart
+      assign size_chart_value = size_chart_metafield.value | default: size_chart_metafield
+
+      if size_chart_metafield.type == 'file_reference' or size_chart_value.width != blank or size_chart_value.aspect_ratio != blank or size_chart_value.src != blank
+        assign is_image = true
+        assign size_chart_image = size_chart_value
+      else
+        capture size_chart_str
+          echo size_chart_value
+        endcapture
+        assign size_chart_str_clean = size_chart_str | strip
+        if size_chart_str_clean contains 'http' or size_chart_str_clean contains '//cdn.shopify' or size_chart_str_clean contains '/files/' or size_chart_str_clean contains '.jpg' or size_chart_str_clean contains '.png' or size_chart_str_clean contains '.webp'
+          assign is_image_url = true
+          assign size_chart_image_url = size_chart_str_clean
+        else
+          assign size_chart_details = size_chart_value
+        endif
+      endif
+    endif
+  endif
+-%}
+
+{%- if has_size_chart -%}
+  <side-drawer-opener
+    class="popup size-chart product-popup-modal__opener--keep size-chart-inline"
+    data-side-drawer="#PopupModal-size-chart-{{ product.id }}"
+    style="display: inline-flex; align-items: center;"
+  >
+    <button
+      id="PopupModalButton-size-chart-{{ product.id }}"
+      class="button button-unstyled popup__button flex items-center gap-2 cursor-pointer"
+      type="button"
+      style="font-size: 1.4rem; color: var(--color-primary, #6d3f49); text-decoration: underline; background: none; border: none; padding: 0;"
+    >
+      {{- 'icon-size-chart.svg' | inline_asset_content -}}
+      <span>{{ 'products.product.size_chart.name_popup' | t | default: 'Size Guide' }}</span>
+    </button>
+  </side-drawer-opener>
+
+  <side-drawer
+    class="popup__content product-popup-modal__drawer--keep drawer fixed top-0 left-0 z-10 w-screen h-full flex-center no-js-hidden"
+    element-s-popup
+    id="PopupModal-size-chart-{{ product.id }}"
+    data-drawer-direction="center"
+  >
+    <div id="Drawer-Overlay-size-chart-{{ product.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
+    <div
+      class="popup__inner color-{{ settings.popover_color_scheme }} w-full h-auto flex flex-column global-settings-popup cus-scrollbar"
+      role="dialog"
+      aria-modal="true"
+      aria-label="Size chart"
+      tabindex="-1"
+      style="--modal-max-width: 72rem;"
+      data-drawer-content
+    >
+      <button
+        onclick="this.closest('side-drawer').close()"
+        class="drawer__close block t-button bor-none rounded-full cursor-pointer absolute button-close-circle"
+        type="button"
+        aria-label="{{ 'accessibility.close_dialog' | t }}"
+        style="--top: 1rem; --right: 1rem;"
+      >
+        {{- 'icon-close.svg' | inline_asset_content -}}
+      </button>
+      <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 1rem;">
+        <div class="drawer__header relative center"
+          style="--p: 1.5rem 0; --mb: 2.5rem;"
+        >
+          <h5 class="drawer__heading break m-0">
+            {{ 'products.product.size_chart.name_popup' | t | default: 'Size Guide' }}
+          </h5>
+        </div>
+        <div class="size-chart-popup-modal__content-info m-auto w-full">
+          <div class="size-chart-details center w-full flex justify-center">
+            {%- if is_image and size_chart_image != blank -%}
+              {{
+                size_chart_image
+                | image_url: width: 1400
+                | image_tag:
+                  loading: 'lazy',
+                  class: 'w-full h-auto object-contain m-auto',
+                  widths: '375, 550, 750, 1100, 1400',
+                  alt: 'Size Guide'
+              }}
+            {%- elsif is_image_url -%}
+              <img
+                src="{{ size_chart_image_url }}"
+                alt="Size Guide"
+                loading="lazy"
+                class="w-full h-auto object-contain m-auto"
+              >
+            {%- elsif size_chart_details != blank -%}
+              <div class="rte w-full">
+                {{ size_chart_details }}
+              </div>
+            {%- endif -%}
+          </div>
+        </div>
+      </div>
+    </div>
+  </side-drawer>
+{%- endif -%}
