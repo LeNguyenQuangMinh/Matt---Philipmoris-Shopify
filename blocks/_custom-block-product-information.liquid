@@ -1,0 +1,224 @@
+{%- liquid
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+  if product == blank
+    assign product = block.settings.product
+  endif
+  assign variant = product.selected_or_first_available_variant
+-%}
+
+<style>
+.custom-block-product-information {
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+.custom-block-product-information .info__list {
+    margin: 0;
+    list-style: none;
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    padding: 0;
+    gap: 0;
+}
+.custom-block-product-information .info__item {
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    flex: 1;
+    position: relative;
+}
+/* Vertical divider between items */
+.custom-block-product-information .info__item:not(:last-of-type)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 50%;
+    background-color: rgba(var(--color-foreground), 0.2);
+}
+.custom-block-product-information .info__item.hide-text {
+    display: none;
+}
+.custom-block-product-information .info__item.d-none {
+    display: none;
+}
+.custom-block-product-information .info__icon {
+    max-width: 32px;
+    height: auto;
+    object-fit: contain;
+}
+.custom-block-product-information .info__item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: inherit;
+}
+.custom-block-product-information .info__text {
+    font-size: 1.4rem;
+    line-height: 1.4;
+    color: rgba(var(--color-foreground), 0.8);
+}
+.custom-block-product-information .info__text.text-green {
+    color: #46952e;
+}
+@media (max-width: 749px) {
+    .custom-block-product-information .info__text {
+        font-size: 1.2rem;
+    }
+}
+</style>
+
+<div class="custom-block-product-information" {{ block.shopify_attributes }}>
+    <ul class="info__list">
+        <li class="info__item{% if product.price > 5000 %} hide-text{% endif %}">
+            {% if block.settings.icon_1 != blank %}
+                <img src="{{ block.settings.icon_1 | image_url: width: 64 }}" alt="{{ block.settings.icon_1.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+            {% else %}
+                <img src="https://cdn11.bigcommerce.com/s-k63dsgx98h/images/stencil/original/image-manager/delivery.png" alt="Delivery Icon" class="info__icon" width="32" height="32" loading="lazy">
+            {% endif %}
+            <span class="info__text">
+                {% if block.settings.text_1 != blank %}
+                    {{ block.settings.text_1 }}
+                {% else %}
+                    Standard Shipping Rate is £4.95
+                {% endif %}
+            </span>
+        </li>
+        <li class="info__item">
+            <a href="#tab-shipping" class="root-scroll-element">
+                {% if block.settings.icon_2 != blank %}
+                    <img src="{{ block.settings.icon_2 | image_url: width: 64 }}" alt="{{ block.settings.icon_2.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+                {% else %}
+                    <img src="https://cdn11.bigcommerce.com/s-k63dsgx98h/images/stencil/original/image-manager/free-box.png" alt="Free Shipping" class="info__icon" width="32" height="32" loading="lazy">
+                {% endif %}
+                <span class="info__text {% if product.price > 7500 %}text-green{% endif %}">
+                    {% if block.settings.text_2 != blank %}
+                        {{ block.settings.text_2 }}
+                    {% else %}
+                        {% if product.price > 10000 %}
+                            Free Shipping Available
+                        {% else %}
+                            FREE Shipping on all orders over £100
+                        {% endif %}
+                    {% endif %}
+                </span>
+            </a>
+        </li>
+        <li class="info__item">
+            <a href="#tab-shipping" class="root-scroll-element">
+                {% if block.settings.icon_3 != blank %}
+                    <img src="{{ block.settings.icon_3 | image_url: width: 64 }}" alt="{{ block.settings.icon_3.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+                {% else %}
+                    <img src="https://cdn11.bigcommerce.com/s-k63dsgx98h/images/stencil/original/image-manager/click.png" alt="Click" class="info__icon" width="32" height="32" loading="lazy">
+                {% endif %}
+                <span class="info__text">
+                    {% if block.settings.text_3 != blank %}
+                        {{ block.settings.text_3 }}
+                    {% else %}
+                        Click and Collect in-store
+                    {% endif %}
+                </span>
+            </a>
+        </li>
+        <li class="info__item order-time{% unless product.available %} d-none{% endunless %}" style="display: none !important;">
+            {% if block.settings.icon_4 != blank %}
+                <img src="{{ block.settings.icon_4 | image_url: width: 64 }}" alt="{{ block.settings.icon_4.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+            {% else %}
+                <svg class="icon info__icon" viewBox="0 0 24 24" width="32" height="32">
+                    <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                    <polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2"/>
+                </svg>
+            {% endif %}
+            <span class="info__text">
+                {% if block.settings.text_4 != blank %}
+                    {{ block.settings.text_4 }}
+                {% else %}
+                    Order In The Next<br><span class="order-time__text"><span class="time hours"></span>hrs : <span class="time minutes"></span>mins</span><br>for same day despatch
+                {% endif %}
+            </span>
+        </li>
+    </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Custom product info",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Item 1"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_1",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_1",
+      "label": "Text",
+      "info": "Leave blank to use default logic"
+    },
+    {
+      "type": "header",
+      "content": "Item 2"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_2",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_2",
+      "label": "Text",
+      "info": "Leave blank to use default logic"
+    },
+    {
+      "type": "header",
+      "content": "Item 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_3",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_3",
+      "label": "Text",
+      "info": "Leave blank to use default logic"
+    },
+    {
+      "type": "header",
+      "content": "Item 4 (Hidden)"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_4",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_4",
+      "label": "Text",
+      "info": "Leave blank to use default logic"
+    }
+  ],
+  "presets": [
+    {
+        "name": "Custom product info",
+        "category": "Custom"
+    }
+  ]
+}
+{% endschema %}

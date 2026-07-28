@@ -9286,7 +9286,11 @@ marquee-component {
 @media screen and (min-width: 750px) {
   .product-details {
     position: sticky;
-    top: 0;
+    top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)));
+  }
+
+  body:has(header-component[data-sticky-state="active"]) .product-details {
+    top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)));
   }
 
   .product-details > .group-block {
@@ -11732,6 +11736,10 @@ form.payment-terms {
   .product-information__media {
     position: sticky;
     top: 0;
+  }
+
+  body:has(header-component[data-sticky-state="active"]) .product-information__media {
+    top: calc(var(--header-height, 0px) + 2rem);
   }
 
   .product-information__grid {

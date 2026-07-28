@@ -177,12 +177,8 @@ function updateHeaderHeights() {
   // Early exit if no header - nothing to do
   if (!(header instanceof HTMLElement)) return;
 
-  // Calculate initial height(s
-  // const headerHeight = header.offsetHeight;
-  const headerGroupHeight = calculateHeaderGroupHeight(header);
-
-  // document.body.style.setProperty('--header-height', `${headerHeight}px`);
-  document.body.style.setProperty('--header-group-height', `${headerGroupHeight}px`);
+  const headerHeight = header.offsetHeight;
+  document.body.style.setProperty('--header-height', `${headerHeight}px`);
 }
 
 function setheaderRowHeight() {

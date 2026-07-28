@@ -115,6 +115,9 @@
             id: 'subtotal',
             product: product
           %}
+          
+          {% content_for "blocks" %}
+
           {% content_for 'block',
             type: 'add-to-cart',
             id: 'add-to-cart',
@@ -279,6 +282,17 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    }
+  ],
+  "blocks": [
+    {
+      "type": "@app"
+    },
+    {
+      "type": "@theme"
+    },
+    {
+      "type": "_custom-block-product-information"
     }
   ],
   "presets": [

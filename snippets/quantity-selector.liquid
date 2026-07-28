@@ -23,7 +23,7 @@
 
 <div
   id="Quantity-Form-{{ section.id }}"
-  class="product-form__quantity{% if class %} {{ class }}{% endif %}"
+  class="product-form__quantity{% if class %} {{ class }}{% endif %} flex items-center gap-lg"
   {% if line_index == null %}
     {{- block.shopify_attributes -}}
   {% endif %}

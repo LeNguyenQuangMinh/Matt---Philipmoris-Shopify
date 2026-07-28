@@ -161,6 +161,8 @@
     <span class="svg-wrapper">
       {{- 'icon-caret.svg' | inline_asset_content -}}
     </span>
+    {% when 'pipe' %}
+      |
   {% endcase -%}
 {% endcapture %}
 
@@ -173,7 +175,7 @@
   class="link link--hover-underline link--text"
 {%- endcapture -%}
 
-<nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'content.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};--button-font-size-link: var(--font-size);--fluid-font-size: {{ fluid_font_size }}">
+<nav class="breadcrumbs element-margin-bottom custom-font-size" role="navigation" aria-label="{{ 'content.breadcrumb.title' | t }}" style="--font-size: {{ settings.font_size }};--button-font-size-link: var(--font-size);--fluid-font-size: {{ fluid_font_size }}{% if settings.font_weight != blank %};font-weight: {{ settings.font_weight }}{% endif %}{% if settings.line_height != blank %};line-height: var(--line-height--body-{{ settings.line_height }}){% endif %}">
   <ol
     class="breadcrumbs__list list-unstyled max-sm:flex justify-{{ settings.horizontal_alignment }} items-center gap-style overflow-x-a hide-scrollbar"
     style="{% render 'gap-style', value: settings.gap %}"
@@ -195,7 +197,9 @@
 
     {% if template.name contains 'collections' %}
       <li {{ attr_item }}>
-        <span>{{ 'content.breadcrumb.collections' | t }}</span>
+        <a href="{{ routes.collections_url }}" class="link link--underline">
+          <span>{{ 'content.breadcrumb.collections' | t }}</span>
+        </a>
       </li>
     {% endif %}
     {% if template.name contains 'collection' and collection %}
@@ -214,7 +218,9 @@
       {% assign position = position | plus: 1 %}
       {% if collection.handle %}
         <li {{ attr_item }}>
-          <span>{{ collection.title | escape }}</span>
+          <a href="{{ collection.url }}" class="link link--underline">
+            <span>{{ collection.title | escape }}</span>
+          </a>
         </li>
         {% assign position = position | plus: 1 %}
       {% endif %}
@@ -252,7 +258,9 @@
         {% assign position = position | plus: 1 %}
       {% endif %}
       <li {{ attr_item }}>
-        <span>{{ product.title | escape }}</span>
+        <a href="{{ product.url }}" class="link link--underline">
+          <span>{{ product.title | escape }}</span>
+        </a>
       </li>
     {% elsif template.name contains 'blog' and blog %}
       <li {{ attr_item }}>
@@ -269,7 +277,7 @@
       </li>
       {% assign position = position | plus: 1 %}
       <li {{ attr_item }}>
-        <a href="{{ blog.url }}" title="{{ blog.title | escape }}" {{ class_link }}>
+        <a href="{{ blog.url }}" title="{{ blog.title | escape }}" {% if article %}{{ class_link }}{% else %}class="link link--underline"{% endif %}>
           <span>{{ blog.title | escape }}</span>
         </a>
         {% if article %}
@@ -281,44 +289,64 @@
       {% assign position = position | plus: 1 %}
       {% if article %}
         <li {{ attr_item }}>
-          <span>{{ article.title | escape }}</span>
+          <a href="{{ article.url }}" class="link link--underline">
+            <span>{{ article.title | escape }}</span>
+          </a>
         </li>
       {% endif %}
     {% elsif template.name == 'search' %}
       <li {{ attr_item }}>
-        <span>{{ 'content.breadcrumb.search' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'content.breadcrumb.search' | t }}</span>
+        </a>
       </li>
     {% elsif template.name == 'cart' %}
       <li {{ attr_item }}>
-        <span>{{ 'content.breadcrumb.cart' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'content.breadcrumb.cart' | t }}</span>
+        </a>
       </li>
     {% elsif template.name contains 'page' and page %}
       <li {{ attr_item }}>
-        <span>{{ page.title | escape }}</span>
+        <a href="{{ page.url }}" class="link link--underline">
+          <span>{{ page.title | escape }}</span>
+        </a>
       </li>
     {% elsif template contains 'customers/login' %}
       <li {{ attr_item }}>
-        <span>{{ 'customer.account.title' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'customer.account.title' | t }}</span>
+        </a>
       </li>
     {% elsif template contains 'customers/register' %}
       <li {{ attr_item }}>
-        <span>{{ 'customer.register.title' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'customer.register.title' | t }}</span>
+        </a>
       </li>
     {% elsif template contains 'customers/account' %}
       <li {{ attr_item }}>
-        <span>{{ 'customer.account.title' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'customer.account.title' | t }}</span>
+        </a>
       </li>
     {% elsif template contains 'customers/orders' %}
       <li {{ attr_item }}>
-        <span>{{ 'customer.orders.title' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'customer.orders.title' | t }}</span>
+        </a>
       </li>
     {% elsif template contains 'customers/order' %}
       <li {{ attr_item }}>
-        <span>{{ 'customer.order.title' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'customer.order.title' | t }}</span>
+        </a>
       </li>
     {% elsif template contains 'customers/addresses' %}
       <li {{ attr_item }}>
-        <span>{{ 'customer.addresses.title' | t }}</span>
+        <a href="{{ request.url }}" class="link link--underline">
+          <span>{{ 'customer.addresses.title' | t }}</span>
+        </a>
       </li>
     {% endif %}
   </ol>

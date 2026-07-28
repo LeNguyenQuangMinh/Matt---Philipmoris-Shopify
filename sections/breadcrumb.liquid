@@ -29,9 +29,13 @@
         {
           "value": "caret",
           "label": "t:options.caret"
+        },
+        {
+          "value": "pipe",
+          "label": "Pipe"
         }
       ],
-      "default": "slash"
+      "default": "pipe"
     },
     {
       "type": "select",
@@ -83,6 +87,10 @@
         {
           "value": "1.2rem",
           "label": "12px"
+        },
+        {
+          "value": "1.3rem",
+          "label": "13px"
         },
         {
           "value": "1.4rem",
@@ -138,6 +146,58 @@
         }
       ],
       "default": "1.6rem"
+    },
+    {
+      "type": "select",
+      "id": "font_weight",
+      "label": "t:settings.weight",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "500",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        }
+      ],
+      "default": ""
+    },
+    {
+      "type": "select",
+      "id": "line_height",
+      "label": "t:settings.line_height",
+      "options": [
+        {
+          "value": "tight",
+          "label": "t:options.tight"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "medium",
+          "label": "t:options.medium"
+        },
+        {
+          "value": "loose",
+          "label": "t:options.loose"
+        }
+      ],
+      "default": "normal"
     },
     {
       "type": "header",
