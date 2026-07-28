@@ -15,7 +15,7 @@
 %}
 
 {% capture group_buttons %}
-  {%- if block.settings.enable_wishlist -%}
+  {%- if block.settings.enable_wishlist and block.settings.show_wishlist_next_to_title != true -%}
     {% liquid
       assign class_button = 'button h-full center cursor-pointer flex items-center justify-center relative leading-none'
       assign class_text = 'visually-hidden'
@@ -58,6 +58,50 @@
     {% endif %}
   </div>
 </span>
+
+{%- if block.settings.enable_wishlist and block.settings.show_wishlist_next_to_title -%}
+  <template id="wishlist-next-to-title-template-{{ section.id }}">
+    <div class="product-title-wishlist-wrapper">
+      {% render 'product-wishlist-button',
+        card_product: closest.product,
+        class_button: 'button button-unstyled wishlist-title-button center cursor-pointer flex items-center justify-center relative leading-none',
+        class_text: 'visually-hidden',
+        class_text_inner: 'text-inner text-sm inline-block'
+      %}
+    </div>
+  </template>
+  <script>
+    (function() {
+      function moveWishlistToTitle() {
+        const template = document.getElementById('wishlist-next-to-title-template-{{ section.id }}');
+        if (!template) return;
+        const selectors = [
+          '#ProductInformation-{{ section.id }} h1',
+          '#ProductInformation-{{ section.id }} .view-product-title',
+          '.product-details h1',
+          '.product-details .view-product-title'
+        ];
+        let titleContainer = null;
+        for (const selector of selectors) {
+          const el = document.querySelector(selector);
+          if (el) {
+            titleContainer = el;
+            break;
+          }
+        }
+        if (titleContainer && !titleContainer.querySelector('.product-title-wishlist-wrapper')) {
+          titleContainer.classList.add('flex', 'items-center', 'justify-between', 'w-full', 'gap-4');
+          titleContainer.appendChild(template.content.cloneNode(true));
+        }
+      }
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', moveWishlistToTitle);
+      } else {
+        moveWishlistToTitle();
+      }
+    })();
+  </script>
+{%- endif -%}
 
 {% schema %}
 {
@@ -286,8 +330,14 @@
       "type": "checkbox",
       "id": "enable_wishlist",
       "label": "t:settings.enable_wishlist",
-      "default": true,
-      "visible_if": "{{ block.settings.group_buttons_position != 'none' }}"
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_wishlist_next_to_title",
+      "label": "Show wishlist next to title",
+      "default": false,
+      "visible_if": "{{ block.settings.enable_wishlist == true }}"
     },
     {
       "type": "checkbox",

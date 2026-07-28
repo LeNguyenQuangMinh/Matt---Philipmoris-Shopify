@@ -10,30 +10,35 @@
 {%- liquid
   assign show_unit_price = show_unit_price | default: false
   assign show_sale_price_first = show_sale_price_first | default: false
+  assign show_savings = show_savings | default: true
   assign selected_variant = product_resource.selected_or_first_available_variant
-  assign price = selected_variant.price
-  assign compare_at_price = selected_variant.compare_at_price
+  assign price_raw = selected_variant.price
+  assign compare_at_price_raw = selected_variant.compare_at_price
 
   assign show_compare_price = false
-  if compare_at_price > price
+  if compare_at_price_raw > price_raw
     assign show_compare_price = true
+    assign savings_raw = compare_at_price_raw | minus: price_raw
   endif
 
   if product_resource == blank
-    assign price = 1999
+    assign price_raw = 1999
   endif
 
   if product.handle == closest.product.handle and settings.currency_code_enabled_product_pages
-    assign price = price | money_with_currency
-    assign compare_at_price = compare_at_price | money_with_currency
+    assign price = price_raw | money_with_currency
+    assign compare_at_price = compare_at_price_raw | money_with_currency
+    assign savings_price = savings_raw | money_with_currency
 
   elsif product.handle != closest.product.handle and settings.currency_code_enabled_product_cards
-    assign price = price | money_with_currency
-    assign compare_at_price = compare_at_price | money_with_currency
+    assign price = price_raw | money_with_currency
+    assign compare_at_price = compare_at_price_raw | money_with_currency
+    assign savings_price = savings_raw | money_with_currency
 
   else
-    assign price = price | money
-    assign compare_at_price = compare_at_price | money
+    assign price = price_raw | money
+    assign compare_at_price = compare_at_price_raw | money
+    assign savings_price = savings_raw | money
   endif
 -%}
 
@@ -46,6 +51,7 @@
     {%- if show_compare_price and selected_variant.quantity_price_breaks_configured? %} volume-pricing--sale-badge{% endif -%}
     {%- if selected_variant.price_varies == false and selected_variant.compare_at_price_varies %} price--no-compare{% endif -%}
   "
+  style="--sale-price-color: {{ settings.sale_price_color | default: 'var(--color-primary-hover, #6d3f49)' }};"
 >
   {% if show_sale_price_first == false and show_compare_price %}
     <span role="group">
@@ -69,6 +75,12 @@
       <span class="compare-at-price price-item price-item--regular">{{- compare_at_price -}}</span>
     </span>
   {% endif %}
+
+  {%- if show_compare_price and show_savings -%}
+    <span class="price-item price-item--savings">
+      (You save {{ savings_price }})
+    </span>
+  {%- endif -%}
 
   {%- if selected_variant.unit_price and show_unit_price %}
     {%- liquid

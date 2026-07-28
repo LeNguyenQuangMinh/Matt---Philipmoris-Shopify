@@ -48,7 +48,8 @@
   {% render 'price-product',
     show_unit_price: true,
     product_resource: product_resource,
-    show_sale_price_first: bl_stts.show_sale_price_first
+    show_sale_price_first: bl_stts.show_sale_price_first,
+    show_savings: bl_stts.show_savings
   %}
 
   {% if bl_stts.show_tax_info %}
@@ -99,6 +100,12 @@
       "type": "checkbox",
       "id": "show_sale_price_first",
       "label": "t:settings.show_sale_price_first",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show savings text (e.g. You save £34.05)",
       "default": true
     },
     {

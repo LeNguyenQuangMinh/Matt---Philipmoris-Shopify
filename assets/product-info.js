@@ -2397,13 +2397,24 @@ if (!customElements.get('sticky-atc')) {
 
       onScroll(entries) {
         entries.forEach((entry) => {
-          if (entry.target === this.form) this.passedForm = entry.boundingClientRect.bottom < 0;
+          if (entry.target === this.form) {
+            this.passedForm = entry.boundingClientRect.bottom < 0;
+          }
         });
 
         this.updateStickyVisibility();
       }
 
       handleWindowScroll() {
+        if (!this.form) {
+          this.findMainForm();
+        }
+        if (this.form) {
+          const formRect = this.form.getBoundingClientRect();
+          this.passedForm = formRect.bottom < 0;
+        } else {
+          this.passedForm = window.scrollY > 300;
+        }
         this.updateStickyVisibility();
       }
 

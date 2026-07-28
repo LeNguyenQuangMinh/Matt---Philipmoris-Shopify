@@ -3268,6 +3268,29 @@ details[open] > .share-button__fallback {
   display: flex;
 }
 
+.product-title-wishlist-wrapper {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.product-title-wishlist-wrapper .card-wishlist {
+  min-width: auto !important;
+}
+
+.product-title-wishlist-wrapper .wishlist-button {
+  background: none !important;
+  border: none !important;
+  padding: 4px !important;
+  cursor: pointer;
+  color: var(--color-foreground, #333);
+}
+
+.product-title-wishlist-wrapper .wishlist-button__icon {
+  width: 22px;
+  height: 22px;
+}
+
 .form__message {
   align-items: center;
   display: flex;
@@ -7648,6 +7671,7 @@ email-signup .checkbox .icon-checkmark {
 
 .price-item--sale {
   color: var(--sale-price-color);
+  font-weight: 700;
 }
 
 .text-clamp-style .card__heading .text-block .text {
@@ -9632,11 +9656,12 @@ sold-in-last-component.loading {
   min-width: 1.6rem;
 }
 
-.sticky-cart-visible .sticky-atc {
-  opacity: 1;
-  visibility: visible;
-  transform: translateY(0);
-  transition-delay: 0s;
+.sticky-cart-visible .sticky-atc,
+.sticky-atc.is-visible {
+  opacity: 1 !important;
+  visibility: visible !important;
+  transform: translateY(0) !important;
+  transition-delay: 0s !important;
 }
 
 .sticky-cart-visible .sticky-atc.style-custom,
@@ -11702,6 +11727,122 @@ form.payment-terms {
   }
 }
 
+.price-product-container {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.price-product-container .price-item,
+.price-product-container .compare-at-price,
+.price-product-container .price-item--regular,
+.price-product-container .price-item--sale {
+  font-size: 1em !important;
+}
+
+.price-item--savings {
+  color: var(--sale-price-color, var(--color-primary-hover, #6d3f49));
+  font-weight: normal;
+  display: inline-block;
+  font-size: 14px;
+}
+
+/* Quantity Selector Layout */
+.quantity.quantity-selector,
+.product-form__quantity .quantity,
+quantity-input.quantity {
+  display: inline-flex !important;
+  flex-direction: row !important;
+  align-items: center !important;
+  justify-content: flex-start !important;
+  gap: 10px !important;
+  min-height: auto !important;
+  border: none !important;
+  background: transparent !important;
+  position: relative !important;
+  width: auto !important;
+}
+
+.quantity.quantity-selector:after,
+.quantity.quantity-selector:before,
+.product-form__quantity .quantity:after,
+.product-form__quantity .quantity:before,
+quantity-input.quantity:after,
+quantity-input.quantity:before {
+  display: none !important;
+  content: none !important;
+  box-shadow: none !important;
+}
+
+.quantity.quantity-selector .quantity__button,
+.product-form__quantity .quantity__button,
+quantity-input.quantity .quantity__button {
+  position: relative !important;
+  top: auto !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  width: 40px !important;
+  height: 40px !important;
+  min-width: 40px !important;
+  min-height: 40px !important;
+  max-width: 40px !important;
+  max-height: 40px !important;
+  border: 1px solid var(--color-border, #d3d3d3) !important;
+  background-color: #ffffff !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  border-radius: 0 !important;
+  cursor: pointer !important;
+  flex-shrink: 0 !important;
+  box-shadow: none !important;
+  z-index: 1 !important;
+}
+
+.quantity.quantity-selector .quantity__button:hover,
+.product-form__quantity .quantity__button:hover,
+quantity-input.quantity .quantity__button:hover {
+  border-color: var(--color-foreground, #000) !important;
+}
+
+.quantity.quantity-selector .quantity__input,
+.product-form__quantity .quantity__input,
+quantity-input.quantity .quantity__input {
+  position: relative !important;
+  top: auto !important;
+  left: auto !important;
+  right: auto !important;
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 40px !important;
+  border: none !important;
+  background: transparent !important;
+  text-align: center !important;
+  font-size: 1.6rem !important;
+  font-weight: 500 !important;
+  color: var(--color-foreground, #333) !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+  flex-shrink: 0 !important;
+  flex-grow: 0 !important;
+}
+
+.quantity.quantity-selector .quantity__input:focus,
+.quantity.quantity-selector .quantity__input:focus-visible,
+.product-form__quantity .quantity__input:focus,
+.product-form__quantity .quantity__input:focus-visible,
+quantity-input.quantity .quantity__input:focus {
+  outline: none !important;
+  box-shadow: none !important;
+  background: transparent !important;
+}
+
 .product-information__media {
   display: flex;
   order: 0;
@@ -11892,16 +12033,32 @@ form.payment-terms {
   }
 }
 
-@media screen and (min-width: 1200px) {
-
-  .product-information__grid:not(.product-information__grid--half,
-    :has(.product-information__media:empty)).product-information--media-left {
-    grid-template-columns: 2fr 1.34fr;
+@media screen and (min-width: 750px) {
+  .product-information__grid.product-information--media-left,
+  .product-information__grid.product-information--media-left.product-information__grid--half,
+  .product-information__grid:not(:has(.product-information__media:empty)).product-information--media-left {
+    grid-template-columns: 55% 45% !important;
   }
 
-  .product-information__grid:not(.product-information__grid--half,
-    :has(.product-information__media:empty)).product-information--media-right {
-    grid-template-columns: 1fr 2fr;
+  .product-information__grid.product-information--media-right,
+  .product-information__grid.product-information--media-right.product-information__grid--half,
+  .product-information__grid:not(:has(.product-information__media:empty)).product-information--media-right {
+    grid-template-columns: 45% 55% !important;
+  }
+}
+
+@media screen and (min-width: 1200px) {
+
+  .product-information__grid.product-information--media-left,
+  .product-information__grid.product-information--media-left.product-information__grid--half,
+  .product-information__grid:not(:has(.product-information__media:empty)).product-information--media-left {
+    grid-template-columns: 55% 45% !important;
+  }
+
+  .product-information__grid.product-information--media-right,
+  .product-information__grid.product-information--media-right.product-information__grid--half,
+  .product-information__grid:not(:has(.product-information__media:empty)).product-information--media-right {
+    grid-template-columns: 45% 55% !important;
   }
 }
 

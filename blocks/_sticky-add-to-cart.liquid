@@ -1,5 +1,6 @@
 {% comment %} INSERT_YOUR_REWRITE_HERE {% endcomment %}
 {% liquid
+  assign product = closest.product | default: product
   assign product_resource = product
   if request.visual_preview_mode and product_resource == blank
     assign product_resource = collections.all.products.first
