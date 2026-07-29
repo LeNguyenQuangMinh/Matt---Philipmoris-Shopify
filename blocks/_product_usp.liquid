@@ -1,0 +1,387 @@
+{%- liquid
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+  if product == blank
+    assign product = block.settings.product
+  endif
+  assign variant = product.selected_or_first_available_variant
+-%}
+
+<style>
+.product-usp {
+    margin-bottom: 2rem;
+    margin-top: 1rem;
+}
+.product-usp .info__list {
+    margin: 0;
+    list-style: none;
+    display: flex;
+    align-items: stretch;
+    padding: 0;
+    gap: 0;
+}
+.product-usp .info__item {
+    padding: 1rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    gap: 1rem;
+    position: relative;
+    width: 30%;
+}
+/* Vertical divider between items */
+.product-usp .info__item:not(:last-of-type)::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 1px;
+    height: 50%;
+    background-color: rgba(var(--color-foreground), 0.2);
+}
+.product-usp .info__item.hide-text {
+    display: none;
+}
+.product-usp .info__item.d-none {
+    display: none !important;
+}
+.product-usp .info__icon {
+    max-width: 32px;
+    height: auto;
+    object-fit: contain;
+}
+.product-usp .info__item a {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-decoration: none;
+    color: inherit;
+}
+.product-usp .info__text {
+    font-size: 1.4rem;
+    line-height: 1.4;
+    color: rgba(var(--color-foreground), 0.8);
+}
+.product-usp .info__text.text-green {
+    color: #46952e;
+}
+.product-usp .info__text .time {
+    font-size: 1.4rem;
+    color: #46952e;
+    font-weight: 700;
+}
+.product-usp .info__text .order-time__text {
+    color: #46952e;
+}
+.product-usp .info__item:not(:last-child)::after {
+    content: "";
+    background-color: #dddedd;
+    height: 30px;
+    width: 2px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
+@media (max-width: 749px) {
+    .product-usp .info__text {
+        font-size: 1.2rem;
+    }
+}
+</style>
+
+<div class="product-usp" {{ block.shopify_attributes }}>
+    <ul class="info__list">
+        {% assign item_1_max_price = block.settings.item_1_max_price | default: 50 %}
+        {% assign item_1_max_price_cents = item_1_max_price | times: 100 %}
+        {% if block.settings.text_1 != blank %}
+            <li class="info__item{% if product.price > item_1_max_price_cents %} hide-text{% endif %}">
+                {% if block.settings.icon_1 != blank %}
+                    <img src="{{ block.settings.icon_1 | image_url: width: 64 }}" alt="{{ block.settings.icon_1.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+                {% else %}
+                    <img src="https://cdn11.bigcommerce.com/s-k63dsgx98h/images/stencil/original/image-manager/delivery.png" alt="Delivery Icon" class="info__icon" width="32" height="32" loading="lazy">
+                {% endif %}
+                <span class="info__text">
+                    {{ block.settings.text_1 }}
+                </span>
+            </li>
+        {% endif %}
+
+        {% assign free_shipping_threshold = block.settings.free_shipping_threshold | default: 100 %}
+        {% assign free_shipping_threshold_cents = free_shipping_threshold | times: 100 %}
+        {% assign free_shipping_formatted = free_shipping_threshold_cents | money_without_trailing_zeros %}
+
+        {% capture default_text_2_above %}Free Shipping Available{% endcapture %}
+        {% capture default_text_2_below %}FREE Shipping on all orders over {{ free_shipping_formatted }}{% endcapture %}
+
+        {% assign text_2_above = block.settings.text_2_above | default: default_text_2_above %}
+        {% assign text_2_below = block.settings.text_2_below | default: default_text_2_below %}
+
+        {% if block.settings.text_2_above != blank or block.settings.text_2_below != blank or block.settings.icon_2 != blank or block.settings.free_shipping_threshold != blank %}
+            <li class="info__item">
+                <a href="#tab-shipping" class="root-scroll-element">
+                    {% if block.settings.icon_2 != blank %}
+                        <img src="{{ block.settings.icon_2 | image_url: width: 64 }}" alt="{{ block.settings.icon_2.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+                    {% else %}
+                        <img src="https://cdn11.bigcommerce.com/s-k63dsgx98h/images/stencil/original/image-manager/free-box.png" alt="Free Shipping" class="info__icon" width="32" height="32" loading="lazy">
+                    {% endif %}
+                    <span class="info__text {% if product.price >= free_shipping_threshold_cents %}text-green{% endif %}">
+                        {% if product.price >= free_shipping_threshold_cents %}
+                            {{ text_2_above }}
+                        {% else %}
+                            {{ text_2_below }}
+                        {% endif %}
+                    </span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if block.settings.text_3 != blank %}
+            <li class="info__item">
+                <a href="#tab-shipping" class="root-scroll-element">
+                    {% if block.settings.icon_3 != blank %}
+                        <img src="{{ block.settings.icon_3 | image_url: width: 64 }}" alt="{{ block.settings.icon_3.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+                    {% else %}
+                        <img src="https://cdn11.bigcommerce.com/s-k63dsgx98h/images/stencil/original/image-manager/click.png" alt="Click" class="info__icon" width="32" height="32" loading="lazy">
+                    {% endif %}
+                    <span class="info__text">
+                        {{ block.settings.text_3 }}
+                    </span>
+                </a>
+            </li>
+        {% endif %}
+
+        {% if block.settings.show_order_time %}
+            <li class="info__item order-time{% unless product.available %} d-none{% endunless %}"
+                data-show-order-time="{{ block.settings.show_order_time }}"
+                data-exclusion-day="{{ block.settings.exclusion_day | escape }}"
+                data-cutoff-hour="{{ block.settings.cutoff_time_countdown | default: 14 }}">
+                {% if block.settings.icon_4 != blank %}
+                    <img src="{{ block.settings.icon_4 | image_url: width: 64 }}" alt="{{ block.settings.icon_4.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
+                {% else %}
+                    <svg class="icon info__icon" viewBox="0 0 24 24" width="32" height="32">
+                        <circle cx="12" cy="12" r="10" fill="none" stroke="currentColor" stroke-width="2"/>
+                        <polyline points="12 6 12 12 16 14" fill="none" stroke="currentColor" stroke-width="2"/>
+                    </svg>
+                {% endif %}
+                <span class="info__text">
+                    {% if block.settings.text_4 != blank %}
+                        {{ block.settings.text_4 }}
+                    {% else %}
+                        Order In The Next<br><span class="order-time__text"><span class="time hours">00</span>hrs : <span class="time minutes">00</span>mins</span><br>for same day despatch
+                    {% endif %}
+                </span>
+            </li>
+        {% endif %}
+    </ul>
+</div>
+
+<script>
+  (function() {
+    function initOrderTimeCountdowns() {
+      const elements = document.querySelectorAll('.product-usp .info__item.order-time');
+      elements.forEach(el => {
+        if (el.classList.contains('d-none')) {
+          el.remove();
+          return;
+        }
+
+        const showOrderTime = el.dataset.showOrderTime !== 'false';
+        if (!showOrderTime) {
+          el.remove();
+          return;
+        }
+
+        const exclusionDayAttr = el.dataset.exclusionDay || 'SAT,SUN';
+        const excludedDays = exclusionDayAttr
+          .split(',')
+          .map(d => d.trim().toUpperCase())
+          .filter(Boolean);
+
+        const cutoffHour = parseInt(el.dataset.cutoffHour, 10) || 14;
+
+        function updateTimer() {
+          const now = new Date();
+          const hours = now.getHours();
+          const minutes = now.getMinutes();
+
+          if (excludedDays.length > 0) {
+            const weekday = now.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
+            if (excludedDays.includes(weekday)) {
+              el.remove();
+              return false;
+            }
+          }
+
+          if (hours >= cutoffHour || (hours === 0 && minutes < 1)) {
+            el.remove();
+            return false;
+          }
+
+          const cutoffTime = new Date(now);
+          cutoffTime.setHours(cutoffHour, 0, 0, 0);
+
+          const diffMs = cutoffTime - now;
+          if (diffMs <= 0) {
+            el.remove();
+            return false;
+          }
+
+          el.style.display = 'flex';
+
+          const diffHrs = Math.floor(diffMs / 3600000);
+          const diffMins = Math.floor((diffMs % 3600000) / 60000);
+
+          const hoursEl = el.querySelector('.hours');
+          const minutesEl = el.querySelector('.minutes');
+
+          if (hoursEl) hoursEl.textContent = String(diffHrs).padStart(2, '0');
+          if (minutesEl) minutesEl.textContent = String(diffMins).padStart(2, '0');
+
+          return true;
+        }
+
+        const isValid = updateTimer();
+        if (isValid) {
+          const timerId = setInterval(() => {
+            const stillValid = updateTimer();
+            if (!stillValid) {
+              clearInterval(timerId);
+            }
+          }, 1000);
+        }
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initOrderTimeCountdowns);
+    } else {
+      initOrderTimeCountdowns();
+    }
+
+    document.addEventListener('shopify:section:load', initOrderTimeCountdowns);
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Product USP",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Item 1"
+    },
+    {
+      "type": "number",
+      "id": "item_1_max_price",
+      "label": "Hide Item 1 when product price exceeds",
+      "default": 50,
+      "info": "Amount in currency unit (e.g. 50 for £50). Item 1 will hide if product price is higher than this value."
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_1",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_1",
+      "label": "Text",
+      "default": "Standard Shipping Rate is £4.95",
+      "info": "Leave blank to hide this item"
+    },
+    {
+      "type": "header",
+      "content": "Item 2 (Free Shipping)"
+    },
+    {
+      "type": "number",
+      "id": "free_shipping_threshold",
+      "label": "Free shipping threshold amount",
+      "default": 100,
+      "info": "Amount in currency unit (e.g. 100 for £100)"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_2",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_2_above",
+      "label": "Text when qualifying for free shipping",
+      "default": "Free Shipping Available",
+      "info": "Displayed when product price >= threshold"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_2_below",
+      "label": "Text when NOT qualifying for free shipping",
+      "default": "FREE Shipping on all orders over £100",
+      "info": "Displayed when product price < threshold. Leave blank to automatically format threshold amount."
+    },
+    {
+      "type": "header",
+      "content": "Item 3"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_3",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_3",
+      "label": "Text",
+      "default": "Click and Collect in-store",
+      "info": "Leave blank to hide this item"
+    },
+    {
+      "type": "header",
+      "content": "Item 4 (Order Countdown)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_order_time",
+      "label": "Show order time for delivery",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "exclusion_day",
+      "label": "Exclusion days (comma-separated)",
+      "default": "SAT,SUN",
+      "info": "e.g. SAT,SUN"
+    },
+    {
+      "type": "text",
+      "id": "cutoff_time_countdown",
+      "label": "Cutoff time (24-hour format)",
+      "default": "14",
+      "info": "Cutoff hour, e.g. 14 for 2:00 PM"
+    },
+    {
+      "type": "image_picker",
+      "id": "icon_4",
+      "label": "Icon image"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "text_4",
+      "label": "Text",
+      "info": "Leave blank to use countdown template: 'Order In The Next XXhrs : YYmins for same day despatch'"
+    }
+  ],
+  "presets": [
+    {
+        "name": "Product USP",
+        "category": "Custom"
+    }
+  ]
+}
+{% endschema %}
