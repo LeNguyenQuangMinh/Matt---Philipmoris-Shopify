@@ -615,10 +615,12 @@ if (!customElements.get('product-info')) {
         const variantImageGrouped = html.querySelector('.has-variant-image-grouped');
 
         if (currentMediaGallery && newMediaGallery && !variantImageGrouped) {
-          try {
-            newMediaGallery.scrollIntoView({ behavior: 'smooth' });
-          } catch (e) {
-            // silent
+          if (!window.isStickyVariantChange && !document.body.classList.contains('sticky-cart-visible')) {
+            try {
+              newMediaGallery.scrollIntoView({ behavior: 'smooth' });
+            } catch (e) {
+              // silent
+            }
           }
 
           currentMediaGallery.replaceWith(newMediaGallery);
@@ -2207,6 +2209,7 @@ if (!customElements.get('sticky-atc')) {
 
       syncStickyToMain(event) {
         this.isSyncing = true;
+        window.isStickyVariantChange = true;
         
         try {
           if (this.mainProductInfo) {
@@ -2235,7 +2238,10 @@ if (!customElements.get('sticky-atc')) {
             requestAnimationFrame(() => {
               mainOption.dispatchEvent(new Event('input', { bubbles: true }));
               mainOption.dispatchEvent(new Event('change', { bubbles: true }));
-              requestAnimationFrame(() => this.updateStickyAvailabilityFromMain());
+              requestAnimationFrame(() => {
+                this.updateStickyAvailabilityFromMain();
+                setTimeout(() => { window.isStickyVariantChange = false; }, 300);
+              });
             });
           } else if (mainOption.tagName === 'OPTION') {
             const select = mainOption.closest('select');
@@ -2246,12 +2252,16 @@ if (!customElements.get('sticky-atc')) {
               requestAnimationFrame(() => {
                 select.dispatchEvent(new Event('input', { bubbles: true }));
                 select.dispatchEvent(new Event('change', { bubbles: true }));
-                requestAnimationFrame(() => this.updateStickyAvailabilityFromMain());
+                requestAnimationFrame(() => {
+                  this.updateStickyAvailabilityFromMain();
+                  setTimeout(() => { window.isStickyVariantChange = false; }, 300);
+                });
               });
             }
           }
         } finally {
           this.isSyncing = false;
+          setTimeout(() => { window.isStickyVariantChange = false; }, 500);
         }
       }
 

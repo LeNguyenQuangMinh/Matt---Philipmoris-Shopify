@@ -144,8 +144,8 @@ if (!customElements.get('media-gallery')) {
           mainItems.forEach((item) => {
             if (item === targetMainItem) {
               item.classList.add('active');
-              if (window.innerWidth >= 768) {
-                item.scrollIntoView({ behavior: smooth ? 'smooth' : 'auto', block: 'start' });
+              if (window.innerWidth >= 768 && smooth && !window.isStickyVariantChange && !document.body.classList.contains('sticky-cart-visible')) {
+                item.scrollIntoView({ behavior: 'smooth', block: 'start' });
               }
             } else {
               item.classList.remove('active');
@@ -155,9 +155,11 @@ if (!customElements.get('media-gallery')) {
           thumbBtns.forEach((b) => {
             if (b.getAttribute('data-media-id') === String(cleanMediaId)) {
               b.classList.add('active');
-              try {
-                b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-              } catch(e) {}
+              if (!window.isStickyVariantChange && !document.body.classList.contains('sticky-cart-visible')) {
+                try {
+                  b.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                } catch(e) {}
+              }
             } else {
               b.classList.remove('active');
             }
@@ -347,10 +349,12 @@ if (!customElements.get('media-gallery')) {
                 if (!newMediaGallery) return;
                 this.replaceWith(newMediaGallery);
 
-                try {
-                  newMediaGallery.scrollIntoView({ behavior: 'smooth' });
-                } catch (e) {
-                  // ignore scrolling errors
+                if (!window.isStickyVariantChange && !document.body.classList.contains('sticky-cart-visible')) {
+                  try {
+                    newMediaGallery.scrollIntoView({ behavior: 'smooth' });
+                  } catch (e) {
+                    // ignore scrolling errors
+                  }
                 }
 
                 if (newMediaGallery.hasAttribute('data-zoom-on-hover')) {

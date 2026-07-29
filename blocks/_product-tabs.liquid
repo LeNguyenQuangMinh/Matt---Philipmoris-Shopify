@@ -19,6 +19,12 @@
   assign accordion_pr = block.settings.accordion_pr
   assign accordion_pt = block.settings.accordion_pt
   assign accordion_pb = block.settings.accordion_pb
+  assign toggle_content_pl = block.settings.toggle_content_pl
+  assign toggle_content_pr = block.settings.toggle_content_pr
+  assign toggle_content_pt = block.settings.toggle_content_pt
+  assign toggle_content_pb = block.settings.toggle_content_pb
+  assign enable_max_height = block.settings.enable_max_height
+  assign content_max_height = block.settings.content_max_height
 -%}
 
 {%- capture style -%}
@@ -47,6 +53,11 @@ style="
   --accordion-pr: {{ accordion_pr }}px;
   --accordion-pt: {{ accordion_pt }}px;
   --accordion-pb: {{ accordion_pb }}px;
+  --toggle-content-pl: {{ toggle_content_pl }}px;
+  --toggle-content-pr: {{ toggle_content_pr }}px;
+  --toggle-content-pt: {{ toggle_content_pt }}px;
+  --toggle-content-pb: {{ toggle_content_pb }}px;
+  {% if enable_max_height %}--toggle-content-max-height: {{ content_max_height }}px;{% else %}--toggle-content-max-height: none;{% endif %}
 "
 {%- endcapture -%}
 
@@ -139,8 +150,20 @@ style="
             }
             break;
           }
-          default:
-            toggleTitle.classList.toggle('is-open');
+          default: {
+            const isOpen = toggleTitle.classList.toggle('is-open');
+            if (isOpen) {
+              setTimeout(() => {
+                const headerOffset = 120;
+                const elementPosition = toggleTitle.getBoundingClientRect().top;
+                const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+                window.scrollTo({
+                  top: offsetPosition,
+                  behavior: 'smooth'
+                });
+              }, 100);
+            }
+          }
         }
       });
     });
@@ -303,6 +326,66 @@ style="
       "step": 1,
       "unit": "px",
       "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Accordion content padding"
+    },
+    {
+      "type": "range",
+      "id": "toggle_content_pl",
+      "label": "Content padding left",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "toggle_content_pr",
+      "label": "Content padding right",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "toggle_content_pt",
+      "label": "Content padding top",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "toggle_content_pb",
+      "label": "Content padding bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_max_height",
+      "label": "Enable max height & scrollbar for content",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "content_max_height",
+      "label": "Content max height",
+      "min": 200,
+      "max": 800,
+      "step": 10,
+      "unit": "px",
+      "default": 450
     },
     {
       "type": "header",
@@ -563,6 +646,12 @@ style="
         "accordion_pr": 45,
         "accordion_pt": 15,
         "accordion_pb": 15,
+        "toggle_content_pl": 0,
+        "toggle_content_pr": 0,
+        "toggle_content_pt": 15,
+        "toggle_content_pb": 15,
+        "enable_max_height": false,
+        "content_max_height": 450,
         "alignment": "start",
         "alignment_mb": "start",
         "gap": 30,

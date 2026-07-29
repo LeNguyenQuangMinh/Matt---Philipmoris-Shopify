@@ -35,19 +35,147 @@
 
 {% liquid
   assign custom_content_type = block.settings.custom_content_type
+  assign tab_content_output = ''
+
   if custom_content_type == 'all'
     if block.settings.content != blank or block.settings.page.content != blank
-      assign meta_ref = block.settings.content | prepend: '<div class="rte">' | append: '</div>' | append: block.settings.page.content
+      capture tab_content_output
+        if block.settings.content != blank
+          echo '<div class="rte">'
+          echo block.settings.content
+          echo '</div>'
+        endif
+        if block.settings.page.content != blank
+          echo block.settings.page.content
+        endif
+      endcapture
     endif
   else 
-    assign meta_ref = product.metafields.custom[block.settings.product_tab_key_metafield] | default : product.metafields.c_f[block.settings.product_tab_key_metafield]
+    assign key_raw = block.settings.product_tab_key_metafield | strip
+    if key_raw != blank
+      if key_raw contains '.'
+        assign key_parts = key_raw | split: '.'
+        assign ns = key_parts[0]
+        assign key_name = key_parts[1]
+        assign target_metafield = product.metafields[ns][key_name]
+      else
+        assign target_metafield = product.metafields.custom[key_raw] | default: product.metafields.c_f[key_raw]
+      endif
+
+      if target_metafield != blank
+        capture tab_content_output
+          assign mf_type = target_metafield.type
+          assign mf_val = target_metafield.value | default: target_metafield
+
+          if mf_type == 'file_reference' or mf_val.media_type == 'image' or mf_val.width != blank or mf_val.aspect_ratio != blank
+            echo '<div class="tab-media-image">'
+            if mf_val.width != blank
+              echo mf_val | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'tab-image width-full height-auto'
+            elsif mf_val.src != blank
+              echo mf_val.src | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'tab-image width-full height-auto'
+            else
+              capture mf_str
+                echo mf_val
+              endcapture
+              assign mf_str_clean = mf_str | strip
+              echo mf_str_clean | file_url | image_tag: loading: 'lazy', class: 'tab-image width-full height-auto'
+            endif
+            echo '</div>'
+
+          elsif mf_type == 'list.file_reference'
+            echo '<div class="tab-media-image-list flex flex-col gap-4">'
+            for file_item in target_metafield.value
+              if file_item.media_type == 'image' or file_item.width != blank
+                echo file_item | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'tab-image width-full height-auto'
+              elsif file_item.media_type == 'video'
+                echo file_item | video_tag: controls: true, class: 'tab-video width-full'
+              else
+                capture item_str
+                  echo file_item
+                endcapture
+                assign item_str_clean = item_str | strip
+                if item_str_clean contains '.jpg' or item_str_clean contains '.png' or item_str_clean contains '.webp' or item_str_clean contains '.gif' or item_str_clean contains 'files/'
+                  echo item_str_clean | file_url | image_tag: loading: 'lazy', class: 'tab-image width-full height-auto'
+                endif
+              endif
+            endfor
+            echo '</div>'
+
+          elsif mf_type == 'video_reference' or mf_val.media_type == 'video'
+            echo mf_val | video_tag: controls: true, autoplay: false, class: 'tab-video width-full'
+
+          elsif mf_type == 'page_reference' or mf_val.content != blank
+            if mf_val.content != blank
+              echo mf_val.content
+            else
+              echo target_metafield
+            endif
+
+          elsif mf_type == 'product_reference'
+            if mf_val.title != blank
+              echo '<div class="tab-product-reference flex gap-4 items-center">'
+              if mf_val.featured_image != blank
+                echo '<a href="' | append: mf_val.url | append: '" class="product-thumb">'
+                echo mf_val.featured_image | image_url: width: 200 | image_tag: loading: 'lazy'
+                echo '</a>'
+              endif
+              echo '<div class="product-info">'
+              echo '<a href="' | append: mf_val.url | append: '" class="font-bold block">'
+              echo mf_val.title
+              echo '</a>'
+              echo '<span class="price block">'
+              echo mf_val.price | money
+              echo '</span>'
+              echo '</div>'
+              echo '</div>'
+            endif
+
+          elsif mf_type == 'rich_text_field'
+            echo '<div class="rte">'
+            echo target_metafield | metafield_tag
+            echo '</div>'
+
+          elsif mf_type == 'list.single_line_text_field' or mf_type == 'list.multi_line_text_field'
+            echo '<ul class="tab-text-list list-disc pl-5">'
+            for item in target_metafield.value
+              echo '<li>'
+              echo item
+              echo '</li>'
+            endfor
+            echo '</ul>'
+
+          else
+            capture mf_str
+              echo mf_val
+            endcapture
+            assign mf_str_clean = mf_str | strip
+            assign downcase_str = mf_str_clean | downcase
+
+            if downcase_str contains '.jpg' or downcase_str contains '.png' or downcase_str contains '.webp' or downcase_str contains '.jpeg' or downcase_str contains '.svg' or downcase_str contains '.gif'
+              if downcase_str contains 'http://' or downcase_str contains 'https://' or downcase_str contains '//cdn.shopify'
+                echo '<div class="tab-media-image"><img src="' | append: mf_str_clean | append: '" loading="lazy" class="tab-image width-full height-auto" /></div>'
+              else
+                echo '<div class="tab-media-image">'
+                echo mf_str_clean | file_url | image_tag: loading: 'lazy', class: 'tab-image width-full height-auto'
+                echo '</div>'
+              endif
+            else
+              echo '<div class="rte">'
+              echo mf_val
+              echo '</div>'
+            endif
+          endif
+        endcapture
+      endif
+    endif
   endif
 %}
-{% if meta_ref != blank %}
+
+{% if tab_content_output != blank %}
   <div class="tab-content{% if accordion_border_style != 'none' %} border-{{ accordion_border_style }}{% endif %}" style="--accordion-border-color: {{ accordion_border_color }};">
     {{ tab_title | replace: 'Tab Title', title }}
     <div class="toggle-content">
-      {{ meta_ref }}
+      {{ tab_content_output }}
     </div>
   </div>
 {% endif %}

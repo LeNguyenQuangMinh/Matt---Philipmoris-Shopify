@@ -33,10 +33,10 @@
   {%- assign cart_qty = cart | item_count_for_variant: product.selected_or_first_available_variant.id -%}
   {% # theme-check-enable %}
   <label class="quantity__label form__label" for="Quantity-{{ section.id}}">
-    {{ 'products.product.quantity.label' | t -}}
+    {{ 'products.product.quantity.label' | t -}}:
     <span class="quantity__rules-cart{% if cart_qty == 0 %} hidden{% endif %}">
       {%- render 'loading-spinner' -%}
-      <span class="quantity__tooltip-trigger" role="tooltip" aria-label="{{ 'products.product.quantity.in_cart_html' | t: quantity: cart_qty | strip_html }}">
+      <span class="quantity__tooltip-trigger hidden" role="tooltip" aria-label="{{ 'products.product.quantity.in_cart_html' | t: quantity: cart_qty | strip_html }}">
         <span class="svg-wrapper icon-cart">
           {{- 'icon-cart.svg' | inline_asset_content -}}
         </span>

@@ -69,6 +69,17 @@
 .custom-block-product-information .info__text.text-green {
     color: #46952e;
 }
+.custom-block-product-information .info__item:not(:last-child)::after {
+    content: "";
+    background-color: #dddedd;
+    height: 30px;
+    width: 2px;
+    position: absolute;
+    right: 0;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    transform: translateY(-50%);
+}
 @media (max-width: 749px) {
     .custom-block-product-information .info__text {
         font-size: 1.2rem;
@@ -128,7 +139,7 @@
                 </span>
             </a>
         </li>
-        <li class="info__item order-time{% unless product.available %} d-none{% endunless %}" style="display: none !important;">
+        <li class="info__item order-time{% unless product.available %} d-none{% endunless %}">
             {% if block.settings.icon_4 != blank %}
                 <img src="{{ block.settings.icon_4 | image_url: width: 64 }}" alt="{{ block.settings.icon_4.alt | escape }}" class="info__icon" width="32" height="32" loading="lazy">
             {% else %}
