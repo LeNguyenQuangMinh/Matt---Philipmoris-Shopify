@@ -3001,6 +3001,22 @@
         "default": true
       },
       {
+        "type": "select",
+        "id": "quick_view_layout",
+        "label": "t:settings.quick_view_layout",
+        "options": [
+          {
+            "value": "default",
+            "label": "t:options.default"
+          },
+          {
+            "value": "custom",
+            "label": "t:options.custom"
+          }
+        ],
+        "default": "default"
+      },
+      {
         "type": "checkbox",
         "id": "enable_compare",
         "label": "t:settings.enable_compare",

@@ -33,9 +33,13 @@ if (!customElements.get('media-gallery')) {
             thumbSwiper = null;
           }
 
+          const slidesCount = thumbBtns.length;
+          const targetPerView = isDesktop ? 5 : 4;
+          const slidesPerView = slidesCount > 0 ? Math.min(slidesCount, targetPerView) : targetPerView;
+
           const swiperOptions = {
             direction: isDesktop ? 'vertical' : 'horizontal',
-            slidesPerView: isDesktop ? 5 : 4,
+            slidesPerView: slidesPerView,
             spaceBetween: 10,
             freeMode: false,
             watchSlidesProgress: true,

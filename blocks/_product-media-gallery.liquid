@@ -280,14 +280,9 @@
 
   .custom-media-gallery__swiper {
     width: 100%;
-    height: 440px;
+    height: 400px;
     overflow: hidden;
     position: relative;
-  }
-
-  .custom-media-gallery__sidebar:not(.has-arrows) .custom-media-gallery__swiper {
-    height: auto;
-    max-height: 440px;
   }
 
   .custom-media-gallery__main-list {
@@ -329,15 +324,16 @@
     opacity: 0.7;
   }
 
-  .custom-media-gallery__arrow.swiper-button-disabled {
-    opacity: 0.2;
-    cursor: not-allowed;
+  .custom-media-gallery__arrow.swiper-button-disabled,
+  .custom-media-gallery__arrow.swiper-button-lock,
+  .custom-media-gallery__arrow[disabled],
+  .custom-media-gallery__arrow[aria-disabled="true"] {
+    display: none !important;
   }
 
-  @media screen and (min-width: 768px) {
-    .custom-media-gallery__arrow svg {
-      transform: rotate(90deg);
-    }
+  .custom-media-gallery__arrow svg {
+    width: 14px;
+    height: 16px;
   }
 
   .custom-media-gallery__thumbnails-scroll {
@@ -757,16 +753,14 @@
       {% endfor %}
     </div>
 
-    <div class="custom-media-gallery__sidebar{% if sorted_media.size > 5 %} has-arrows{% endif %}">
-      {% if sorted_media.size > 5 %}
+    <div class="custom-media-gallery__sidebar{% if sorted_media.size > 1 %} has-arrows{% endif %}">
+      {% if sorted_media.size > 1 %}
         <button
           type="button"
           class="custom-media-gallery__arrow custom-media-gallery__arrow--prev"
           aria-label="Previous thumbnail"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="15 18 9 12 15 6"></polyline>
-          </svg>
+          <svg aria-hidden='true' focusable='false' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><path fill='currentColor' d='M4.465 366.475l7.07 7.071c4.686 4.686 12.284 4.686 16.971 0L224 178.053l195.494 195.493c4.686 4.686 12.284 4.686 16.971 0l7.07-7.071c4.686-4.686 4.686-12.284 0-16.97l-211.05-211.051c-4.686-4.686-12.284-4.686-16.971 0L4.465 349.505c-4.687 4.686-4.687 12.284 0 16.97z'></path></svg>
         </button>
       {% endif %}
 
@@ -793,15 +787,13 @@
         </div>
       </div>
 
-      {% if sorted_media.size > 5 %}
+      {% if sorted_media.size > 1 %}
         <button
           type="button"
           class="custom-media-gallery__arrow custom-media-gallery__arrow--next"
           aria-label="Next thumbnail"
         >
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polyline points="9 18 15 12 9 6"></polyline>
-          </svg>
+          <svg aria-hidden='true' focusable='false' role='img' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 448 512'><path fill='currentColor' d='M443.5 162.6l-7.1-7.1c-4.7-4.7-12.3-4.7-17 0L224 351 28.5 155.5c-4.7-4.7-12.3-4.7-17 0l-7.1 7.1c-4.7 4.7-4.7 12.3 0 17l211 211.1c4.7 4.7 12.3 4.7 17 0l211-211.1c4.8-4.7 4.8-12.3.1-17z'></path></svg>
         </button>
       {% endif %}
     </div>

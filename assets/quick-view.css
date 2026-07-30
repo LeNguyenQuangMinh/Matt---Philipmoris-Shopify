@@ -1,16 +1,11 @@
 .quick-view-modal {
-  --full-page-grid-central-column-width: min(
-    var(--page-width) - var(--page-margin) * 2,
-    calc(100% - var(--page-margin) * 2)
-  );
+  --full-page-grid-central-column-width: min(var(--page-width) - var(--page-margin) * 2,
+      calc(100% - var(--page-margin) * 2));
   --full-page-grid-margin: minmax(var(--page-margin), 1fr);
-  --full-page-grid-with-margins: var(--full-page-grid-margin) var(--full-page-grid-central-column-width)
-    var(--full-page-grid-margin);
+  --full-page-grid-with-margins: var(--full-page-grid-margin) var(--full-page-grid-central-column-width) var(--full-page-grid-margin);
 
-  --util-page-margin-offset: max(
-    var(--page-margin),
-    calc((100% - min(var(--page-content-width), calc(100% - (var(--page-margin) * 2)))) / 2)
-  );
+  --util-page-margin-offset: max(var(--page-margin),
+      calc((100% - min(var(--page-content-width), calc(100% - (var(--page-margin) * 2)))) / 2));
   --full-page-margin-inline-offset: calc(((100vw - var(--scrollbar-width, 0px) - var(--full-page-grid-central-column-width)) / 2) * -1);
 }
 
@@ -21,4 +16,232 @@
 
 .quick-view-modal .product-information__grid {
   --gap: 1.5rem;
+}
+
+/* ==========================================================================
+   Quick View - Custom Layout Media Gallery
+   ========================================================================== */
+.quick-view-modal--custom .qv-custom-gallery {
+  display: flex !important;
+  flex-direction: row !important;
+  gap: 12px !important;
+  align-items: flex-start !important;
+  position: relative !important;
+  width: 100%;
+}
+
+/* Thumbnails Navigation Base */
+.quick-view-modal--custom .qv-custom-thumbs-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100px;
+  flex-shrink: 0;
+}
+
+.quick-view-modal--custom .qv-custom-thumb-nav {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 4px;
+  color: #333333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: opacity 0.2s ease;
+}
+
+.quick-view-modal--custom .qv-custom-thumb-nav:hover {
+  opacity: 0.7;
+}
+
+.quick-view-modal--custom .qv-custom-thumb-nav svg {
+  width: 16px;
+  height: 16px;
+}
+
+.quick-view-modal--custom .qv-custom-thumbs-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  overflow: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  padding: 2px 0;
+}
+
+.quick-view-modal--custom .qv-custom-thumbs-list::-webkit-scrollbar {
+  display: none;
+}
+
+.quick-view-modal--custom .qv-custom-thumb-item {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  flex-shrink: 0;
+  border: 1px solid #e2e2e2;
+  border-radius: 2px;
+  cursor: pointer;
+  overflow: hidden;
+  padding: 2px;
+  background: #ffffff;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.quick-view-modal--custom .qv-custom-thumb-item.is-active,
+.quick-view-modal--custom .qv-custom-thumb-item:hover {
+  border-color: #333333;
+  box-shadow: 0 0 0 1px #333333;
+}
+
+.quick-view-modal--custom .qv-custom-thumb-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Main Product Image Base */
+.quick-view-modal--custom .qv-custom-main-image {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #ffffff;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.quick-view-modal--custom .qv-custom-main-image img {
+  max-width: 100%;
+  max-height: 460px;
+  object-fit: contain;
+}
+
+/* Desktop: Show 5 thumbnails vertically on the left (Height = 5 * 68px + 4 * 8px = 372px) */
+@media (min-width: 769px) {
+  .quick-view-modal--custom .qv-custom-gallery {
+    flex-direction: row;
+  }
+
+  .quick-view-modal--custom .qv-custom-thumbs-wrapper {
+    flex-direction: column;
+    width: 100px;
+  }
+
+  .quick-view-modal--custom .qv-custom-thumbs-list {
+    flex-direction: column;
+    max-height: 575px;
+    /* Exactly 5 visible thumbnails */
+    width: 100%;
+  }
+
+  .quick-view-modal--custom .qv-custom-main-image {
+    min-height: 380px;
+    max-height: 480px;
+  }
+
+  .quick-view-modal--custom .product-details {
+    max-width: 600px;
+    padding-left: 30px !important;
+  }
+}
+
+/* Mobile & Small Screens: Show 3 thumbnails horizontally under main image (Width = 3 * 58px + 2 * 8px = 190px) */
+@media (max-width: 768px) {
+  .quick-view-modal--custom .qv-custom-gallery {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .quick-view-modal--custom .qv-custom-main-image {
+    order: 1;
+    width: 100%;
+    min-height: 250px;
+    max-height: 340px;
+  }
+
+  .quick-view-modal--custom .qv-custom-thumbs-wrapper {
+    order: 2;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    margin-top: 12px;
+    gap: 6px;
+  }
+
+  .quick-view-modal--custom .qv-custom-thumbs-list {
+    flex-direction: row;
+    max-height: none;
+    max-width: 190px;
+    /* Exactly 3 visible thumbnails */
+    overflow-x: auto;
+    overflow-y: hidden;
+  }
+
+  .quick-view-modal--custom .qv-custom-thumb-nav.nav-up svg {
+    transform: rotate(-90deg);
+    /* Left Arrow (<) */
+  }
+
+  .quick-view-modal--custom .qv-custom-thumb-nav.nav-down svg {
+    transform: rotate(-90deg);
+    /* Right Arrow (>) */
+  }
+}
+
+.quick-view-modal--custom .spacer,
+.quick-view-modal--custom .product-title-wishlist-wrapper,
+.quick-view-modal--custom .block-product-tabs {
+  display: none;
+}
+
+.quick-view-modal--custom .popup__inner {
+  padding: 52px 20px 47px;
+}
+
+.quick-view-modal--custom .product-information__grid {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+.quick-view-modal--custom .quick-view-modal__content {
+  width: min(100% - 3rem, 1091px);
+}
+
+.quick-view-modal--custom .product-vendor-image-wrapper {
+  margin-bottom: 15px;
+}
+
+.quick-view-modal--custom .price-product-container {
+  margin-top: 6px;
+}
+
+.quick-view-modal--custom .productView-info {
+  gap: 1rem;
+  padding-bottom: 1rem;
+}
+
+.quick-view-modal--custom variant-selects {
+  padding-top: 1rem;
+}
+
+.quick-view-modal--custom .variant-option {
+  margin-bottom: 2.5rem;
+}
+
+.quick-view-modal--custom .product-usp {
+  margin-bottom: 8px;
+}
+
+.quick-view-modal--custom .product-usp .info__list {
+  margin-left: -20px;
+  margin-right: -20px;
+  flex-wrap: wrap;
+}
+
+.quick-view-modal--custom .product-usp .info__item {
+  width: 50%;
+  padding-left: 20px;
+  padding-right: 20px;
 }
