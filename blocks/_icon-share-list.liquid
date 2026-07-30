@@ -1,0 +1,346 @@
+{%- liquid
+  assign product = closest.product | default: product
+  assign share_permalink = product.url | prepend: request.origin
+  assign share_link = share_permalink | url_encode
+  assign share_title = product.title | url_encode
+-%}
+
+{%- capture class_item -%}
+  list-social__item{% if block.settings.social_style == 'custom' %} social__item--custom{% endif %}
+{%- endcapture -%}
+
+{%- capture class_link -%}
+  list-social__link{% if block.settings.social_style == 'default' %} link{% endif %}
+{%- endcapture -%}
+
+{%- capture social_style -%}
+  --gap-x: {{ block.settings.gap_x }}px;
+  --gap-y: {{ block.settings.gap_y }}px;
+  gap: {{ block.settings.gap_y }}px {{ block.settings.gap_x }}px;
+  {% if block.settings.social_style == 'custom' %}
+    --social-item-size: {{ block.settings.icon_size }}px;
+    --social-item-size-mobile: {{ block.settings.icon_size_mobile }}px;
+    --social-item-color: {{ block.settings.icon_color }};
+    --social-item-color-hover: {{ block.settings.icon_color_hover }};
+    --social-item-bg-color: {{ block.settings.icon_bg_color }};
+    --social-item-bg-color-hover: {{ block.settings.icon_bg_color_hover }};
+    --social-item-border-color: {{ block.settings.icon_border_color }};
+    --social-item-border-color-hover: {{ block.settings.icon_border_color_hover }};
+  {% endif %}
+{%- endcapture -%}
+
+<link rel="stylesheet" href="{{ 'component-list-social.css' | asset_url }}" media="print" fetchpriority="low" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="{{ 'component-list-social.css' | asset_url }}"></noscript>
+
+<style>
+  .product-share-list-block .list-social {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap-y, 10px) var(--gap-x, 10px);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .product-share-list-block .list-social__item {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .product-share-list-block .list-social__link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: currentColor;
+    text-decoration: none;
+    transition: all 0.2s ease;
+  }
+
+  .product-share-list-block .list-social__link .svg-wrapper {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.2rem;
+    height: 2.2rem;
+  }
+
+  .product-share-list-block .list-social__link svg {
+    width: 100%;
+    height: 100%;
+    fill: currentColor;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  /* Default style */
+  .product-share-list-block .list-social--default .list-social__link {
+    color: var(--color-foreground, #232323);
+  }
+
+  .product-share-list-block .list-social--default .list-social__link:hover {
+    opacity: 0.7;
+  }
+
+  /* Custom style */
+  .product-share-list-block .list-social--custom .list-social__item {
+    width: var(--social-item-size, 36px);
+    height: var(--social-item-size, 36px);
+    border-radius: 50%;
+    background-color: var(--social-item-bg-color, #232323);
+    color: var(--social-item-color, #ffffff);
+    border: 1px solid var(--social-item-border-color, #232323);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+  }
+
+  .product-share-list-block .list-social--custom .list-social__link {
+    color: inherit;
+    width: 100%;
+    height: 100%;
+  }
+
+  .product-share-list-block .list-social--custom .list-social__link .svg-wrapper {
+    width: calc(var(--social-item-size, 36px) * 0.55);
+    height: calc(var(--social-item-size, 36px) * 0.55);
+  }
+
+  @media (hover: hover) {
+    .product-share-list-block .list-social--custom .list-social__item:hover {
+      background-color: var(--social-item-bg-color-hover, transparent);
+      color: var(--social-item-color-hover, #232323);
+      border-color: var(--social-item-border-color-hover, #232323);
+    }
+  }
+
+  @media (max-width: 749px) {
+    .product-share-list-block .list-social--custom .list-social__item {
+      width: var(--social-item-size-mobile, 36px);
+      height: var(--social-item-size-mobile, 36px);
+    }
+    .product-share-list-block .list-social--custom .list-social__link .svg-wrapper {
+      width: calc(var(--social-item-size-mobile, 36px) * 0.55);
+      height: calc(var(--social-item-size-mobile, 36px) * 0.55);
+    }
+  }
+</style>
+
+<div class="product-share-list-block flex flex-wrap flex-column h-full spacing-style" style="{% render 'spacing-style', settings: block.settings %}" {{ block.shopify_attributes }}>
+  <ul
+    class="list-unstyled list-social list-social--{{ block.settings.social_style }} flex flex-wrap list-position-inherit{% if class %} {{ class }}{% endif %}"
+    role="list"
+    style="{{ social_style }}"
+  >
+    {% if block.settings.show_facebook %}
+      <li class="{{ class_item }}">
+        <a class="{{ class_link }} icon--facebook" title="Facebook" href="https://facebook.com/sharer/sharer.php?u={{ share_link }}" target="_blank" rel="noopener" data-tagrocket-clicked-outboundlink="1" data-tagrocket-clicked-social="1">
+          <span class="svg-wrapper">
+            <svg viewBox="0 0 320 512" aria-hidden="true" focusable="false" role="presentation">
+              <path fill="currentColor" d="M279.14 288l14.22-92.66h-88.91v-60.13c0-25.35 12.42-50.06 52.24-50.06h40.42V6.26S260.43 0 225.36 0c-73.22 0-121.08 44.38-121.08 124.72v70.62H22.89V288h81.39v224h100.17V288z" />
+            </svg>
+          </span>
+          <span class="visually-hidden">Facebook</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% if block.settings.show_email %}
+      <li class="{{ class_item }}">
+        <a class="{{ class_link }} icon--email" title="Email" href="mailto:?subject={{ share_title }}&amp;body={{ share_link }}" target="_self" rel="noopener">
+          <span class="svg-wrapper">
+            <svg viewBox="0 0 28 28" aria-hidden="true" focusable="false" role="presentation">
+              <path fill="currentColor" d="M0 23.5v-12.406q0.688 0.766 1.578 1.359 5.656 3.844 7.766 5.391 0.891 0.656 1.445 1.023t1.477 0.75 1.719 0.383h0.031q0.797 0 1.719-0.383t1.477-0.75 1.445-1.023q2.656-1.922 7.781-5.391 0.891-0.609 1.563-1.359v12.406q0 1.031-0.734 1.766t-1.766 0.734h-23q-1.031 0-1.766-0.734t-0.734-1.766zM0 6.844q0-1.219 0.648-2.031t1.852-0.812h23q1.016 0 1.758 0.734t0.742 1.766q0 1.234-0.766 2.359t-1.906 1.922q-5.875 4.078-7.313 5.078-0.156 0.109-0.664 0.477t-0.844 0.594-0.812 0.508-0.898 0.422-0.781 0.141h-0.031q-0.359 0-0.781-0.141t-0.898-0.422-0.812-0.508-0.844-0.594-0.664-0.477q-1.422-1-4.094-2.852t-3.203-2.227q-0.969-0.656-1.828-1.805t-0.859-2.133z"/>
+            </svg>
+          </span>
+          <span class="visually-hidden">Email</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% if block.settings.show_print %}
+      <li class="{{ class_item }}">
+        <a class="{{ class_link }} icon--print" title="Print" onclick="window.print();return false;" role="button">
+          <span class="svg-wrapper">
+            <svg viewBox="0 0 26 28" aria-hidden="true" focusable="false" role="presentation">
+              <path fill="currentColor" d="M0 21.5v-6.5q0-1.234 0.883-2.117t2.117-0.883h1v-8.5q0-0.625 0.438-1.062t1.062-0.438h10.5q0.625 0 1.375 0.313t1.188 0.75l2.375 2.375q0.438 0.438 0.75 1.188t0.313 1.375v4h1q1.234 0 2.117 0.883t0.883 2.117v6.5q0 0.203-0.148 0.352t-0.352 0.148h-3.5v2.5q0 0.625-0.438 1.062t-1.062 0.438h-15q-0.625 0-1.062-0.438t-0.438-1.062v-2.5h-3.5q-0.203 0-0.352-0.148t-0.148-0.352zM6 24h14v-4h-14v4zM6 14h14v-6h-2.5q-0.625 0-1.062-0.438t-0.438-1.062v-2.5h-10v10zM22 15q0 0.406 0.297 0.703t0.703 0.297 0.703-0.297 0.297-0.703-0.297-0.703-0.703-0.297-0.703 0.297-0.297 0.703z"/>
+            </svg>
+          </span>
+          <span class="visually-hidden">Print</span>
+        </a>
+      </li>
+    {% endif %}
+
+    {% if block.settings.show_twitter %}
+      <li class="{{ class_item }}">
+        <a class="{{ class_link }} icon--x" href="https://x.com/intent/tweet/?text={{ share_title }}&amp;url={{ share_link }}" target="_blank" rel="noopener" title="X">
+          <span class="svg-wrapper">
+            <svg viewBox="0 0 1200 1227" aria-hidden="true" focusable="false" role="presentation">
+              <path fill="currentColor" d="M714.163 519.284L1160.89 0H1055.03L667.137 450.887L357.328 0H0L468.492 681.821L0 1226.37H105.866L515.491 750.218L842.672 1226.37H1200L714.137 519.284H714.163ZM569.165 687.828L521.697 619.934L144.011 79.6944H306.615L611.412 515.685L658.88 583.579L1055.08 1150.3H892.476L569.165 687.854V687.828Z" />
+            </svg>
+          </span>
+          <span class="visually-hidden">X</span>
+        </a>
+      </li>
+    {% endif %}
+  </ul>
+</div>
+
+{% schema %}
+{
+  "name": "Product share list",
+  "settings": [
+    {
+      "type": "select",
+      "id": "social_style",
+      "label": "t:settings.style",
+      "options": [
+        { "value": "default", "label": "t:options.default" },
+        { "value": "custom", "label": "t:options.custom" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_facebook",
+      "label": "Show Facebook",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_email",
+      "label": "Show Email",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_print",
+      "label": "Show Print",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_twitter",
+      "label": "Show Twitter/X",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "icon_size",
+      "label": "Icon size desktop",
+      "min": 24,
+      "max": 120,
+      "step": 6,
+      "unit": "px",
+      "default": 36,
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "icon_size_mobile",
+      "label": "Icon size mobile",
+      "min": 24,
+      "max": 120,
+      "step": 6,
+      "unit": "px",
+      "default": 36,
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon color",
+      "default": "#232323",
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg_color",
+      "label": "Icon background color",
+      "default": "transparent",
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_border_color",
+      "label": "Icon border color",
+      "default": "#e6e6e6",
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_color_hover",
+      "label": "Icon color hover",
+      "default": "#ffffff",
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_bg_color_hover",
+      "label": "Icon background color hover",
+      "default": "#232323",
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "color",
+      "id": "icon_border_color_hover",
+      "label": "Icon border color hover",
+      "default": "#232323",
+      "visible_if": "{{ block.settings.social_style == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "gap_x",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings.column_gap"
+    },
+    {
+      "type": "range",
+      "id": "gap_y",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings.row_gap"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product share list"
+    }
+  ]
+}
+{% endschema %}

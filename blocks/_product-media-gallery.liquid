@@ -272,8 +272,10 @@
     gap: 8px;
   }
 
-  body:has(header-component[data-sticky-state="active"]) .custom-media-gallery__sidebar {
-    top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)));
+  @media (min-width: 768px) {
+    body:has(header-component[data-sticky-state="active"]) .custom-media-gallery__sidebar {
+      top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)));
+    }
   }
 
   .custom-media-gallery__swiper {

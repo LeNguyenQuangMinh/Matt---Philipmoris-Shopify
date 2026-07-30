@@ -261,3 +261,19 @@
 .tab-content.border-full side-drawer-opener {
   border: 1px solid var(--accordion-border-color);
 }
+
+.tab-content h3 {
+  font-size: 18px;
+}
+
+.tab-content h2 {
+  font-size: 22px;
+  margin-bottom: 0;
+  font-weight: 400;
+}
+
+.tab-content p {
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 2.4rem;
+}

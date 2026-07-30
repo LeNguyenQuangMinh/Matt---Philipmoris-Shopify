@@ -73,7 +73,17 @@ style="
 >
   <overlay-component class="overlay-component fixed inset-0 cursor-pointer md:hidden" aria-controls="StickyAddToCart" aria-expanded="true"></overlay-component>
   {%- unless product.has_only_default_variant -%}
-    <div div class="sticky-atc__variant">
+    <div class="sticky-atc__variant">
+      <button
+        type="button"
+        class="sticky-atc__close-button button button-unstyled cursor-pointer"
+        aria-label="{{ 'accessibility.close' | t | default: 'Close' }}"
+        onclick="this.closest('sticky-atc').classList.remove('is-active');"
+      >
+        <span class="svg-wrapper">
+          {{- 'icon-close.svg' | inline_asset_content -}}
+        </span>
+      </button>
       <div class="section section--page-width variant-alignment--{{ variant_alignment }}" {{ attr }}>
         <div class="large-up-hide medium-hide">
           <div class="sticky-atc__info">
@@ -94,7 +104,7 @@ style="
       <div class="sticky-atc__content w-full flex items-center small-hide" style="--gap: {{ content_gap }};">
         <div class="sticky-atc__media">
           {%- assign current_media = product.selected_or_first_available_variant.featured_media | default: product.featured_media -%}
-          {{- current_media | image_url: width: 64 | image_tag: height: '64', sizes: '64px', widths: '64', loading: 'lazy', class: 'w-full h-auto object-cover' -}}
+          {{- current_media | image_url: width: 100 | image_tag: height: '100', sizes: '100px', widths: '100', loading: 'lazy', class: 'w-full h-auto object-cover' -}}
         </div>
         <div class="sticky-atc__info">
           <div class="sticky-atc__title">

@@ -81,10 +81,10 @@
         {% render 'spacing-style', settings: bl_stts %}
       "
     >
-      {{- 'icon-size-chart.svg' | inline_asset_content -}}
-      <span
-        class="{{ bl_stts.type_preset }} {{ text_block_classes }}" style="{% render 'typography-style', settings: bl_stts, weight: bl_stts.font_weight %}"
-      >
+    <span
+    class="{{ bl_stts.type_preset }} {{ text_block_classes }}" style="{% render 'typography-style', settings: bl_stts, weight: bl_stts.font_weight %}"
+    >
+    {{- 'icon-size-chart.svg' | inline_asset_content -}}
         {{- bl_stts.heading }}
       </span>
     </button>

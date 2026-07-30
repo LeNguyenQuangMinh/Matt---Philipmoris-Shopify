@@ -9578,13 +9578,22 @@ sold-in-last-component.loading {
   gap: 1.5rem;
 }
 
+.popup.size-chart > .button span {
+  font-size: 16px;
+  font-weight: 400;
+  font-style: normal;
+  line-height: 24px;
+  letter-spacing: 0;
+}
+
 .popup.size-chart > .button {
   display: flex;
   justify-content: center;
   align-items: center;
-  gap: 10px;
+  gap: 2px;
   text-transform: none;
   text-align: left;
+  text-decoration: none !important;
 }
 
 .popup.size-chart > .button svg {
@@ -9787,6 +9796,20 @@ sold-in-last-component.loading {
   margin-bottom: 1.6rem;
 }
 
+.sticky-atc .sticky-atc__title {
+  font-size: 15px;
+  margin: 0 0 8px 0;
+  font-weight: 700;
+  color: #3e3e3e;
+  line-height: 1.4;
+  text-transform: uppercase;
+}
+
+.sticky-atc .sticky-atc__price {
+  font-size: 20px;
+  font-weight: 700;
+}
+
 .sticky-atc__variant {
   padding: 1.5rem 0 0;
   width: 100%;
@@ -9847,7 +9870,8 @@ sold-in-last-component.loading {
   }
 
   .sticky-atc .variant-selects .variant-option {
-    max-width: fit-content;
+    /* max-width: fit-content; */
+    max-width: calc(50% - 20px);
   }
 
   .sticky-atc__variant {
@@ -9867,6 +9891,10 @@ sold-in-last-component.loading {
   }
 }
 
+.sticky-atc .size-chart {
+  display: none !important;
+}
+
 @media screen and (max-width: 749px) {
   .sticky-atc__action {
     width: 100%;
@@ -9877,6 +9905,42 @@ sold-in-last-component.loading {
   .sticky-atc {
     bottom: calc(var(--toolbar-mobile-height) + 5px);
   }
+
+  .sticky-atc .variant-selects .variant-option {
+    max-width: 100%;
+  }
+}
+
+.sticky-atc__variant .sticky-atc__close-button {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  z-index: 35;
+  background: #ffffff;
+  border: 1px solid #3e3e3e;
+  width: 28px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #3e3e3e;
+  padding: 0;
+  border-radius: 0;
+  transition: all 0.2s ease;
+}
+
+.sticky-atc__variant .sticky-atc__close-button:hover {
+  background: #3e3e3e;
+  color: #ffffff;
+}
+
+.sticky-atc__variant .sticky-atc__close-button .svg-wrapper {
+  width: 14px;
+  height: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .sub-collection-block {
@@ -20397,4 +20461,10 @@ ul.items-same-height > li {
 
 .header-message p {
   margin: 0;
+}
+
+.icon-size-chart {
+  color: #6d3f49;
+  width: 28px;
+  height: 17px;
 }
