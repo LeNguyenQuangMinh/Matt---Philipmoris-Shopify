@@ -3,22 +3,22 @@ class FreeShippingComponent extends HTMLElement {
     super();
   }
 
-  static freeShippingText = window.free_shipping_text.free_shipping_message;
-  static freeShippingText1 = window.free_shipping_text.free_shipping_message_1;
-  static freeShippingText2 = window.free_shipping_text.free_shipping_message_2;
-  static freeShippingText3 = window.free_shipping_text.free_shipping_message_3;
-  static freeShippingText4 = window.free_shipping_text.free_shipping_message_4;
+  static freeShippingText = window.free_shipping_text?.free_shipping_message || 'Free shipping for all orders over';
+  static freeShippingText1 = window.free_shipping_text?.free_shipping_message_1 || 'You qualify for free shipping!';
+  static freeShippingText2 = window.free_shipping_text?.free_shipping_message_2 || 'Spend';
+  static freeShippingText3 = window.free_shipping_text?.free_shipping_message_3 || 'more to receive';
+  static freeShippingText4 = window.free_shipping_text?.free_shipping_message_4 || 'free shipping';
   static classLabel1 = 'progress-30';
   static classLabel2 = 'progress-60';
   static classLabel3 = 'progress-100';
-  static freeShippingPrice = Currency.convert(parseInt(window.free_shipping_price), window.free_shipping_default_currency, Shopify.currency.active);
+  static freeShippingPrice = window.free_shipping_price ? Currency.convert(parseInt(window.free_shipping_price), window.free_shipping_default_currency, Shopify.currency.active) : 0;
 
   connectedCallback() {
     this.freeShippingEligible = 0;
     this.progressBar = this.querySelector('[data-shipping-progress]');
     this.messageElement = this.querySelector('[data-shipping-message]');
     this.textEnabled = this.progressBar?.dataset.textEnabled === 'true';
-    this.shipVal = window.free_shipping_text.free_shipping_1;
+    this.shipVal = window.free_shipping_text?.free_shipping_1;
     this.progressMeter = this.querySelector('[data-free-shipping-progress-meter]');
     this.onCartUpdated = () => this.initialize();
 
@@ -29,11 +29,15 @@ class FreeShippingComponent extends HTMLElement {
     }
 
     this.initialize();
+    this.initOrderTimer();
   }
 
   disconnectedCallback() {
     document.removeEventListener('cart:updated', this.onCartUpdated);
     this.cartUpdateUnsubscriber?.();
+    if (this.orderTimerId) {
+      clearInterval(this.orderTimerId);
+    }
   }
 
   initialize() {
@@ -68,7 +72,7 @@ class FreeShippingComponent extends HTMLElement {
     const cartTotalPriceFormatted = cartTotalPrice;
     const cartTotalPriceRounded = parseFloat(cartTotalPriceFormatted);
 
-    let freeShipBar = Math.abs((cartTotalPriceRounded * 100) / FreeShippingComponent.freeShippingPrice);
+    let freeShipBar = FreeShippingComponent.freeShippingPrice > 0 ? Math.abs((cartTotalPriceRounded * 100) / FreeShippingComponent.freeShippingPrice) : 100;
     if (freeShipBar >= 100) {
       freeShipBar = 100;
     }
@@ -81,19 +85,42 @@ class FreeShippingComponent extends HTMLElement {
 
   getText(cartTotalPrice, freeShipBar) {
     let text;
+    const isShowOnlyText = this.dataset.showOnlyText === 'true';
 
-    if (cartTotalPrice == 0) {
-      this.progressBar.classList.add('progress-hidden');
-      text = '<span>' + FreeShippingComponent.freeShippingText + ' ' + Shopify.formatMoney(FreeShippingComponent.freeShippingPrice.toFixed(2) * 100, window.money_format) + '!</span>';
-    } else if (cartTotalPrice >= FreeShippingComponent.freeShippingPrice) {
-      this.progressBar.classList.remove('progress-hidden');
-      this.freeShippingEligible = 1;
-      text = FreeShippingComponent.freeShippingText1;
+    if (isShowOnlyText) {
+      const textBefore = this.dataset.textBefore || 'Spend';
+      const textAfter = this.dataset.textAfter || 'more to receive free shipping';
+      const textQualified = this.dataset.textQualified || FreeShippingComponent.freeShippingText1 || 'You qualify for free shipping!';
+
+      if (cartTotalPrice == 0) {
+        this.progressBar?.classList.add('progress-hidden');
+        const formattedPrice = Shopify.formatMoney(FreeShippingComponent.freeShippingPrice.toFixed(2) * 100, window.money_format);
+        text = `${textBefore} <span class="previewCart-shippingNotice-amount">${formattedPrice}</span> ${textAfter}`;
+      } else if (cartTotalPrice >= FreeShippingComponent.freeShippingPrice) {
+        this.progressBar?.classList.remove('progress-hidden');
+        this.freeShippingEligible = 1;
+        text = `<span class="previewCart-shippingNotice-eligible">${textQualified}</span>`;
+      } else {
+        this.progressBar?.classList.remove('progress-hidden');
+        const remainingPrice = Math.abs(FreeShippingComponent.freeShippingPrice - cartTotalPrice);
+        const formattedRemaining = Shopify.formatMoney(remainingPrice.toFixed(2) * 100, window.money_format);
+        text = `${textBefore} <span class="previewCart-shippingNotice-amount">${formattedRemaining}</span> ${textAfter}`;
+        this.shipVal = window.free_shipping_text?.free_shipping_2;
+      }
     } else {
-      this.progressBar.classList.remove('progress-hidden');
-      const remainingPrice = Math.abs(FreeShippingComponent.freeShippingPrice - cartTotalPrice);
-      text = '<span>' + FreeShippingComponent.freeShippingText2 + ' </span>' + Shopify.formatMoney(remainingPrice.toFixed(2) * 100, window.money_format) + '<span> ' + FreeShippingComponent.freeShippingText3 + ' </span><span class="text">' + FreeShippingComponent.freeShippingText4 + '</span>';
-      this.shipVal = window.free_shipping_text.free_shipping_2;
+      if (cartTotalPrice == 0) {
+        this.progressBar?.classList.add('progress-hidden');
+        text = '<span>' + FreeShippingComponent.freeShippingText + ' ' + Shopify.formatMoney(FreeShippingComponent.freeShippingPrice.toFixed(2) * 100, window.money_format) + '!</span>';
+      } else if (cartTotalPrice >= FreeShippingComponent.freeShippingPrice) {
+        this.progressBar?.classList.remove('progress-hidden');
+        this.freeShippingEligible = 1;
+        text = FreeShippingComponent.freeShippingText1;
+      } else {
+        this.progressBar?.classList.remove('progress-hidden');
+        const remainingPrice = Math.abs(FreeShippingComponent.freeShippingPrice - cartTotalPrice);
+        text = '<span>' + FreeShippingComponent.freeShippingText2 + ' </span>' + Shopify.formatMoney(remainingPrice.toFixed(2) * 100, window.money_format) + '<span> ' + FreeShippingComponent.freeShippingText3 + ' </span><span class="text">' + FreeShippingComponent.freeShippingText4 + '</span>';
+        this.shipVal = window.free_shipping_text?.free_shipping_2;
+      }
     }
 
     return text;
@@ -118,17 +145,14 @@ class FreeShippingComponent extends HTMLElement {
   }
 
   resetProgressClass(classLabel) {
-    this.progressBar.classList.remove('progress-30');
-    this.progressBar.classList.remove('progress-60');
-    this.progressBar.classList.remove('progress-100');
-    this.progressBar.classList.remove('progress-free');
-
+    if (!this.progressBar) return;
+    this.progressBar.classList.remove('progress-30', 'progress-60', 'progress-100', 'progress-free');
     this.progressBar.classList.add(classLabel);
   }
 
   setProgressWidthAndText(freeShipBar, text, classLabel) {
     setTimeout(() => {
-      if (!this.progressBar || !this.messageElement) return;
+      if (!this.messageElement) return;
 
       this.resetProgressClass(classLabel);
 
@@ -147,8 +171,60 @@ class FreeShippingComponent extends HTMLElement {
     }, 400);
   }
 
+  initOrderTimer() {
+    const orderTimeSub = this.querySelector('[data-order-time-sub]');
+    if (!orderTimeSub) return;
+
+    const excludedDays = ['SAT', 'SUN'];
+    const cutoffHour = 14;
+
+    const updateTimer = () => {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+
+      const weekday = now.toLocaleDateString('en-GB', { weekday: 'short' }).toUpperCase();
+      if (excludedDays.includes(weekday)) {
+        orderTimeSub.style.display = 'none';
+        return false;
+      }
+
+      if (hours >= cutoffHour || (hours === 0 && minutes < 1)) {
+        orderTimeSub.style.display = 'none';
+        return false;
+      }
+
+      const cutoffTime = new Date(now);
+      cutoffTime.setHours(cutoffHour, 0, 0, 0);
+
+      const diffMs = cutoffTime - now;
+      if (diffMs <= 0) {
+        orderTimeSub.style.display = 'none';
+        return false;
+      }
+
+      orderTimeSub.style.display = '';
+
+      const diffHrs = Math.floor(diffMs / 3600000);
+      const diffMins = Math.floor((diffMs % 3600000) / 60000);
+
+      const hoursEl = orderTimeSub.querySelector('.hours');
+      const minutesEl = orderTimeSub.querySelector('.minutes');
+
+      if (hoursEl) hoursEl.textContent = String(diffHrs).padStart(2, '0');
+      if (minutesEl) minutesEl.textContent = String(diffMins).padStart(2, '0');
+
+      return true;
+    };
+
+    if (updateTimer()) {
+      this.orderTimerId = setInterval(updateTimer, 1000);
+    }
+  }
 }
 
 window.addEventListener('load', () => {
-  customElements.define('free-shipping-component', FreeShippingComponent);
+  if (!customElements.get('free-shipping-component')) {
+    customElements.define('free-shipping-component', FreeShippingComponent);
+  }
 });

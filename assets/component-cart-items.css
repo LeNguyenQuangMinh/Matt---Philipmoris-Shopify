@@ -395,8 +395,8 @@ cart-items-component .cart-items__table-row.removing {
     display: grid;
     grid-template-columns: clamp(10.5rem, 17cqi, 15rem) minmax(0, 1fr) minmax(var(--cart-item-price-width), auto);
     grid-template-areas:
-        "media details totals"
-        "media quantity remove";
+        "media details remove"
+        "media quantity totals";
     gap: var(--gap-xs);
     align-items: start;
     padding-block: var(--cart-items-gap);

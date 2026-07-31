@@ -58,8 +58,8 @@
       </div>
 
       <div class="drawer__inner-filled{% if cart == empty %} hidden{% endif %}" data-cart-drawer-filled>
-        <div class="drawer__header flex justify-between items-center relative" style="--p: 1.5rem 0 0 0;">
-          <h2 class="drawer__heading break m-0 h5">{{ 'content.your_cart' | t }}</h2>
+        <div class="drawer__header flex justify-between items-center relative" style="--p: 0 30px;">
+          <h2 class="drawer__heading break m-0 h5">REVIEW YOUR CART</h2>
           <button
             class="drawer__close block t-button bor-none rounded-full cursor-pointer"
             type="button"
@@ -70,7 +70,7 @@
           </button>
         </div>
 
-        <div class="wrapper-cart-count" data-cart-text style="--p: 0 0 1.5rem 0;">
+        <div class="wrapper-cart-count hidden" data-cart-text style="--p: 0 0 1.5rem 0;">
           {{ cart.item_count }} {{ cart.item_count | pluralize: 'item', 'items' }}
         </div>
       </div>
@@ -362,12 +362,18 @@
                 {%- endif -%}
               </div>
 
-              <div class="totals" role="status">
-                <h2 class="totals__total">{{ 'content.estimated_total' | t }}</h2>
-                <p class="totals__total-value">{{ cart.total_price | money_with_currency }}</p>
+              <div class="drawer__totals-wrapper" role="status">
+                <div class="drawer__total-row">
+                  <span class="drawer__total-label">Subtotal:</span>
+                  <span class="drawer__total-value">{{ cart.total_price | money }}</span>
+                </div>
+                <div class="drawer__total-row drawer__total-row--grand">
+                  <span class="drawer__total-label">Grand total:</span>
+                  <span class="drawer__total-value">{{ cart.total_price | money }}</span>
+                </div>
               </div>
 
-              <small class="tax-note caption-large rte">
+              <small class="tax-note caption-large rte hidden">
                 {%- if cart.duties_included and cart.taxes_included -%}
                   {%- if shop.shipping_policy.body == blank -%}
                     {{ 'content.duties_and_taxes_included_shipping_at_checkout_without_policy' | t }}
@@ -422,22 +428,14 @@
                     disabled
                   {% endif %}
                 >
-                  <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.checkout' | t }}">
-                    <span class="button-text-main inline-block relative z-1">
-                      {{- 'content.checkout' | t -}}
-                    </span>
-                  </span>
+                  CHECK OUT NOW
                 </button>
                 <a
                   href="{{ routes.cart_url }}"
                   id="CartDrawer-Viewcart"
                   class="cart__viewcart-button button-secondary button--full-width"
                 >
-                  <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'content.cart.view_empty_cart' | t }}">
-                    <span class="button-text-main inline-block relative z-1">
-                      {{- 'content.cart.view_empty_cart' | t -}}
-                    </span>
-                  </span>
+                  VIEW CART
                 </a>
               </div>
             </div>

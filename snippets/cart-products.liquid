@@ -158,8 +158,8 @@
                       role="cell"
                       headers="productInformation"
                     >
-                      {%- if bl_stts.vendor -%}
-                        <p class="caption-with-letter-spacing">{{ item.product.vendor }}</p>
+                      {%- if item.product.vendor != blank -%}
+                        <p class="cart-item__vendor caption-with-letter-spacing">{{ item.product.vendor }}</p>
                       {%- endif -%}
 
                       <a href="{{ item.url }}" class="cart-item__name break link--hover-underline">
@@ -494,7 +494,7 @@
                         {% endif %}
                       >
                         <span class="svg-wrapper icon-remove">
-                          {{- 'icon-close.svg' | inline_asset_content -}}
+                          {{- 'icon-remove.svg' | inline_asset_content -}}
                         </span>
                         <span class="visually-hidden">
                           {{ 'content.remove_title' | t: title: item.title | escape }}

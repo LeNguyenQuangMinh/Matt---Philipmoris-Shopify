@@ -185,6 +185,18 @@
       id="FacetSortForm"
       style="--pt: {{ padding_block_start }}px; --pb: {{ padding_block_end }}px;"
     >
+      {%- if results.terms -%}
+        <input
+          type="hidden"
+          name="q"
+          value="{{ results.terms | escape }}"
+        >
+        <input
+          name="options[prefix]"
+          type="hidden"
+          value="last"
+        >
+      {%- endif -%}
       {%- if bl_stts.filters_sidebar_layout -%}
         <style>
           /* .custom-toolbar {

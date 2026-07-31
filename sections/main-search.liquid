@@ -128,15 +128,13 @@
         </div>
         {%- if search.performed -%}
           <div class="collection-wrapper grid-base gap-style">
-            {%- if search.filters != empty -%}
-              {% content_for 'block',
-                type: 'filters',
-                id: 'filters',
-                results: search,
-                results_size: search.results_count,
-                limit: limit
-              %}
-            {%- endif -%}
+            {% content_for 'block',
+              type: 'filters',
+              id: 'filters',
+              results: search,
+              results_size: search.results_count,
+              limit: limit
+            %}
             <div
               class="main-collection-grid"
               style="

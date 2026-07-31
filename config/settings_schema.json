@@ -2689,6 +2689,13 @@
         "default": false
       },
       {
+        "type": "checkbox",
+        "id": "show_only_shipping_text",
+        "label": "Show only Shipping Text",
+        "default": false,
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+      },
+      {
         "type": "text",
         "id": "calculator_free_shipping_message_price",
         "label": "t:settings.calculator_free_shipping_message_price",
@@ -2696,9 +2703,78 @@
         "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
       },
       {
+        "type": "text",
+        "id": "free_shipping_text_before",
+        "label": "Text before amount (e.g. Spend)",
+        "default": "Spend",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_text_after",
+        "label": "Text after amount (e.g. more to receive free shipping)",
+        "default": "more to receive free shipping",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_text_qualified",
+        "label": "Text when eligible for free shipping",
+        "default": "You qualify for free shipping!",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_sub_text_before",
+        "label": "Despatch text before timer",
+        "default": "For despatch today, order within",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "text",
+        "id": "free_shipping_sub_text_link",
+        "label": "Details link text",
+        "default": "Details",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "url",
+        "id": "free_shipping_sub_text_url",
+        "label": "Details link URL",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_notice_bg",
+        "label": "Notice Background Color",
+        "default": "#f5f5f5",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_notice_text_color",
+        "label": "Notice Text Color",
+        "default": "#333333",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_notice_highlight_color",
+        "label": "Notice Highlight Color (Amount & Timer)",
+        "default": "#13aa13",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
+        "type": "color",
+        "id": "free_shipping_notice_link_color",
+        "label": "Notice Details Link Color",
+        "default": "#0b62ac",
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == true }}"
+      },
+      {
         "type": "paragraph",
         "content": "t:content.progress_bar",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "select",
@@ -2723,7 +2799,7 @@
           }
         ],
         "default": "shipping_truck",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "range",
@@ -2734,7 +2810,7 @@
         "step": 1,
         "unit": "px",
         "default": 10,
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "range",
@@ -2745,21 +2821,21 @@
         "step": 1,
         "unit": "px",
         "default": 10,
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "color",
         "id": "calculator_free_shipping_message_color",
         "label": "t:settings.color",
         "default": "#808080",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "color",
         "id": "calculator_free_shipping_message_bg",
         "label": "t:settings.background_color",
         "default": "#a9a9a9",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "color",
@@ -2767,7 +2843,7 @@
         "label": "t:settings.background_color",
         "info": "Background color < 30%",
         "default": "#d12442",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "color",
@@ -2775,7 +2851,7 @@
         "label": "t:settings.background_color",
         "info": "Background color < 60%",
         "default": "#ff5431",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "color",
@@ -2783,7 +2859,7 @@
         "label": "t:settings.background_color",
         "info": "Background color < 100%",
         "default": "#69c69c",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "color",
@@ -2791,7 +2867,7 @@
         "label": "t:settings.background_color",
         "info": "Background color = 100%",
         "default": "#69c69c",
-        "visible_if": "{{ settings.show_calculator_free_shipping_message == true }}"
+        "visible_if": "{{ settings.show_calculator_free_shipping_message == true and settings.show_only_shipping_text == false }}"
       },
       {
         "type": "header",

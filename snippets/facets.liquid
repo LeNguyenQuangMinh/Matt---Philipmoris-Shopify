@@ -973,6 +973,18 @@
             data-drawer-target="Drawer-Facets"
             data-drawer-direction="left"
           >
+            {%- if results.terms -%}
+              <input
+                type="hidden"
+                name="q"
+                value="{{ results.terms | escape }}"
+              >
+              <input
+                name="options[prefix]"
+                type="hidden"
+                value="last"
+              >
+            {%- endif -%}
             <div
               id="Drawer-Facets-Overlay"
               data-drawer-overlay
