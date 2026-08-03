@@ -40,7 +40,7 @@
 
 {% capture account_text %}
   {%- if account_type == 'text' or account_type == 'both' -%}
-    <span class="text max-md:hidden {{ account_custom_class }}" style="{{ header_utility_custom_style }}">
+    <span class="text max-md:hidden whitespace-nowrap {{ account_custom_class }}" style="{{ header_utility_custom_style }}">
       {%- liquid
         if customer
           echo 'customer.account_fallback' | t

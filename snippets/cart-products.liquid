@@ -219,7 +219,7 @@
                         {%- endif -%}
                       {%- endfor -%}
 
-                      <ul class="discounts list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
+                      <ul class="discounts hidden list-unstyled" role="list" aria-label="{{ 'customer.order.discount' | t }}">
                         {%- for discount in item.line_level_discount_allocations -%}
                           <li class="discounts__discount">
                             <span class="discounts__discount-text font-medium">
@@ -232,7 +232,7 @@
                         {%- endfor -%}
                       </ul>
 
-                      <div class="cart-item__price-wrapper relative medium-hide large-up-hide">
+                      <div class="cart-item__price-wrapper relative medium-hide large-up-hide hidden">
                         <text-loader-component>
                           {%- render 'loading-spinner' -%}
                           <div class="cart-item__price-wrapper">

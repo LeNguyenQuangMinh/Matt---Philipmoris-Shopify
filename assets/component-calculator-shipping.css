@@ -173,7 +173,9 @@
   flex-direction: column;
   gap: 5px;
   border: unset !important;
-  font-size: 1.3rem;
+  font-size: 1.4rem;
+  font-weight: 600;
+  margin-bottom: 2px;
   color: var(--shipping-notice-color, #333333);
 }
 
