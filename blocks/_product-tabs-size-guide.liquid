@@ -1,4 +1,40 @@
 {% liquid
+  assign product = closest.product
+  assign title = block.settings.title | default: 'Size Guide'
+  assign view_content = block.settings.view_content
+  assign accordion_icon = block.settings.accordion_icon
+  assign accordion_border_style = block.settings.accordion_border_style
+  assign accordion_border_color = block.settings.accordion_border_color
+%}
+
+{%- capture icon -%}
+  {% if accordion_icon == 'plus' %}
+    {{- 'icon-plus.svg' | inline_asset_content -}}
+  {% elsif accordion_icon == 'right-arrow' %}
+    {{- 'icon-right-arrow.svg' | inline_asset_content -}}
+  {% elsif accordion_icon == 'caret' %}
+    {{- 'icon-caret.svg' | inline_asset_content -}}
+  {% endif %}
+{%- endcapture -%}
+
+{%- capture tab_title -%}
+  {% liquid
+    assign element = 'side-drawer-opener'
+    if view_content == 'default'
+      assign element = 'div'
+    endif
+  %}
+
+  <{{ element }} {% if view_content == 'popup' %}data-side-drawer="#PopupModal-{{ section.id }}"{% else %}data-side-drawer="#Global-Drawer"{% endif %} class="toggle-title{% if view_content == 'default' %} isCheckingOpenDefault {% endif %}" data-view-content="{{ view_content }}">
+    <button class="toggle-link cursor-pointer">
+      <span class="text">Tab Title</span>
+      <span class="svg-wrapper icon-caret-wrapper">{{- icon -}}</span>
+    </button>
+  </{{ element }}>
+{%- endcapture -%}
+
+{% liquid
+  assign tab_content_output = ''
   assign has_size_chart = false
   assign is_image = false
   assign is_image_url = false
@@ -9,7 +45,7 @@
 
   # 1. Direct Product Metafield Check (custom.size_guide or custom.size_chart)
   assign direct_guide = product.metafields.custom.size_guide.value | default: product.metafields.custom.size_guide | default: product.metafields.custom.size_chart.value | default: product.metafields.custom.size_chart
-  
+
   if direct_guide != blank
     if direct_guide.size_guide_image != blank or direct_guide.image != blank or direct_guide.size_chart_image != blank or direct_guide.size_chart != blank or direct_guide.size_guide_file != blank or direct_guide.file != blank or direct_guide.photo != blank or direct_guide.picture != blank or direct_guide.content != blank or direct_guide.details != blank or direct_guide.description != blank
       assign guide = direct_guide
@@ -33,13 +69,13 @@
     endif
   endif
 
-  # 2. Metaobject Auto-Detection Logic if no size chart assigned directly on product
+  # 2. Metaobject Auto-Detection Logic if no direct guide assigned
   if has_size_chart == false and guide == blank
     assign raw_gender = product.metafields.custom.gender.value | default: product.metafields.custom.gender | default: product.metafields.facts.gender.value | default: product.metafields.facts.gender
     if raw_gender.first != blank
       assign raw_gender = raw_gender.first
     endif
-    
+
     if raw_gender.label != blank
       assign gender_str = raw_gender.label
     elsif raw_gender.name != blank
@@ -56,7 +92,6 @@
     assign v = product.vendor | handleize
     assign t = product.type | handleize
 
-    # Gender aliases (e.g. mens <-> male, womens <-> female)
     assign g_alt = g
     if g == 'mens' or g == 'men'
       assign g_alt = 'male'
@@ -68,7 +103,6 @@
       assign g_alt = 'womens'
     endif
 
-    # Singular / Plural product type alias (e.g. glove <-> gloves, shoe <-> shoes)
     assign t_alt = t
     if t != blank
       assign t_size = t.size
@@ -81,7 +115,6 @@
       endif
     endif
 
-    # Try gender, vendor, type combinations
     if guide == blank and g != blank and v != blank and t != blank
       assign k = g | append: '-' | append: v | append: '-' | append: t
       assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
@@ -102,7 +135,6 @@
       assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
     endif
 
-    # Try vendor & type combinations
     if guide == blank and v != blank and t != blank
       assign k = v | append: '-' | append: t
       assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
@@ -113,7 +145,6 @@
       assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
     endif
 
-    # Try gender & type combinations
     if guide == blank and g != blank and t != blank
       assign k = g | append: '-' | append: t
       assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
@@ -124,7 +155,6 @@
       assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
     endif
 
-    # Try product type only
     if guide == blank and t != blank
       assign guide = shop.metaobjects.size_guide[t] | default: shop.metaobjects.size_chart[t] | default: shop.metaobjects.size_guides[t]
     endif
@@ -149,85 +179,131 @@
       endif
     endif
   endif
--%}
 
-{%- if has_size_chart -%}
-  <side-drawer-opener
-    class="popup size-chart test121212121 product-popup-modal__opener--keep size-chart-inline"
-    data-side-drawer="#PopupModal-size-chart-{{ product.id }}"
-    style="display: inline-flex; align-items: center;"
-  >
-    <button
-      id="PopupModalButton-size-chart-{{ product.id }}"
-      class="button button-unstyled popup__button flex items-center gap-2 cursor-pointer"
-      type="button"
-      style="font-size: 1.4rem; color: var(--color-primary, #6d3f49); text-decoration: underline; background: none; border: none; padding: 0;"
-    >
-      <span>{{ 'products.product.size_chart.name_popup' | t | default: 'Size Guide' }}</span>
-      {{- 'icon-size-chart.svg' | inline_asset_content -}}
-    </button>
-  </side-drawer-opener>
+  # 4. Generate Tab Content Output HTML
+  if has_size_chart
+    capture tab_content_output
+      if is_image and size_chart_image != blank
+        echo '<div class="tab-media-image center flex justify-center w-full">'
+        echo size_chart_image | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'tab-image w-full h-auto object-contain m-auto', widths: '375, 550, 750, 1100, 1400', alt: title
+        echo '</div>'
+      elsif is_image_url
+        echo '<div class="tab-media-image center flex justify-center w-full">'
+        echo '<img src="' | append: size_chart_image_url | append: '" alt="' | append: title | append: '" loading="lazy" class="tab-image w-full h-auto object-contain m-auto" />'
+        echo '</div>'
+      elsif size_chart_details != blank
+        echo '<div class="rte w-full">'
+        echo size_chart_details
+        echo '</div>'
+      endif
+    endcapture
+  endif
+%}
 
-  <side-drawer
-    class="popup__content product-popup-modal__drawer--keep drawer fixed top-0 left-0 z-10 w-screen h-full flex-center no-js-hidden"
-    element-s-popup
-    id="PopupModal-size-chart-{{ product.id }}"
-    data-drawer-direction="center"
-  >
-    <div id="Drawer-Overlay-size-chart-{{ product.id }}" class="drawer__overlay fixed inset-0 cursor-pointer"></div>
-    <div
-      class="popup__inner color-{{ settings.popover_color_scheme }} w-full h-auto flex flex-column global-settings-popup cus-scrollbar"
-      role="dialog"
-      aria-modal="true"
-      aria-label="Size chart"
-      tabindex="-1"
-      style="--modal-max-width: 72rem;"
-      data-drawer-content
-    >
-      <button
-        onclick="this.closest('side-drawer').close()"
-        class="drawer__close block t-button bor-none rounded-full cursor-pointer absolute button-close-circle"
-        type="button"
-        aria-label="{{ 'accessibility.close_dialog' | t }}"
-        style="--top: 1rem; --right: 1rem;"
-      >
-        {{- 'icon-close.svg' | inline_asset_content -}}
-      </button>
-      <div class="w-full h-full overflow-auto cus-scrollbar" style="--p: 1rem;">
-        <div class="drawer__header relative center"
-          style="--p: 1.5rem 0; --mb: 2.5rem;"
-        >
-          <h5 class="drawer__heading break m-0">
-            {{ 'products.product.size_chart.name_popup' | t | default: 'Size Guide' }}
-          </h5>
-        </div>
-        <div class="size-chart-popup-modal__content-info m-auto w-full">
-          <div class="size-chart-details center w-full flex justify-center">
-            {%- if is_image and size_chart_image != blank -%}
-              {{
-                size_chart_image
-                | image_url: width: 1400
-                | image_tag:
-                  loading: 'lazy',
-                  class: 'w-full h-auto object-contain m-auto',
-                  widths: '375, 550, 750, 1100, 1400',
-                  alt: 'Size Guide'
-              }}
-            {%- elsif is_image_url -%}
-              <img
-                src="{{ size_chart_image_url }}"
-                alt="Size Guide"
-                loading="lazy"
-                class="w-full h-auto object-contain m-auto"
-              >
-            {%- elsif size_chart_details != blank -%}
-              <div class="rte w-full">
-                {{ size_chart_details }}
-              </div>
-            {%- endif -%}
-          </div>
-        </div>
-      </div>
+{% if tab_content_output != blank %}
+  <div class="tab-content{% if accordion_border_style != 'none' %} border-{{ accordion_border_style }}{% endif %}" style="--accordion-border-color: {{ accordion_border_color }};">
+    {{ tab_title | replace: 'Tab Title', title }}
+    <div class="toggle-content">
+      {{ tab_content_output }}
     </div>
-  </side-drawer>
-{%- endif -%}
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Size Guide Tab",
+  "tag": null,
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "t:settings.title",
+      "default": "Size Guide"
+    },
+    {
+      "type": "checkbox",
+      "id": "open_by_default",
+      "label": "Open tab by default",
+      "default": false,
+      "info": "This setting only works if the tabs design is set to accordion with default view"
+    },
+    {
+      "type": "select",
+      "id": "view_content",
+      "label": "t:settings.view_content",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "sidebar",
+          "label": "t:options.sidebar"
+        },
+        {
+          "value": "popup",
+          "label": "t:options.popup"
+        }
+      ],
+      "default": "sidebar"
+    },
+    {
+      "type": "header",
+      "content": "t:content.appearance"
+    },
+    {
+      "type": "select",
+      "id": "accordion_icon",
+      "label": "t:settings.icon",
+      "options": [
+        { "value": "none", "label": "t:options.none" },
+        { "value": "caret", "label": "t:options.caret" },
+        { "value": "plus", "label": "t:options.plus" },
+        { "value": "right-arrow", "label": "t:options.right_arrow" }
+      ],
+      "default": "caret"
+    },
+    {
+      "type": "select",
+      "id": "accordion_border_style",
+      "label": "t:settings.border_style",
+      "options": [
+        {
+          "value": "none",
+          "label": "t:options.none"
+        },
+        {
+          "value": "top",
+          "label": "t:options.top"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom"
+        },
+        {
+          "value": "top-bottom",
+          "label": "t:options.top_bottom"
+        },
+        {
+          "value": "full",
+          "label": "t:options.full"
+        }
+      ],
+      "default": "bottom"
+    },
+    {
+      "type": "color",
+      "id": "accordion_border_color",
+      "label": "t:settings.border_color",
+      "default": "#d3d3d3",
+      "visible_if": "{{ block.settings.accordion_border_style != 'none' }}"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Size Guide Tab",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}

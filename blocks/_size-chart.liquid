@@ -17,53 +17,190 @@
   assign size_chart_type = bl_stts.size_chart_type
   assign is_image = false
   assign is_image_url = false
+  assign size_chart_image = nil
+  assign size_chart_image_url = nil
+  assign size_chart_details = nil
 
-  # Check if product has size option
-  assign has_size_option = false
-  for option in product.options_with_values
-    assign option_name_downcase = option.name | downcase
-    if option_name_downcase contains 'size'
-      assign has_size_option = true
-      break
-    endif
-  endfor
-
-  if has_size_option
-    if size_chart_type == 'metafield'
-      if product.metafields.custom.size_chart
-      assign has_size_chart = true
-      assign size_chart_metafield = product.metafields.custom.size_chart
-      assign size_chart_value = size_chart_metafield.value | default: size_chart_metafield
-
-      if size_chart_metafield.type == 'file_reference' or size_chart_value.width != blank or size_chart_value.aspect_ratio != blank or size_chart_value.src != blank
-        assign is_image = true
-        assign size_chart_image = size_chart_value
-      else
-        capture size_chart_str
-          echo size_chart_value
-        endcapture
-        assign size_chart_str_clean = size_chart_str | strip
-        if size_chart_str_clean contains 'http' or size_chart_str_clean contains '//cdn.shopify' or size_chart_str_clean contains '/files/' or size_chart_str_clean contains '.jpg' or size_chart_str_clean contains '.png' or size_chart_str_clean contains '.webp'
-          assign is_image_url = true
-          assign size_chart_image_url = size_chart_str_clean
-        else
-          assign size_chart_details = size_chart_value
-        endif
-      endif
-    endif
-  elsif size_chart_type == 'image'
-    if bl_stts.size_chart_image != blank
+  # 1. Direct Product Metafield Check (custom.size_guide or custom.size_chart)
+  assign direct_guide = product.metafields.custom.size_guide.value | default: product.metafields.custom.size_guide | default: product.metafields.custom.size_chart.value | default: product.metafields.custom.size_chart
+  
+  if direct_guide != blank
+    if direct_guide.size_guide_image != blank or direct_guide.image != blank or direct_guide.size_chart_image != blank or direct_guide.size_chart != blank or direct_guide.size_guide_file != blank or direct_guide.file != blank or direct_guide.photo != blank or direct_guide.picture != blank or direct_guide.content != blank or direct_guide.details != blank or direct_guide.description != blank
+      assign guide = direct_guide
+    elsif direct_guide.type == 'file_reference' or direct_guide.width != blank or direct_guide.aspect_ratio != blank or direct_guide.src != blank
       assign has_size_chart = true
       assign is_image = true
-      assign size_chart_image = bl_stts.size_chart_image
-    endif
-  elsif size_chart_type == 'page'
-    if bl_stts.size_chart_page != blank
-      assign has_size_chart = true
-      assign size_chart_heading = bl_stts.size_chart_page.title
-      assign size_chart_details = bl_stts.size_chart_page.content
+      assign size_chart_image = direct_guide
+    else
+      capture direct_str
+        echo direct_guide
+      endcapture
+      assign direct_str_clean = direct_str | strip
+      if direct_str_clean contains 'http' or direct_str_clean contains '//cdn.shopify' or direct_str_clean contains '/files/' or direct_str_clean contains '.jpg' or direct_str_clean contains '.png' or direct_str_clean contains '.webp'
+        assign has_size_chart = true
+        assign is_image_url = true
+        assign size_chart_image_url = direct_str_clean
+      elsif direct_str_clean != blank
+        assign has_size_chart = true
+        assign size_chart_details = direct_guide
+      endif
     endif
   endif
+
+  # 2. Metaobject Auto-Detection Logic based on Product Attributes if no direct guide
+  if has_size_chart == false and guide == blank
+    assign raw_gender = product.metafields.custom.gender.value | default: product.metafields.custom.gender | default: product.metafields.facts.gender.value | default: product.metafields.facts.gender
+    if raw_gender.first != blank
+      assign raw_gender = raw_gender.first
+    endif
+    
+    if raw_gender.label != blank
+      assign gender_str = raw_gender.label
+    elsif raw_gender.name != blank
+      assign gender_str = raw_gender.name
+    elsif raw_gender.title != blank
+      assign gender_str = raw_gender.title
+    elsif raw_gender.value != blank
+      assign gender_str = raw_gender.value
+    else
+      assign gender_str = raw_gender
+    endif
+
+    assign g = gender_str | default: '' | handleize
+    assign v = product.vendor | handleize
+    assign t = product.type | handleize
+
+    # Gender aliases (e.g. mens <-> male, womens <-> female)
+    assign g_alt = g
+    if g == 'mens' or g == 'men'
+      assign g_alt = 'male'
+    elsif g == 'male'
+      assign g_alt = 'mens'
+    elsif g == 'womens' or g == 'women'
+      assign g_alt = 'female'
+    elsif g == 'female'
+      assign g_alt = 'womens'
+    endif
+
+    # Singular / Plural product type alias (e.g. glove <-> gloves, shoe <-> shoes)
+    assign t_alt = t
+    if t != blank
+      assign t_size = t.size
+      assign last_char = t | slice: -1, 1
+      if last_char == 's' and t_size > 1
+        assign t_len = t_size | minus: 1
+        assign t_alt = t | slice: 0, t_len
+      else
+        assign t_alt = t | append: 's'
+      endif
+    endif
+
+    # Key Attempt 1: gender-vendor-type
+    if guide == blank and g != blank and v != blank and t != blank
+      assign k = g | append: '-' | append: v | append: '-' | append: t
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    if guide == blank and g_alt != blank and v != blank and t != blank
+      assign k = g_alt | append: '-' | append: v | append: '-' | append: t
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    if guide == blank and g != blank and v != blank and t_alt != blank
+      assign k = g | append: '-' | append: v | append: '-' | append: t_alt
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    if guide == blank and g_alt != blank and v != blank and t_alt != blank
+      assign k = g_alt | append: '-' | append: v | append: '-' | append: t_alt
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    # Key Attempt 2: vendor-type
+    if guide == blank and v != blank and t != blank
+      assign k = v | append: '-' | append: t
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    if guide == blank and v != blank and t_alt != blank
+      assign k = v | append: '-' | append: t_alt
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    # Key Attempt 3: gender-type
+    if guide == blank and g != blank and t != blank
+      assign k = g | append: '-' | append: t
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    if guide == blank and g_alt != blank and t != blank
+      assign k = g_alt | append: '-' | append: t
+      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    endif
+
+    # Key Attempt 4: product type only
+    if guide == blank and t != blank
+      assign guide = shop.metaobjects.size_guide[t] | default: shop.metaobjects.size_chart[t] | default: shop.metaobjects.size_guides[t]
+    endif
+
+    if guide == blank and t_alt != blank
+      assign guide = shop.metaobjects.size_guide[t_alt] | default: shop.metaobjects.size_chart[t_alt] | default: shop.metaobjects.size_guides[t_alt]
+    endif
+  endif
+
+  # 3. Extract content from Metaobject entry (guide) if found
+  if guide != blank
+    assign has_size_chart = true
+    assign meta_img = guide.size_guide_image.value | default: guide.image.value | default: guide.size_guide_image | default: guide.image | default: guide.size_chart_image.value | default: guide.size_chart_image | default: guide.size_chart.value | default: guide.size_chart | default: guide.size_guide_file.value | default: guide.size_guide_file | default: guide.size_chart_file.value | default: guide.size_chart_file | default: guide.file.value | default: guide.file | default: guide.photo.value | default: guide.photo | default: guide.picture.value | default: guide.picture
+
+    if meta_img != blank
+      assign is_image = true
+      assign size_chart_image = meta_img
+    else
+      assign meta_text = guide.content.value | default: guide.content | default: guide.details.value | default: guide.details | default: guide.description.value | default: guide.description | default: guide.text.value | default: guide.text | default: guide.html.value | default: guide.html
+      if meta_text != blank
+        assign size_chart_details = meta_text
+      endif
+    endif
+  endif
+
+  # 2. Theme settings / metafield fallbacks if no Metaobject found
+  if has_size_chart == false
+    if size_chart_type == 'metafield' or product.metafields.custom.size_chart != blank
+      if product.metafields.custom.size_chart
+        assign has_size_chart = true
+        assign size_chart_metafield = product.metafields.custom.size_chart
+        assign size_chart_value = size_chart_metafield.value | default: size_chart_metafield
+
+        if size_chart_metafield.type == 'file_reference' or size_chart_value.width != blank or size_chart_value.aspect_ratio != blank or size_chart_value.src != blank
+          assign is_image = true
+          assign size_chart_image = size_chart_value
+        else
+          capture size_chart_str
+            echo size_chart_value
+          endcapture
+          assign size_chart_str_clean = size_chart_str | strip
+          if size_chart_str_clean contains 'http' or size_chart_str_clean contains '//cdn.shopify' or size_chart_str_clean contains '/files/' or size_chart_str_clean contains '.jpg' or size_chart_str_clean contains '.png' or size_chart_str_clean contains '.webp'
+            assign is_image_url = true
+            assign size_chart_image_url = size_chart_str_clean
+          else
+            assign size_chart_details = size_chart_value
+          endif
+        endif
+      endif
+    elsif size_chart_type == 'image'
+      if bl_stts.size_chart_image != blank
+        assign has_size_chart = true
+        assign is_image = true
+        assign size_chart_image = bl_stts.size_chart_image
+      endif
+    elsif size_chart_type == 'page'
+      if bl_stts.size_chart_page != blank
+        assign has_size_chart = true
+        assign size_chart_heading = bl_stts.size_chart_page.title
+        assign size_chart_details = bl_stts.size_chart_page.content
+      endif
+    endif
   endif
 -%}
 

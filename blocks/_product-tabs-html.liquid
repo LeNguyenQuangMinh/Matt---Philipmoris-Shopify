@@ -67,7 +67,19 @@
           assign mf_type = target_metafield.type
           assign mf_val = target_metafield.value | default: target_metafield
 
-          if mf_type == 'file_reference' or mf_val.media_type == 'image' or mf_val.width != blank or mf_val.aspect_ratio != blank
+          # Check if Metaobject Reference (e.g. Size Guide)
+          assign meta_img = mf_val.size_guide_image.value | default: mf_val.image.value | default: mf_val.size_guide_image | default: mf_val.image | default: mf_val.size_chart_image.value | default: mf_val.size_chart_image | default: mf_val.size_chart.value | default: mf_val.size_chart | default: mf_val.size_guide_file.value | default: mf_val.size_guide_file | default: mf_val.file.value | default: mf_val.file
+          assign meta_text = mf_val.content.value | default: mf_val.content | default: mf_val.details.value | default: mf_val.details | default: mf_val.description.value | default: mf_val.description | default: mf_val.text.value | default: mf_val.text
+
+          if meta_img != blank
+            echo '<div class="tab-media-image center flex justify-center w-full">'
+            echo meta_img | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'tab-image w-full h-auto object-contain m-auto', widths: '375, 550, 750, 1100, 1400', alt: title
+            echo '</div>'
+          elsif meta_text != blank
+            echo '<div class="rte w-full">'
+            echo meta_text
+            echo '</div>'
+          elsif mf_type == 'file_reference' or mf_val.media_type == 'image' or mf_val.width != blank or mf_val.aspect_ratio != blank
             echo '<div class="tab-media-image">'
             if mf_val.width != blank
               echo mf_val | image_url: width: 1200 | image_tag: loading: 'lazy', class: 'tab-image width-full height-auto'
@@ -166,6 +178,35 @@
             endif
           endif
         endcapture
+      elsif key_raw == 'size_guide' or key_raw == 'custom.size_guide' or key_raw == 'size_chart' or key_raw == 'custom.size_chart'
+        # Run Auto-detection fallback for size guide
+        assign raw_gender = product.metafields.custom.gender.value | default: product.metafields.custom.gender
+        assign g = raw_gender.label | default: raw_gender.name | default: raw_gender.title | default: raw_gender.value | default: raw_gender | handleize
+        assign v = product.vendor | handleize
+        assign t = product.type | handleize
+        assign auto_guide = nil
+        if g != blank and v != blank and t != blank
+          assign k = g | append: '-' | append: v | append: '-' | append: t
+          assign auto_guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k]
+        endif
+        if auto_guide == blank and v != blank and t != blank
+          assign k = v | append: '-' | append: t
+          assign auto_guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k]
+        endif
+        if auto_guide == blank and t != blank
+          assign auto_guide = shop.metaobjects.size_guide[t] | default: shop.metaobjects.size_chart[t]
+        endif
+
+        if auto_guide != blank
+          assign auto_img = auto_guide.size_guide_image.value | default: auto_guide.image.value | default: auto_guide.size_guide_image | default: auto_guide.image | default: auto_guide.size_chart_image.value | default: auto_guide.file.value | default: auto_guide.file
+          if auto_img != blank
+            capture tab_content_output
+              echo '<div class="tab-media-image center flex justify-center w-full">'
+              echo auto_img | image_url: width: 1400 | image_tag: loading: 'lazy', class: 'tab-image w-full h-auto object-contain m-auto', widths: '375, 550, 750, 1100, 1400', alt: title
+              echo '</div>'
+            endcapture
+          endif
+        endif
       endif
     endif
   endif

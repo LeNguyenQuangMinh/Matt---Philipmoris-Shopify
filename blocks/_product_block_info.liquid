@@ -26,25 +26,46 @@
   assign stock_management = variant.inventory_management
 
   assign stock_status_class = "in-stock"
-  assign stock_display_text = ""
+  assign stock_display_html = ""
+
+  assign high_text_setting = block.settings.high_stock_text | default: "5+ In Stock - Available for immediate despatch"
+  assign low_text_setting = block.settings.low_stock_text | default: "Available for immediate despatch"
+  if low_text_setting == blank or low_text_setting contains 'left in stock' or low_text_setting contains 'Only'
+    assign low_text_setting = "Available for immediate despatch"
+  endif
+  assign out_text_setting = block.settings.out_of_stock_text | default: "Out of Stock"
 
   if variant.available == false
     assign stock_status_class = "out-of-stock"
-    assign stock_display_text = block.settings.out_of_stock_text | default: "Out of Stock"
-  elsif stock_management == blank or stock_policy == 'continue'
+    capture stock_display_html
+      echo '<span class="stock-prefix">' | append: out_text_setting | append: '</span>'
+    endcapture
+  elsif stock_management == blank or stock_policy == 'continue' or stock_qty > threshold
     assign stock_status_class = "in-stock"
-    assign stock_display_text = block.settings.high_stock_text | default: "5+ In Stock - Available for immediate despatch"
-  elsif stock_qty > threshold
-    assign stock_status_class = "in-stock"
-    assign stock_display_text = block.settings.high_stock_text | default: "5+ In Stock - Available for immediate despatch"
-    assign stock_display_text = stock_display_text | replace: "[qty]", stock_qty
+    assign formatted_high = high_text_setting | replace: "[qty]", stock_qty
+    if formatted_high contains '-'
+      assign parts = formatted_high | split: '-'
+      assign prefix_part = parts[0] | append: '-'
+      assign suffix_part = formatted_high | remove_first: parts[0] | remove_first: '-'
+      capture stock_display_html
+        echo '<span class="stock-prefix">' | append: prefix_part | append: '</span><span class="stock-suffix">' | append: suffix_part | append: '</span>'
+      endcapture
+    else
+      capture stock_display_html
+        echo '<span class="stock-prefix">' | append: formatted_high | append: '</span>'
+      endcapture
+    endif
   elsif stock_qty > 0
     assign stock_status_class = "low-stock"
-    assign stock_display_text = block.settings.low_stock_text | default: "Only [qty] left in stock - Order soon!"
-    assign stock_display_text = stock_display_text | replace: "[qty]", stock_qty
+    assign formatted_low = low_text_setting | replace: "[qty]", stock_qty
+    capture stock_display_html
+      echo '<span class="stock-suffix">' | append: formatted_low | append: '</span>'
+    endcapture
   else
     assign stock_status_class = "out-of-stock"
-    assign stock_display_text = block.settings.out_of_stock_text | default: "Out of Stock"
+    capture stock_display_html
+      echo '<span class="stock-prefix">' | append: out_text_setting | append: '</span>'
+    endcapture
   endif
 -%}
 
@@ -68,15 +89,20 @@
 .productView-info-value.stock-info-value {
     grid-column: 1 / -1;
     font-weight: 500;
+    color: rgba(var(--color-foreground), 0.9);
 }
-.productView-info-value.stock-info-value.in-stock {
-    color: #46952e;
+.productView-info-value.stock-info-value .stock-suffix {
+    color: rgba(var(--color-foreground), 0.9);
 }
-.productView-info-value.stock-info-value.low-stock {
-    color: #e67e22;
+.productView-info-value.stock-info-value.in-stock .stock-prefix {
+    color: {{ block.settings.in_stock_color | default: '#46952e' }};
 }
+.productView-info-value.stock-info-value.low-stock .stock-prefix {
+    color: {{ block.settings.low_stock_color | default: '#e67e22' }};
+}
+.productView-info-value.stock-info-value.out-of-stock .stock-prefix,
 .productView-info-value.stock-info-value.out-of-stock {
-    color: #d9534f;
+    color: {{ block.settings.out_of_stock_color | default: '#d9534f' }};
 }
 </style>
 
@@ -93,12 +119,12 @@
         <dd class="productView-info-value stock-info-value {{ stock_status_class }}"
             data-stock-threshold="{{ threshold }}"
             data-high-stock-text="{{ block.settings.high_stock_text | default: '5+ In Stock - Available for immediate despatch' | escape }}"
-            data-low-stock-text="{{ block.settings.low_stock_text | default: 'Only [qty] left in stock - Order soon!' | escape }}"
+            data-low-stock-text="{{ low_text_setting | escape }}"
             data-untracked-stock-text="{{ block.settings.high_stock_text | default: '5+ In Stock - Available for immediate despatch' | escape }}"
             data-out-of-stock-text="{{ block.settings.out_of_stock_text | default: 'Out of Stock' | escape }}">
             <span class="custom-product-stock" data-stock-left=""></span>
             <span class="custom-instock-text"></span>
-            <span class="stock-text">{{ stock_display_text }}</span>
+            <span class="stock-text">{{ stock_display_html }}</span>
         </dd>
     {% endif %}
 
@@ -130,7 +156,10 @@
       stockElements.forEach(el => {
         const threshold = parseInt(el.dataset.stockThreshold, 10) || 5;
         const highText = el.dataset.highStockText || '5+ In Stock - Available for immediate despatch';
-        const lowText = el.dataset.lowStockText || 'Only [qty] left in stock - Order soon!';
+        let lowText = el.dataset.lowStockText || 'Available for immediate despatch';
+        if (lowText.includes('left in stock') || lowText.includes('Only')) {
+          lowText = 'Available for immediate despatch';
+        }
         const untrackedText = el.dataset.untrackedStockText || '5+ In Stock - Available for immediate despatch';
         const outText = el.dataset.outOfStockText || 'Out of Stock';
 
@@ -142,21 +171,34 @@
 
         el.classList.remove('in-stock', 'low-stock', 'out-of-stock');
 
+        function formatStockHtml(textStr, isLow) {
+          if (isLow) {
+            return `<span class="stock-suffix">${textStr}</span>`;
+          }
+          if (textStr.includes('-')) {
+            const hyphenIdx = textStr.indexOf('-');
+            const prefixStr = textStr.substring(0, hyphenIdx + 1);
+            const suffixStr = textStr.substring(hyphenIdx + 1);
+            return `<span class="stock-prefix">${prefixStr}</span><span class="stock-suffix">${suffixStr}</span>`;
+          }
+          return `<span class="stock-prefix">${textStr}</span>`;
+        }
+
         if (!available) {
           el.classList.add('out-of-stock');
-          stockTextEl.textContent = outText;
+          stockTextEl.innerHTML = formatStockHtml(outText, false);
         } else if (!management || policy === 'continue') {
           el.classList.add('in-stock');
-          stockTextEl.textContent = untrackedText;
+          stockTextEl.innerHTML = formatStockHtml(untrackedText, false);
         } else if (qty > threshold) {
           el.classList.add('in-stock');
-          stockTextEl.textContent = highText.replace('[qty]', qty);
+          stockTextEl.innerHTML = formatStockHtml(highText.replace('[qty]', qty), false);
         } else if (qty > 0) {
           el.classList.add('low-stock');
-          stockTextEl.textContent = lowText.replace('[qty]', qty);
+          stockTextEl.innerHTML = formatStockHtml(lowText.replace('[qty]', qty), true);
         } else {
           el.classList.add('out-of-stock');
-          stockTextEl.textContent = outText;
+          stockTextEl.innerHTML = formatStockHtml(outText, false);
         }
       });
     }
@@ -213,14 +255,32 @@
       "type": "inline_richtext",
       "id": "low_stock_text",
       "label": "Low Stock Text (Stock <= Threshold)",
-      "default": "Only [qty] left in stock - Order soon!",
-      "info": "Use [qty] tag to dynamically insert remaining stock quantity (e.g. Only 3 left in stock)"
+      "default": "Available for immediate despatch",
+      "info": "Use [qty] tag if you want to dynamically insert remaining stock quantity"
     },
     {
       "type": "inline_richtext",
       "id": "out_of_stock_text",
       "label": "Out of Stock Text",
       "default": "Out of Stock"
+    },
+    {
+      "type": "color",
+      "id": "in_stock_color",
+      "label": "In-Stock Color",
+      "default": "#46952e"
+    },
+    {
+      "type": "color",
+      "id": "low_stock_color",
+      "label": "Low-Stock Color",
+      "default": "#e67e22"
+    },
+    {
+      "type": "color",
+      "id": "out_of_stock_color",
+      "label": "Out of Stock Color",
+      "default": "#d9534f"
     },
     {
       "type": "header",
