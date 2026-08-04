@@ -49,7 +49,7 @@
         </side-drawer-opener>
       {%- endif -%}
     </div>
-
+    {% content_for 'block', id: 'static-blog-post-group-basic', type: 'group' %}
     <div class="blog-posts__main grid">
       {% content_for 'block', id: 'static-blog-post-sidebar', type: '_blog-post-sidebar' %}
       {%- paginate blog.articles by limit -%}

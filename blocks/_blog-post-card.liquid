@@ -161,6 +161,67 @@
         {{ description }}
         {{ button }}
       </div>
+    {% when 'custom' %}
+      <div {{arttributes_content}}>
+        <a
+          href="{{ article.url }}"
+          class="decoration-none block"
+        >
+          {{ title }}
+        </a>
+
+        {{ details }}
+
+        {%- if block_settings.show_tags and article.tags.size > 0 -%}
+          {%- if block_settings.tags_custom_padding_button -%}
+            {%- assign tags_btn_padding_block = block_settings.tags_button_padding_block | times: 0.1 | append: 'rem' -%}
+            {%- assign tags_btn_padding_inline = block_settings.tags_button_padding_inline | times: 0.1 | append: 'rem' -%}
+            {%- assign tags_btn_padding_style = 'padding: ' | append: tags_btn_padding_block | append: ' ' | append: tags_btn_padding_inline | append: ' !important;' -%}
+          {%- else -%}
+            {%- assign tags_btn_padding_style = nil -%}
+          {%- endif -%}
+
+          <div class="blog-post-card__tags flex flex-wrap items-center justify-center gap-xs">
+            {%- for tag in article.tags -%}
+              {%- assign tag_url = blog.url | append: '/tagged/' | append: tag | handle -%}
+              {% render 'button',
+                link: tag_url,
+                label: tag,
+                style_class: block_settings.tags_style_class,
+                button_style: block_settings.tags_button_style,
+                button_border_width: block_settings.tags_button_border_width,
+                button_border_radius: block_settings.tags_button_border_radius,
+                button_type_font: block_settings.tags_button_type_font,
+                button_type_size: block_settings.tags_button_type_size,
+                button_type_line_height: block_settings.tags_button_type_line_height,
+                button_type_letter_spacing: block_settings.tags_button_type_letter_spacing,
+                button_font_weight: block_settings.tags_button_font_weight,
+                button_text_case: block_settings.tags_button_text_case,
+                button_type_alignment: block_settings.tags_button_type_alignment,
+                buttons_shadow_horizontal_offset: block_settings.tags_buttons_shadow_horizontal_offset,
+                buttons_shadow_vertical_offset: block_settings.tags_buttons_shadow_vertical_offset,
+                buttons_shadow_blur: block_settings.tags_buttons_shadow_blur,
+                style: tags_btn_padding_style
+              %}
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+      </div>
+
+      {%- if article.image -%}
+        <div class="blog-post-card__image-container">
+          <a href="{{ article.url }}">
+            {{ image }}
+          </a>
+        </div>
+      {%- endif -%}
+
+      {%- if description != blank or button != blank -%}
+        <div {{arttributes_content}}>
+          {{ description }}
+          {{ button }}
+        </div>
+      {%- endif -%}
   {% endcase %}
 </div>
 
@@ -200,6 +261,10 @@
         {
           "value": "balance",
           "label": "t:options.balance"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
         }
       ],
       "default": "classic"
@@ -340,6 +405,321 @@
       "step": 1,
       "unit": "px",
       "default": 0
+    },
+    {
+      "type": "header",
+      "content": "Tags",
+      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_tags",
+      "label": "t:settings.show_tags",
+      "default": true,
+      "visible_if": "{{ block.settings.layout_type == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "tags_style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        },
+        {
+          "value": "link",
+          "label": "t:options.link"
+        }
+      ],
+      "default": "button-secondary",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags }}"
+    },
+    {
+      "type": "select",
+      "id": "tags_button_style",
+      "label": "t:settings.type",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "outline",
+          "label": "t:options.outline"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "custom"
+    },
+    {
+      "type": "range",
+      "id": "tags_button_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "tags_button_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_radius",
+      "default": 4,
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "tags_button_type_font",
+      "label": "t:settings.font",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "select",
+      "id": "tags_button_type_size",
+      "label": "t:settings.size",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "15px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        },
+        {
+          "value": "3.2rem",
+          "label": "32px"
+        }
+      ],
+      "default": "1.5rem"
+    },
+    {
+      "type": "select",
+      "id": "tags_button_type_line_height",
+      "label": "t:settings.line_height",
+      "options": [
+        {
+          "value": "tight",
+          "label": "t:options.tight"
+        },
+        {
+          "value": "normal",
+          "label": "t:options.normal"
+        },
+        {
+          "value": "loose",
+          "label": "t:options.loose"
+        }
+      ],
+      "default": "normal",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "tags_button_type_letter_spacing",
+      "label": "t:settings.letter_spacing",
+      "step": 0.1,
+      "min": 0,
+      "max": 1,
+      "unit": "px",
+      "default": 1,
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "tags_button_font_weight",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "tags_button_text_case",
+      "label": "t:settings.button_text_case",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "select",
+      "id": "tags_button_type_alignment",
+      "label": "t:settings.alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "t:options.left"
+        },
+        {
+          "value": "center",
+          "label": "t:options.center"
+        },
+        {
+          "value": "right",
+          "label": "t:options.right"
+        }
+      ],
+      "default": "center",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "tags_buttons_shadow_horizontal_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_horizontal_offset",
+      "default": 0,
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "tags_buttons_shadow_vertical_offset",
+      "min": -12,
+      "max": 12,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.shadow_vertical_offset",
+      "default": 0,
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "tags_buttons_shadow_blur",
+      "min": 0,
+      "max": 20,
+      "step": 2,
+      "unit": "px",
+      "label": "t:settings.shadow_blur",
+      "default": 0,
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_button_style == 'custom' and block.settings.tags_style_class != 'link' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "tags_custom_padding_button",
+      "label": "Custom padding button",
+      "default": false,
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags }}"
+    },
+    {
+      "type": "range",
+      "id": "tags_button_padding_block",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 7,
+      "label": "t:settings.padding_top_bottom",
+      "unit": "px",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_custom_padding_button }}"
+    },
+    {
+      "type": "range",
+      "id": "tags_button_padding_inline",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 34,
+      "label": "t:settings.padding_left_right",
+      "unit": "px",
+      "visible_if": "{{ block.settings.layout_type == 'custom' and block.settings.show_tags and block.settings.tags_custom_padding_button }}"
     }
   ],
   "presets": [

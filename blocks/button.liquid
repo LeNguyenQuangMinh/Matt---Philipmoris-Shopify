@@ -5,7 +5,13 @@
   {%- endcapture -%}
 {%- endif -%}
 
-{% render 'button', link: block.settings.link %}
+{%- if block.settings.custom_padding_button -%}
+  {%- assign btn_padding_block = block.settings.button_padding_block | times: 0.1 | append: 'rem' -%}
+  {%- assign btn_padding_inline = block.settings.button_padding_inline | times: 0.1 | append: 'rem' -%}
+  {%- assign btn_padding_style = 'padding: ' | append: btn_padding_block | append: ' ' | append: btn_padding_inline | append: ' !important;' -%}
+{%- endif -%}
+
+{% render 'button', link: block.settings.link, style: btn_padding_style %}
 
 {% schema %}
 {
@@ -397,6 +403,10 @@
         {
           "value": "1.4rem",
           "label": "14px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "15px"
         },
         {
           "value": "1.6rem",
@@ -961,6 +971,38 @@
       "unit": "px",
       "default": 10,
       "visible_if": "{{ block.settings.width_mobile == 'custom' }}"
+    },
+    {
+      "type": "header",
+      "content": "Button padding"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_padding_button",
+      "label": "Custom padding button",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "button_padding_block",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings.padding_top_bottom",
+      "unit": "px",
+      "visible_if": "{{ block.settings.custom_padding_button }}"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_inline",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 20,
+      "label": "t:settings.padding_left_right",
+      "unit": "px",
+      "visible_if": "{{ block.settings.custom_padding_button }}"
     }
   ],
   "presets": [

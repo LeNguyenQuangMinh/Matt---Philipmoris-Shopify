@@ -31,6 +31,18 @@
   assign shopify_attributes = shopify_attributes | default: block.shopify_attributes
   assign label = label | default: block.settings.label
   assign button_style = button_style | default: block.settings.button_style
+  assign button_border_width = button_border_width | default: block.settings.button_border_width
+  assign button_border_radius = button_border_radius | default: block.settings.button_border_radius
+  assign button_type_font = button_type_font | default: block.settings.button_type_font
+  assign button_type_size = button_type_size | default: block.settings.button_type_size
+  assign button_type_line_height = button_type_line_height | default: block.settings.button_type_line_height
+  assign button_type_letter_spacing = button_type_letter_spacing | default: block.settings.button_type_letter_spacing
+  assign button_font_weight = button_font_weight | default: block.settings.button_font_weight
+  assign button_text_case = button_text_case | default: block.settings.button_text_case
+  assign button_type_alignment = button_type_alignment | default: block.settings.button_type_alignment
+  assign buttons_shadow_horizontal_offset = buttons_shadow_horizontal_offset | default: block.settings.buttons_shadow_horizontal_offset
+  assign buttons_shadow_vertical_offset = buttons_shadow_vertical_offset | default: block.settings.buttons_shadow_vertical_offset
+  assign buttons_shadow_blur = buttons_shadow_blur | default: block.settings.buttons_shadow_blur
   assign wrap = wrap | default: block.settings.wrap
   assign font_style = font_style | default: block.settings.font_style
   assign show_icon_button = show_icon_button | default: block.settings.show_icon_button
@@ -57,7 +69,23 @@
   "
   style="
     {% render 'size-style', settings: block.settings %}
-    {% render 'button-style', settings: block.settings %}
+    {% render 'button-style',
+      settings: block.settings,
+      style_class: style_class,
+      button_style: button_style,
+      button_border_width: button_border_width,
+      button_border_radius: button_border_radius,
+      button_type_font: button_type_font,
+      button_type_size: button_type_size,
+      button_type_line_height: button_type_line_height,
+      button_type_letter_spacing: button_type_letter_spacing,
+      button_font_weight: button_font_weight,
+      button_text_case: button_text_case,
+      button_type_alignment: button_type_alignment,
+      buttons_shadow_horizontal_offset: buttons_shadow_horizontal_offset,
+      buttons_shadow_vertical_offset: buttons_shadow_vertical_offset,
+      buttons_shadow_blur: buttons_shadow_blur
+    %}
     {{ style }}
     {% if style_class == 'link' %}
       {% render 'typography-style', settings: block.settings, button_link: true, font_style: font_style %}
