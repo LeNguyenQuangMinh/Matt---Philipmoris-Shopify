@@ -1,7 +1,4 @@
-{% comment %}
-  {{ 'component-article-card.css' | asset_url | stylesheet_tag }}
-  {{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
-{% endcomment %}
+{{ 'section-main-blog.css' | asset_url | stylesheet_tag }}
 
 {%- liquid
   assign sec_stts = section.settings
@@ -16,6 +13,7 @@
       section--{{ sec_stts.section_width }}
       color-{{ sec_stts.color_scheme }}
       blog-posts
+      {% if sec_stts.enable_drawer_sidebar %}blog-posts--drawer-mode{% endif %}
       spacing-style
       size-style
     "
@@ -30,15 +28,27 @@
       {% render 'spacing-style', settings: sec_stts %}
     "
   >
-    {% content_for 'block', type: '_blog-post-header', id: 'blog-post-header' %}
+    <div class="blog-posts-header-wrapper flex justify-between items-center relative">
+      <div class="blog-header-left flex-1">
+        {% content_for 'block', type: '_blog-post-header', id: 'blog-post-header' %}
+      </div>
 
-    <side-drawer-opener class="toggle-sidebar" data-side-drawer="#Drawer-Blog-Sidebar">
-      <button class="button--drawer focus-inset">
-        <span class="svg-wrapper">
-          {% render 'icon-sidebar' %}
-        </span>
-      </button>
-    </side-drawer-opener>
+      {%- if sec_stts.enable_drawer_sidebar -%}
+        <side-drawer-opener class="blog-filter-opener" data-side-drawer="#Drawer-Blog-Sidebar">
+          <button class="button-show-filters focus-inset" type="button">
+            <span>{{ sec_stts.drawer_button_label | default: 'SHOW FILTERS +' }}</span>
+          </button>
+        </side-drawer-opener>
+      {%- else -%}
+        <side-drawer-opener class="toggle-sidebar" data-side-drawer="#Drawer-Blog-Sidebar">
+          <button class="button--drawer focus-inset">
+            <span class="svg-wrapper">
+              {% render 'icon-sidebar' %}
+            </span>
+          </button>
+        </side-drawer-opener>
+      {%- endif -%}
+    </div>
 
     <div class="blog-posts__main grid">
       {% content_for 'block', id: 'static-blog-post-sidebar', type: '_blog-post-sidebar' %}
@@ -156,6 +166,24 @@
     {
       "type": "header",
       "content": "t:content.sidebar_layout"
+    },
+    {
+      "type": "checkbox",
+      "id": "enable_drawer_sidebar",
+      "label": "Enable filter drawer (Off-canvas)",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "drawer_button_label",
+      "label": "Filter button label",
+      "default": "SHOW FILTERS +"
+    },
+    {
+      "type": "text",
+      "id": "drawer_title",
+      "label": "Filter drawer heading",
+      "default": "BLOGS"
     },
     {
       "type": "range",
@@ -335,3 +363,4 @@
   ]
 }
 {% endschema %}
+

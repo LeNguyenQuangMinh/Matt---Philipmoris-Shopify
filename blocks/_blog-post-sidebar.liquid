@@ -2,19 +2,29 @@
   {% content_for 'blocks' %}
 {%- endcapture -%}
 
+{%- liquid
+  assign enable_drawer = section.settings.enable_drawer_sidebar
+-%}
+
 <side-drawer
-  class="blog-posts__sidebar-drawer drawer__container"
+  class="blog-posts__sidebar-drawer drawer__container{% if enable_drawer %} blog-posts__sidebar-drawer--desktop-drawer{% endif %}"
   id="Drawer-Blog-Sidebar"
   data-drawer-direction="left"
   data-moved="false"
 >
-  <div id="Drawer-Overlay-Blog-Sidebar" class="drawer__overlay fixed inset-0 cursor-pointer lg:none"></div>
+  <div id="Drawer-Overlay-Blog-Sidebar" class="drawer__overlay fixed inset-0 cursor-pointer{% unless enable_drawer %} lg:none{% endunless %}"></div>
   <div class="blog-posts__sidebar-container" data-drawer-content>
     <div class="blog-posts__sidebar flex flex-column hide-scrollbar">
-      <div class="drawer__header flex justify-between items-center relative lg:none">
-        <h2 class="drawer__heading break m-0 h5">{{ 'content.sidebar' | t }}</h2>
+      <div class="drawer__header flex justify-between items-center relative{% unless enable_drawer %} lg:none{% endunless %}">
+        <h2 class="drawer__heading break m-0 h5">
+          {%- if section.settings.drawer_title != blank -%}
+            {{ section.settings.drawer_title }}
+          {%- else -%}
+            BLOGS
+          {%- endif -%}
+        </h2>
         <button
-          class="drawer__close block t-button bor-none rounded-full cursor-pointer"
+          class="drawer__close block t-button bor-none cursor-pointer drawer__close--square"
           type="button"
           onclick="this.closest('side-drawer').close()"
           aria-label="{{ 'accessibility.close_dialog' | t }}"
@@ -22,7 +32,20 @@
           {{- 'icon-close.svg' | inline_asset_content -}}
         </button>
       </div>
-      {{ children }}
+      <div class="drawer__body-content flex flex-column">
+        {{ children }}
+      </div>
+      {%- if enable_drawer -%}
+        <div class="drawer__footer">
+          <button
+            type="button"
+            class="button--drawer-close-footer"
+            onclick="this.closest('side-drawer').close()"
+          >
+            CLOSE
+          </button>
+        </div>
+      {%- endif -%}
     </div>
   </div>
 </side-drawer>
