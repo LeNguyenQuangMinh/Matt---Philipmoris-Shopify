@@ -1,0 +1,351 @@
+{% doc %}
+  Renders a single Blog Tag Spotlight item with customizable product card blocks.
+{% enddoc %}
+
+{%- liquid
+  assign b_stts = block.settings
+  assign tag_handle = b_stts.tag_name | downcase | handleize
+  assign active_tag_handle = current_tags.first | downcase | handleize
+  assign article_obj = b_stts.article
+
+  if article_obj == blank and tag_handle != blank
+    for article in blog.articles
+      for t in article.tags
+        assign t_handle = t | handleize
+        if t_handle == tag_handle
+          assign article_obj = article
+          break
+        endif
+      endfor
+      if article_obj != blank
+        break
+      endif
+    endfor
+  endif
+  
+  assign spotlight_image = b_stts.image | default: article_obj.image
+  assign spotlight_title = b_stts.title | default: article_obj.title
+  assign spotlight_author = b_stts.author | default: article_obj.author
+  
+  if b_stts.date != blank
+    assign spotlight_date = b_stts.date
+  elsif article_obj != blank
+    assign spotlight_date = article_obj.published_at | date: "%d/%m/%Y"
+  else
+    assign spotlight_date = nil
+  endif
+
+  assign spotlight_link = b_stts.link | default: article_obj.url
+-%}
+
+<div 
+  class="blog-tag-spotlight-item blog-tag-spotlight blog-tag-spotlight--media-{{ b_stts.media_position }}" 
+  data-tag="{{ tag_handle }}"
+  data-is-default="{{ b_stts.is_default }}"
+  style="display: none;"
+  {{ block.shopify_attributes }}
+>
+  {%- comment -%} Left Column: Media Banner {%- endcomment -%}
+  <div class="blog-tag-spotlight__media-col">
+    <a href="{{ spotlight_link | default: '#' }}" class="blog-tag-spotlight__media-link" aria-label="{{ spotlight_title | escape }}">
+      {%- if spotlight_image != blank -%}
+        {{ spotlight_image | image_url: width: 1200 | image_tag: 
+          loading: 'lazy',
+          sizes: '(min-width: 990px) 55vw, 100vw',
+          widths: '375, 550, 750, 1100, 1500',
+          class: 'blog-tag-spotlight__image' 
+        }}
+      {%- else -%}
+        {{ 'lifestyle-1' | placeholder_svg_tag: 'blog-tag-spotlight__image placeholder-svg' }}
+      {%- endif -%}
+    </a>
+  </div>
+
+  {%- comment -%} Right Column: Information & Related Products {%- endcomment -%}
+  <div class="blog-tag-spotlight__content-col">
+    {%- comment -%} Header Tag Pills {%- endcomment -%}
+    {%- if b_stts.tags_list != blank -%}
+      {%- assign tag_array = b_stts.tags_list | split: ',' -%}
+      <div class="blog-tag-spotlight__tags">
+        {%- for tag_item in tag_array -%}
+          {%- assign clean_tag = tag_item | strip -%}
+          {%- if clean_tag != blank -%}
+            <span class="blog-tag-spotlight__tag-pill">{{ clean_tag }}</span>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+    {%- elsif article_obj != blank and article_obj.tags.size > 0 -%}
+      <div class="blog-tag-spotlight__tags">
+        {%- for tag_item in article_obj.tags -%}
+          <a href="{{ blog.url }}/tagged/{{ tag_item | handleize }}" class="blog-tag-spotlight__tag-pill">{{ tag_item }}</a>
+        {%- endfor -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Main Title {%- endcomment -%}
+    {%- if spotlight_title != blank -%}
+      <h2 class="blog-tag-spotlight__title">
+        {%- if spotlight_link != blank -%}
+          <a href="{{ spotlight_link }}">{{ spotlight_title }}</a>
+        {%- else -%}
+          {{ spotlight_title }}
+        {%- endif -%}
+      </h2>
+    {%- endif -%}
+
+    {%- comment -%} Meta Author & Date {%- endcomment -%}
+    {%- if spotlight_author != blank or spotlight_date != blank -%}
+      <div class="blog-tag-spotlight__meta">
+        {%- if spotlight_author != blank -%}
+          <p class="blog-tag-spotlight__author">{{ 'blogs.article.posted_by' | t: author: spotlight_author | default: 'Posted by ' | append: spotlight_author }}</p>
+        {%- endif -%}
+        {%- if spotlight_date != blank -%}
+          <p class="blog-tag-spotlight__date">{{ spotlight_date }}</p>
+        {%- endif -%}
+      </div>
+    {%- endif -%}
+
+    {%- comment -%} Related Products Section {%- endcomment -%}
+    <div class="blog-tag-spotlight__products-wrapper">
+      {%- if b_stts.products_heading != blank -%}
+        <h3 class="blog-tag-spotlight__products-heading">{{ b_stts.products_heading }}</h3>
+      {%- endif -%}
+
+      {%- liquid
+        assign products_to_show = b_stts.product_list
+        if products_to_show == blank and b_stts.collection != blank
+          assign products_to_show = b_stts.collection.products
+        endif
+        if products_to_show == blank and article_obj != blank
+          if article_obj.metafields.custom.related_products.value != blank
+            assign products_to_show = article_obj.metafields.custom.related_products.value
+          elsif article_obj.metafields.custom.featured_products.value != blank
+            assign products_to_show = article_obj.metafields.custom.featured_products.value
+          endif
+        endif
+        if products_to_show == blank
+          assign lookup_tag = tag_handle
+          if lookup_tag == blank
+            assign lookup_tag = active_tag_handle
+          endif
+          if lookup_tag != blank and collections[lookup_tag] != blank
+            assign products_to_show = collections[lookup_tag].products
+          endif
+        endif
+      -%}
+
+      {%- if products_to_show != blank -%}
+        <div class="blog-tag-spotlight__products-grid">
+          {%- for product_item in products_to_show limit: b_stts.products_limit -%}
+            <div 
+              class="blog-tag-spotlight__product-card-item"
+              style="--card-title-size: {{ b_stts.card_title_size | default: 15 }}px; --card-price-size: {{ b_stts.card_price_size | default: 14 }}px;"
+            >
+              <div class="spotlight-product-card">
+                <div class="spotlight-product-card__media-wrapper ratio-{{ b_stts.card_image_ratio | default: 'square' }}">
+                  <a href="{{ product_item.url }}" class="spotlight-product-card__media-link" aria-label="{{ product_item.title | escape }}">
+                    {%- if product_item.featured_media -%}
+                      {{ product_item.featured_media | image_url: width: 600 | image_tag:
+                        loading: 'lazy',
+                        sizes: '(min-width: 750px) 25vw, 50vw',
+                        widths: '200, 400, 600',
+                        class: 'spotlight-product-card__image'
+                      }}
+                    {%- else -%}
+                      {{ 'product-1' | placeholder_svg_tag: 'spotlight-product-card__image placeholder-svg' }}
+                    {%- endif -%}
+                  </a>
+                  {%- if settings.enable_quick_view -%}
+                    <div class="spotlight-product-card__quickview-overlay">
+                      {% render 'quick-view-button', card_product: product_item, class_button: 'spotlight-quickview-btn' %}
+                    </div>
+                  {%- endif -%}
+                </div>
+
+                {%- if b_stts.show_vendor != false and product_item.vendor != blank -%}
+                  <div class="spotlight-product-card__vendor">
+                    {%- liquid
+                      assign vendor_handle = product_item.vendor | handle
+                      assign vendor_img_png = vendor_handle | append: '.png'
+                      assign vendor_img_jpg = vendor_handle | append: '.jpg'
+                      assign vendor_img_svg = vendor_handle | append: '.svg'
+                      assign vendor_img = images[vendor_img_png] | default: images[vendor_img_jpg] | default: images[vendor_img_svg]
+                    -%}
+                    {%- if vendor_img != blank -%}
+                      <img src="{{ vendor_img | image_url: width: 200 }}" alt="{{ product_item.vendor | escape }}" class="spotlight-product-card__vendor-img" width="{{ vendor_img.width }}" height="{{ vendor_img.height }}">
+                    {%- else -%}
+                      <span class="spotlight-product-card__vendor-text">{{ product_item.vendor }}</span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+
+                <h4 class="spotlight-product-card__title">
+                  <a href="{{ product_item.url }}">{{ product_item.title }}</a>
+                </h4>
+
+                <div class="spotlight-product-card__price">
+                  {% render 'price-product', product_resource: product_item, show_savings: b_stts.show_savings %}
+                </div>
+              </div>
+            </div>
+          {%- endfor -%}
+        </div>
+      {%- endif -%}
+    </div>
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Spotlight Tag Item",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "card-product-flex"
+    },
+    {
+      "type": "@theme"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Tag Identification"
+    },
+    {
+      "type": "text",
+      "id": "tag_name",
+      "label": "Tag handle / name",
+      "info": "Enter the exact tag name (e.g. harkila, news-and-events). Leave empty if this is the default block."
+    },
+    {
+      "type": "checkbox",
+      "id": "is_default",
+      "label": "Set as Default Spotlight Item",
+      "default": false,
+      "info": "This item displays when no tag filter is active or when no tag matches."
+    },
+    {
+      "type": "header",
+      "content": "Banner & Article Content"
+    },
+    {
+      "type": "article",
+      "id": "article",
+      "label": "Select Featured Article (Optional)",
+      "info": "Auto-populates image, title, author, and date if left blank."
+    },
+    {
+      "type": "image_picker",
+      "id": "image",
+      "label": "Banner image (Override)"
+    },
+    {
+      "type": "url",
+      "id": "link",
+      "label": "Banner link"
+    },
+    {
+      "type": "text",
+      "id": "tags_list",
+      "label": "Pill tags list (Comma-separated)",
+      "default": "AUTHOR:ISOBEL, HARKILA, NEWS AND EVENTS"
+    },
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Spotlight Title (Override)",
+      "default": "Vinnie Jones In The Country Series 2"
+    },
+    {
+      "type": "text",
+      "id": "author",
+      "label": "Author name (Override)",
+      "default": "Isobel"
+    },
+    {
+      "type": "text",
+      "id": "date",
+      "label": "Publication date (Override)",
+      "default": "6/12/2024"
+    },
+    {
+      "type": "header",
+      "content": "Related Products Settings"
+    },
+    {
+      "type": "text",
+      "id": "products_heading",
+      "label": "Products section heading",
+      "default": "RELATED PRODUCTS"
+    },
+    {
+      "type": "product_list",
+      "id": "product_list",
+      "label": "Featured Products",
+      "limit": 4
+    },
+    {
+      "type": "collection",
+      "id": "collection",
+      "label": "Or Select Collection",
+      "info": "Used if no individual products are selected above."
+    },
+    {
+      "type": "range",
+      "id": "products_limit",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2,
+      "label": "Maximum products to show"
+    },
+    {
+      "type": "header",
+      "content": "Product Card Settings"
+    },
+    {
+      "type": "select",
+      "id": "card_image_ratio",
+      "label": "Image ratio / Tỷ lệ ảnh",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15,
+      "unit": "px",
+      "label": "Title font size (px)"
+    },
+    {
+      "type": "range",
+      "id": "card_price_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px",
+      "label": "Price font size (px)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor / brand logo",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show savings (You save...)",
+      "default": true
+    }
+  ]
+}
+{% endschema %}

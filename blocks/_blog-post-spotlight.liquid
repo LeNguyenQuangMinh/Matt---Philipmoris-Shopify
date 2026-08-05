@@ -1,0 +1,309 @@
+{% doc %}
+  Renders a Blog Tag Spotlight block container that holds dynamic tag spotlight items.
+{% enddoc %}
+
+{{ 'section-blog-tag-spotlight.css' | asset_url | stylesheet_tag }}
+
+{%- liquid
+  assign current_tag = current_tags.first | downcase | handleize
+-%}
+
+<div 
+  class="blog-tag-spotlight-wrapper spacing-style" 
+  data-current-tag="{{ current_tag }}" 
+  style="{% render 'spacing-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+>
+  {%- comment -%} Render manual blocks configured in Theme Editor {%- endcomment -%}
+  {% content_for 'blocks' %}
+
+  {%- comment -%} Automatic Fallback Spotlight (Generated Server-side) {%- endcomment -%}
+  {%- liquid
+    assign auto_article = nil
+    if current_tag != blank
+      for article in blog.articles
+        assign has_active_tag = false
+        assign has_spotlight_tag = false
+        for t in article.tags
+          assign th = t | downcase | handleize
+          if th == current_tag
+            assign has_active_tag = true
+          endif
+          if th == 'spotlight'
+            assign has_spotlight_tag = true
+          endif
+        endfor
+
+        if has_active_tag
+          if has_spotlight_tag
+            assign auto_article = article
+            break
+          elsif auto_article == nil
+            assign auto_article = article
+          endif
+        endif
+      endfor
+    else
+      assign auto_article = blog.articles.first
+    endif
+
+    assign auto_products = nil
+    if auto_article != blank
+      if auto_article.metafields.custom.related_products.value != blank
+        assign auto_products = auto_article.metafields.custom.related_products.value
+      elsif auto_article.metafields.custom.featured_products.value != blank
+        assign auto_products = auto_article.metafields.custom.featured_products.value
+      endif
+    endif
+
+    if auto_products == blank and current_tag != blank and collections[current_tag] != blank
+      assign auto_products = collections[current_tag].products
+    endif
+  -%}
+
+  {%- if auto_article != blank -%}
+    <div 
+      class="blog-tag-spotlight-item blog-tag-spotlight blog-tag-spotlight--auto-generated blog-tag-spotlight--media-{{ block.settings.media_position }}" 
+      data-auto-spotlight="true"
+      style="display: none;"
+    >
+      {%- comment -%} Left Column: Media Banner {%- endcomment -%}
+      <div class="blog-tag-spotlight__media-col">
+        <a href="{{ auto_article.url }}" class="blog-tag-spotlight__media-link" aria-label="{{ auto_article.title | escape }}">
+          {%- if auto_article.image != blank -%}
+            {{ auto_article.image | image_url: width: 1200 | image_tag: 
+              loading: 'lazy',
+              sizes: '(min-width: 990px) 55vw, 100vw',
+              widths: '375, 550, 750, 1100, 1500',
+              class: 'blog-tag-spotlight__image' 
+            }}
+          {%- else -%}
+            {{ 'lifestyle-1' | placeholder_svg_tag: 'blog-tag-spotlight__image placeholder-svg' }}
+          {%- endif -%}
+        </a>
+      </div>
+
+      {%- comment -%} Right Column: Information & Related Products {%- endcomment -%}
+      <div class="blog-tag-spotlight__content-col">
+        {%- if auto_article.tags.size > 0 -%}
+          <div class="blog-tag-spotlight__tags">
+            {%- for tag_item in auto_article.tags -%}
+              <a href="{{ blog.url }}/tagged/{{ tag_item | handleize }}" class="blog-tag-spotlight__tag-pill">{{ tag_item }}</a>
+            {%- endfor -%}
+          </div>
+        {%- endif -%}
+
+        <h2 class="blog-tag-spotlight__title">
+          <a href="{{ auto_article.url }}">{{ auto_article.title }}</a>
+        </h2>
+
+        <div class="blog-tag-spotlight__meta">
+          {%- if auto_article.author != blank -%}
+            <p class="blog-tag-spotlight__author">{{ 'blogs.article.posted_by' | t: author: auto_article.author | default: 'Posted by ' | append: auto_article.author }}</p>
+          {%- endif -%}
+          <p class="blog-tag-spotlight__date">{{ auto_article.published_at | date: "%d/%m/%Y" }}</p>
+        </div>
+
+        {%- if auto_products != blank and auto_products.size > 0 -%}
+          <div class="blog-tag-spotlight__products-wrapper">
+            <h3 class="blog-tag-spotlight__products-heading">RELATED PRODUCTS</h3>
+            <div class="blog-tag-spotlight__products-grid">
+              {%- for product_item in auto_products limit: 2 -%}
+                <div 
+                  class="blog-tag-spotlight__product-card-item"
+                  style="--card-title-size: {{ block.settings.card_title_size | default: 15 }}px; --card-price-size: {{ block.settings.card_price_size | default: 14 }}px;"
+                >
+                  <div class="spotlight-product-card">
+                    <div class="spotlight-product-card__media-wrapper ratio-{{ block.settings.card_image_ratio | default: 'square' }}">
+                      <a href="{{ product_item.url }}" class="spotlight-product-card__media-link" aria-label="{{ product_item.title | escape }}">
+                        {%- if product_item.featured_media -%}
+                          {{ product_item.featured_media | image_url: width: 600 | image_tag:
+                            loading: 'lazy',
+                            sizes: '(min-width: 750px) 25vw, 50vw',
+                            widths: '200, 400, 600',
+                            class: 'spotlight-product-card__image'
+                          }}
+                        {%- else -%}
+                          {{ 'product-1' | placeholder_svg_tag: 'spotlight-product-card__image placeholder-svg' }}
+                        {%- endif -%}
+                      </a>
+                      {%- if settings.enable_quick_view -%}
+                        <div class="spotlight-product-card__quickview-overlay">
+                          {% render 'quick-view-button', card_product: product_item, class_button: 'spotlight-quickview-btn' %}
+                        </div>
+                      {%- endif -%}
+                    </div>
+
+                    {%- if block.settings.show_vendor and product_item.vendor != blank -%}
+                      <div class="spotlight-product-card__vendor">
+                        {%- liquid
+                          assign vendor_handle = product_item.vendor | handle
+                          assign vendor_img_png = vendor_handle | append: '.png'
+                          assign vendor_img_jpg = vendor_handle | append: '.jpg'
+                          assign vendor_img_svg = vendor_handle | append: '.svg'
+                          assign vendor_img = images[vendor_img_png] | default: images[vendor_img_jpg] | default: images[vendor_img_svg]
+                        -%}
+                        {%- if vendor_img != blank -%}
+                          <img src="{{ vendor_img | image_url: width: 200 }}" alt="{{ product_item.vendor | escape }}" class="spotlight-product-card__vendor-img" width="{{ vendor_img.width }}" height="{{ vendor_img.height }}">
+                        {%- else -%}
+                          <span class="spotlight-product-card__vendor-text">{{ product_item.vendor }}</span>
+                        {%- endif -%}
+                      </div>
+                    {%- endif -%}
+
+                    <h4 class="spotlight-product-card__title">
+                      <a href="{{ product_item.url }}">{{ product_item.title }}</a>
+                    </h4>
+
+                    <div class="spotlight-product-card__price">
+                      {% render 'price-product', product_resource: product_item, show_savings: block.settings.show_savings %}
+                    </div>
+                  </div>
+                </div>
+              {%- endfor -%}
+            </div>
+          </div>
+        {%- endif -%}
+      </div>
+    </div>
+  {%- endif -%}
+</div>
+
+<script>
+  (function() {
+    const wrapper = document.currentScript.previousElementSibling;
+    if (!wrapper) return;
+    const currentTag = wrapper.getAttribute('data-current-tag');
+    const items = wrapper.querySelectorAll('.blog-tag-spotlight-item:not(.blog-tag-spotlight--auto-generated)');
+    const autoItem = wrapper.querySelector('.blog-tag-spotlight--auto-generated');
+    let matched = false;
+
+    items.forEach(item => {
+      const itemTag = item.getAttribute('data-tag');
+      const isDefault = item.getAttribute('data-is-default') === 'true';
+
+      if (currentTag && itemTag && itemTag === currentTag) {
+        item.style.display = 'flex';
+        matched = true;
+      } else if (!currentTag && isDefault && !matched) {
+        item.style.display = 'flex';
+        matched = true;
+      } else {
+        item.style.display = 'none';
+      }
+    });
+
+    if (!matched && autoItem) {
+      autoItem.style.display = 'flex';
+      matched = true;
+    }
+
+    if (!matched && window.Shopify && window.Shopify.designMode && items.length > 0) {
+      items[0].style.display = 'flex';
+    }
+  })();
+</script>
+
+{% schema %}
+{
+  "name": "Blog Tag Spotlight",
+  "tag": null,
+  "blocks": [
+    {
+      "type": "_blog-tag-spotlight-item"
+    }
+  ],
+  "settings": [
+    {
+      "type": "header",
+      "content": "Layout Settings"
+    },
+    {
+      "type": "select",
+      "id": "media_position",
+      "label": "Banner position",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "left"
+    },
+    {
+      "type": "header",
+      "content": "Product Card Settings"
+    },
+    {
+      "type": "select",
+      "id": "card_image_ratio",
+      "label": "Image ratio / Tỷ lệ ảnh",
+      "options": [
+        { "value": "square", "label": "Square (1:1)" },
+        { "value": "portrait", "label": "Portrait (4:5)" }
+      ],
+      "default": "square"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 15,
+      "unit": "px",
+      "label": "Title font size (px)"
+    },
+    {
+      "type": "range",
+      "id": "card_price_size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "default": 14,
+      "unit": "px",
+      "label": "Price font size (px)"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_vendor",
+      "label": "Show vendor / brand logo",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_savings",
+      "label": "Show savings (You save...)",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "label": "Top padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 40,
+      "unit": "px",
+      "label": "Bottom padding"
+    }
+  ]
+}
+{% endschema %}

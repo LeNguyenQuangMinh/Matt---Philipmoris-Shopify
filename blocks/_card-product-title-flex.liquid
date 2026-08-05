@@ -1,6 +1,6 @@
 {%- liquid
   assign bl_stts = block.settings
-  assign card_product = bl_stts.product
+  assign card_product = bl_stts.product | default: closest.product | default: card_product
 
   if bl_stts.width == 'custom'
     assign is_card_title_custom_width = true

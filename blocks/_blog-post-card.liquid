@@ -183,7 +183,8 @@
 
           <div class="blog-post-card__tags flex flex-wrap items-center justify-center gap-xs">
             {%- for tag in article.tags -%}
-              {%- assign tag_url = blog.url | append: '/tagged/' | append: tag | handle -%}
+              {%- assign tag_handle = tag | handleize -%}
+              {%- assign tag_url = blog.url | append: '/tagged/' | append: tag_handle -%}
               {% render 'button',
                 link: tag_url,
                 label: tag,

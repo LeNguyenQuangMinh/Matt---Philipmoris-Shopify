@@ -50,6 +50,7 @@
       {%- endif -%}
     </div>
     {% content_for 'block', id: 'static-blog-post-group-basic', type: 'group' %}
+    {% content_for 'block', id: 'static-blog-tag-spotlight', type: '_blog-post-spotlight' %}
     <div class="blog-posts__main grid">
       {% content_for 'block', id: 'static-blog-post-sidebar', type: '_blog-post-sidebar' %}
       {%- paginate blog.articles by limit -%}
@@ -121,6 +122,9 @@
     },
     {
       "type": "_divider"
+    },
+    {
+      "type": "_blog-post-spotlight"
     }
   ],
   "settings": [

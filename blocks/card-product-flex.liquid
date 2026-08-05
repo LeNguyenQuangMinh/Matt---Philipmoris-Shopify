@@ -23,7 +23,7 @@
 
 {%- liquid
   assign bl_stts = block.settings
-  assign card_product = bl_stts.product
+  assign card_product = bl_stts.product | default: closest.product | default: card_product
 -%}
 
 {%- capture product_card_class -%}
@@ -64,7 +64,7 @@
         data-json-product='{"id": {{card_product.id}},"handle": "{{card_product.handle}}","media": {{card_product.media | json | escape}},"variants": {{ card_product.variants | json | escape}}}'
       ></div>
     </template>
-    {% content_for 'blocks' %}
+    {% content_for 'blocks', closest.product: card_product %}
   </div>
 </div>
 

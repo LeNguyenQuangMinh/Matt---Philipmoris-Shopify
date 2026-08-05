@@ -1,7 +1,7 @@
 {%- liquid
   assign section_id = section.id
   assign bl_stts = block.settings
-  assign card_product = bl_stts.product
+  assign card_product = bl_stts.product | default: closest.product | default: card_product
   assign media_aspect_ratio = bl_stts.image_ratio
   assign show_secondary_image = bl_stts.show_secondary_image
   assign ratio = 1

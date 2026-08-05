@@ -1,0 +1,317 @@
+/* Blog Tag Spotlight Section Styling */
+
+.blog-tag-spotlight {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+  width: 100%;
+  align-items: stretch;
+}
+
+@media (min-width: 990px) {
+  .blog-tag-spotlight {
+    flex-direction: row;
+    gap: 3rem;
+  }
+
+  .blog-tag-spotlight--media-right {
+    flex-direction: row-reverse;
+  }
+}
+
+/* Left Column: Media Banner */
+.blog-tag-spotlight__media-col {
+  flex: 1 1 55%;
+  width: 100%;
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--media-radius, 0px);
+  min-height: 380px;
+}
+
+.blog-tag-spotlight__media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+  text-decoration: none;
+}
+
+.blog-tag-spotlight__image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.blog-tag-spotlight__media-link:hover .blog-tag-spotlight__image {
+  transform: scale(1.02);
+}
+
+/* Right Column: Content Spotlight */
+.blog-tag-spotlight__content-col {
+  flex: 1 1 45%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  text-align: center;
+  padding: 3rem 2.5rem;
+  background-color: var(--color-background-secondary, #f8f6f3);
+  border-radius: var(--media-radius, 0px);
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* Header Tag Pills */
+.blog-tag-spotlight__tags {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.blog-tag-spotlight__tag-pill {
+  display: inline-block;
+  padding: 0.4rem 1rem;
+  font-size: 1.1rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-foreground, #4a4a4a);
+  background-color: #ffffff;
+  border: 1px solid var(--color-border, #6b6b6b);
+  border-radius: 2px;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.blog-tag-spotlight__tag-pill:hover {
+  background-color: var(--color-foreground, #333333);
+  color: #ffffff;
+  border-color: var(--color-foreground, #333333);
+}
+
+/* Main Title */
+.blog-tag-spotlight__title {
+  font-family: var(--font-heading-family, serif);
+  font-size: clamp(2.2rem, 3.5vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-heading, #5c1d24);
+  margin: 0 0 1rem 0;
+  letter-spacing: 0.02em;
+}
+
+.blog-tag-spotlight__title a {
+  color: inherit;
+  text-decoration: none;
+  transition: opacity 0.2s ease;
+}
+
+.blog-tag-spotlight__title a:hover {
+  opacity: 0.85;
+}
+
+/* Meta Information */
+.blog-tag-spotlight__meta {
+  font-size: 1.2rem;
+  color: var(--color-foreground-70, #666666);
+  margin-bottom: 2.5rem;
+  line-height: 1.5;
+}
+
+.blog-tag-spotlight__meta p {
+  margin: 0.2rem 0;
+}
+
+/* Related Products Section */
+.blog-tag-spotlight__products-wrapper {
+  width: 100%;
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.blog-tag-spotlight__products-heading {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--color-primary, #611c28);
+  margin-bottom: 1.5rem;
+  position: relative;
+}
+
+.blog-tag-spotlight__products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 500px;
+}
+
+.blog-tag-spotlight__product-card,
+.blog-tag-spotlight__product-card-item {
+  background-color: #ffffff;
+  border-radius: 4px;
+  padding: 1rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  width: 100%;
+}
+
+.blog-tag-spotlight__product-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.blog-tag-spotlight__products-placeholder {
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.03);
+  border-radius: 4px;
+  font-size: 1.2rem;
+  color: #777;
+}
+
+@media (max-width: 749px) {
+  .blog-tag-spotlight__content-col {
+    padding: 2rem 1.5rem;
+  }
+  
+  .blog-tag-spotlight__media-col {
+    min-height: 260px;
+  }
+  
+  .blog-tag-spotlight__products-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Spotlight Product Card styling matching exact layout */
+.spotlight-product-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 0.8rem;
+  width: 100%;
+}
+
+.spotlight-product-card__media-wrapper {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: 4px;
+  background-color: #fff;
+  aspect-ratio: 1 / 1;
+}
+
+.spotlight-product-card__media-wrapper.ratio-portrait {
+  aspect-ratio: 4 / 5;
+}
+
+.spotlight-product-card__media-wrapper.ratio-square {
+  aspect-ratio: 1 / 1;
+}
+
+.spotlight-product-card__media-link {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.spotlight-product-card__image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+.spotlight-product-card__media-wrapper:hover .spotlight-product-card__image {
+  transform: scale(1.05);
+}
+
+.spotlight-product-card__quickview-overlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  z-index: 5;
+}
+
+.spotlight-product-card__media-wrapper:hover .spotlight-product-card__quickview-overlay {
+  opacity: 1;
+  visibility: visible;
+}
+
+.spotlight-quickview-btn {
+  background: rgba(255, 255, 255, 0.92);
+  color: #333;
+  padding: 0.6rem 1.4rem;
+  border-radius: 4px;
+  font-size: 1.2rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  border: 1px solid #ccc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  cursor: pointer;
+}
+
+.spotlight-product-card__vendor {
+  margin-top: 0.5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.spotlight-product-card__vendor-img {
+  max-height: 28px;
+  width: auto;
+  object-fit: contain;
+}
+
+.spotlight-product-card__vendor-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #995c00;
+  letter-spacing: 0.08em;
+}
+
+.spotlight-product-card__title {
+  font-size: var(--card-title-size, 1.5rem);
+  font-weight: 500;
+  margin: 0;
+  line-height: 1.3;
+}
+
+.spotlight-product-card__title a {
+  color: var(--color-foreground, #2c3e50);
+  text-decoration: none;
+}
+
+.spotlight-product-card__price {
+  font-size: var(--card-price-size, 1.5rem);
+  font-weight: 600;
+}
+
+.spotlight-product-card__price .compare-at-price {
+  text-decoration: line-through;
+  opacity: 0.7;
+  margin-right: 0.5rem;
+}
+
+.spotlight-product-card__price .price-item--savings {
+  color: #d90429;
+  font-weight: 500;
+  margin-left: 0.4rem;
+}

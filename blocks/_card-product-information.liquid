@@ -24,7 +24,7 @@
     {%- endif -%}
   "
 >
-  {% content_for 'blocks' %}
+  {% content_for 'blocks', closest.product: closest.product %}
 </div>
 
 {% schema %}

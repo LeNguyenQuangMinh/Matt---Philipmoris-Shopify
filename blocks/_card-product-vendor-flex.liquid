@@ -1,5 +1,5 @@
 {%- liquid
-  assign card_product = block.settings.product
+  assign card_product = block.settings.product | default: closest.product | default: card_product
 -%}
 
 {%- capture card_product_vendor -%}
