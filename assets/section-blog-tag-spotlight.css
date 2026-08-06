@@ -3,7 +3,6 @@
 .blog-tag-spotlight {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
   width: 100%;
   align-items: stretch;
 }
@@ -11,7 +10,6 @@
 @media (min-width: 990px) {
   .blog-tag-spotlight {
     flex-direction: row;
-    gap: 3rem;
   }
 
   .blog-tag-spotlight--media-right {
@@ -21,7 +19,7 @@
 
 /* Left Column: Media Banner */
 .blog-tag-spotlight__media-col {
-  flex: 1 1 55%;
+  flex: 1 1 60%;
   width: 100%;
   display: flex;
   position: relative;
@@ -40,6 +38,7 @@
 .blog-tag-spotlight__image {
   width: 100%;
   height: 100%;
+  aspect-ratio: 3 / 2;
   object-fit: cover;
   object-position: center;
   display: block;
@@ -52,14 +51,15 @@
 
 /* Right Column: Content Spotlight */
 .blog-tag-spotlight__content-col {
-  flex: 1 1 45%;
+  flex: 1 1 40%;
+  max-width: 570px;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: flex-start;
   text-align: center;
-  padding: 3rem 2.5rem;
+  padding: 0;
   background-color: var(--color-background-secondary, #f8f6f3);
   border-radius: var(--media-radius, 0px);
   border: 1px solid rgba(0, 0, 0, 0.05);
@@ -71,7 +71,8 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.8rem;
-  margin-bottom: 2rem;
+  margin-bottom: 1.8rem;
+  padding-top: 4rem;
 }
 
 .blog-tag-spotlight__tag-pill {
@@ -95,27 +96,6 @@
   border-color: var(--color-foreground, #333333);
 }
 
-/* Main Title */
-.blog-tag-spotlight__title {
-  font-family: var(--font-heading-family, serif);
-  font-size: clamp(2.2rem, 3.5vw, 3.2rem);
-  font-weight: 600;
-  line-height: 1.25;
-  color: var(--color-heading, #5c1d24);
-  margin: 0 0 1rem 0;
-  letter-spacing: 0.02em;
-}
-
-.blog-tag-spotlight__title a {
-  color: inherit;
-  text-decoration: none;
-  transition: opacity 0.2s ease;
-}
-
-.blog-tag-spotlight__title a:hover {
-  opacity: 0.85;
-}
-
 /* Meta Information */
 .blog-tag-spotlight__meta {
   font-size: 1.2rem;
@@ -135,24 +115,43 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0 2rem 1.2rem;
 }
 
 .blog-tag-spotlight__products-heading {
-  font-size: 1.5rem;
   font-weight: 700;
-  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--color-primary, #611c28);
-  margin-bottom: 1.5rem;
+  color: #72253d;
   position: relative;
+  margin-top: 30px;
+  font-size: 20px;
 }
 
 .blog-tag-spotlight__products-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  display: flex;
+  flex-direction: column;
   gap: 1.5rem;
   width: 100%;
-  max-width: 500px;
+  max-height: 405px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-primary, #611c28) #e6e6e6;
+  padding: 0 26px 0 50px;
+}
+
+.blog-tag-spotlight__products-grid::-webkit-scrollbar {
+  width: 6px;
+}
+
+.blog-tag-spotlight__products-grid::-webkit-scrollbar-track {
+  background: #e6e6e6;
+  border-radius: 3px;
+}
+
+.blog-tag-spotlight__products-grid::-webkit-scrollbar-thumb {
+  background: var(--color-primary, #611c28);
+  border-radius: 3px;
 }
 
 .blog-tag-spotlight__product-card,
@@ -182,11 +181,11 @@
   .blog-tag-spotlight__content-col {
     padding: 2rem 1.5rem;
   }
-  
+
   .blog-tag-spotlight__media-col {
     min-height: 260px;
   }
-  
+
   .blog-tag-spotlight__products-grid {
     grid-template-columns: 1fr;
   }
@@ -262,7 +261,7 @@
   text-transform: uppercase;
   letter-spacing: 0.05em;
   border: 1px solid #ccc;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 

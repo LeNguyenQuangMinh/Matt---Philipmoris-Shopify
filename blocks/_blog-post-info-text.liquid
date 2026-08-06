@@ -1,32 +1,40 @@
 {% assign alignment = alignment | default: block.settings.alignment %}
+{% assign target_article = article | default: block.settings.article %}
+{% assign display_layout = block.settings.display_layout | default: 'horizontal' %}
 
 {%- if block.settings.show_date or block.settings.show_author -%}
   <div
     class="
       blog-post-details
+      blog-post-details--{{ display_layout }}
       spacing-style
       justify-{{ alignment }}
       {% if block.settings.type_preset != '' %}{{ block.settings.type_preset }}{% endif%}
     "
-    style="{% render 'spacing-style', settings: block.settings %}"
+    style="
+      {% render 'spacing-style', settings: block.settings %}
+      {% if display_layout == 'vertical' %}
+        display: flex; flex-direction: column; align-items: {% if alignment == 'center' %}center{% elsif alignment == 'right' %}flex-end{% else %}flex-start{% endif %}; gap: 0.4rem;
+      {% else %}
+        display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; justify-content: {% if alignment == 'center' %}center{% elsif alignment == 'right' %}flex-end{% else %}flex-start{% endif %}; gap: 0.8rem;
+      {% endif %}
+    "
   >
-    {%- if block.settings.show_date -%}
-      <span class="blog-date">
-        {{- 'blogs.article.on' | t }}
-        {{- article.published_at | time_tag: '%b %d, %Y' -}}
-      </span>
-    {%- endif -%}
-
-    {%- if block.settings.show_author -%}
+    {%- if block.settings.show_author and target_article.author != blank -%}
       <span class="blog-author">
-        {{- 'blogs.article.by' | t }}
-        <em class="font-bold">{{ article.author }}</em>
+        Posted by {{ target_article.author }}
       </span>
     {%- endif -%}
 
-    {% if block.settings.show_comments %}
+    {%- if block.settings.show_date and target_article.published_at != blank -%}
+      <span class="blog-date">
+        {{ target_article.published_at | date: "%d/%m/%Y" }}
+      </span>
+    {%- endif -%}
+
+    {% if block.settings.show_comments and target_article.comments_count > 0 %}
       <span>{{ 'blogs.article.blog_details_separator' | t }}</span>
-      <span class="blog-comment">{{ 'blogs.article.comments' | t: count: article.comments_count }}</span>
+      <span class="blog-comment">{{ 'blogs.article.comments' | t: count: target_article.comments_count }}</span>
     {%- endif -%}
   </div>
 {% endif %}
@@ -35,6 +43,22 @@
 {
   "name": "t:names.details",
   "settings": [
+    {
+      "type": "select",
+      "id": "display_layout",
+      "label": "Layout direction",
+      "options": [
+        {
+          "value": "horizontal",
+          "label": "Horizontal"
+        },
+        {
+          "value": "vertical",
+          "label": "Vertical"
+        }
+      ],
+      "default": "horizontal"
+    },
     {
       "type": "checkbox",
       "id": "show_date",

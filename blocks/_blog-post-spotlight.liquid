@@ -88,33 +88,64 @@
         {%- if auto_article.tags.size > 0 -%}
           <div class="blog-tag-spotlight__tags">
             {%- for tag_item in auto_article.tags -%}
-              <a href="{{ blog.url }}/tagged/{{ tag_item | handleize }}" class="blog-tag-spotlight__tag-pill">{{ tag_item }}</a>
+              {%- assign tag_h = tag_item | handleize -%}
+              {%- assign tag_u = blog.url | append: '/tagged/' | append: tag_h -%}
+              {% render 'button',
+                link: tag_u,
+                label: tag_item,
+                style_class: 'button-secondary',
+                button_style: 'custom',
+                button_border_width: 1,
+                button_border_radius: 4,
+                button_type_size: '1.5rem',
+                button_type_line_height: 'normal',
+                button_type_letter_spacing: 1,
+                button_font_weight: '400',
+                button_text_case: 'uppercase',
+                button_type_alignment: 'center',
+                buttons_shadow_horizontal_offset: 0,
+                buttons_shadow_vertical_offset: 0,
+                buttons_shadow_blur: 0,
+                style: 'padding: 0.7rem 3.4rem !important;'
+              %}
             {%- endfor -%}
           </div>
         {%- endif -%}
 
-        <h2 class="blog-tag-spotlight__title">
-          <a href="{{ auto_article.url }}">{{ auto_article.title }}</a>
-        </h2>
+        {% capture spotlight_title %}
+          {% content_for 'block', id: 'heading', type: '_heading', text: auto_article.title %}
+        {% endcapture %}
 
-        <div class="blog-tag-spotlight__meta">
-          {%- if auto_article.author != blank -%}
-            <p class="blog-tag-spotlight__author">{{ 'blogs.article.posted_by' | t: author: auto_article.author | default: 'Posted by ' | append: auto_article.author }}</p>
-          {%- endif -%}
-          <p class="blog-tag-spotlight__date">{{ auto_article.published_at | date: "%d/%m/%Y" }}</p>
-        </div>
+        {% capture spotlight_details %}
+          {% content_for 'block', id: 'blog-post-details', type: '_blog-post-info-text', alignment: 'center', article: auto_article %}
+        {% endcapture %}
+
+        <a href="{{ auto_article.url }}" class="decoration-none block">
+          {{ spotlight_title }}
+        </a>
+
+        {{ spotlight_details }}
 
         {%- if auto_products != blank and auto_products.size > 0 -%}
           <div class="blog-tag-spotlight__products-wrapper">
             <h3 class="blog-tag-spotlight__products-heading">RELATED PRODUCTS</h3>
             <div class="blog-tag-spotlight__products-grid">
-              {%- for product_item in auto_products limit: 2 -%}
+              {%- assign auto_limit = block.settings.products_limit | default: 4 -%}
+              {%- for product_item in auto_products limit: auto_limit -%}
                 <div 
                   class="blog-tag-spotlight__product-card-item"
                   style="--card-title-size: {{ block.settings.card_title_size | default: 15 }}px; --card-price-size: {{ block.settings.card_price_size | default: 14 }}px;"
                 >
                   <div class="spotlight-product-card">
-                    <div class="spotlight-product-card__media-wrapper ratio-{{ block.settings.card_image_ratio | default: 'square' }}">
+                    {%- liquid
+                      assign ratio_setting = block.settings.card_image_ratio | default: 'square'
+                      if ratio_setting == 'custom' and block.settings.custom_image_ratio != blank
+                        assign custom_ratio_style = 'style="aspect-ratio: ' | append: block.settings.custom_image_ratio | append: ';"'
+                      else
+                        assign custom_ratio_style = ''
+                      endif
+                    -%}
+                    <div class="spotlight-product-card__media-wrapper ratio-{{ ratio_setting }}" {{ custom_ratio_style }}>
                       <a href="{{ product_item.url }}" class="spotlight-product-card__media-link" aria-label="{{ product_item.title | escape }}">
                         {%- if product_item.featured_media -%}
                           {{ product_item.featured_media | image_url: width: 600 | image_tag:
@@ -128,8 +159,59 @@
                         {%- endif -%}
                       </a>
                       {%- if settings.enable_quick_view -%}
+                        {%- liquid
+                          assign quick_add_type_icon = false
+                          if settings.quick_add_type == 'icon'
+                            assign quick_add_type_icon = true
+                            assign class_button = 'card-product__group-btn rounded-full bor-none center cursor-pointer flex items-center justify-center relative w-fit leading-none'
+                            assign class_text = 'text whitespace-nowrap overflow-hidden pointer-events-none absolute-c-y z--1 opacity-0'
+                            assign class_text_inner = 'text-inner inline-block'
+                          endif
+                        -%}
                         <div class="spotlight-product-card__quickview-overlay">
-                          {% render 'quick-view-button', card_product: product_item, class_button: 'spotlight-quickview-btn' %}
+                          <div class="card--block-button relative z-2 w-full size-style">
+                            <div class="quick-view w-full">
+                              <modal-opener data-modal="#QuickViewStandard">
+                                <button
+                                  type="button"
+                                  class="quickview-button quick-add__submit button-secondary button--full-width {{ class_button }}"
+                                  aria-haspopup="dialog"
+                                  title="{{ 'products.product.quick_view' | t }}"
+                                  data-product-url="{{ product_item.url }}"
+                                  data-product-id="{{ product_item.id }}"
+                                  data-open-quick-view-popup
+                                  data-product-handle="{{ product_item.handle }}"
+                                >
+                                  {%- if quick_add_type_icon == false -%}
+                                    <span class="button-overflow relative overflow-hidden" data-button-text="{{ 'products.product.quick_view' | t }}">
+                                      <span class="button-text-main inline-block relative z-1">
+                                        {{ 'products.product.quick_view' | t }}
+                                      </span>
+                                    </span>
+                                  {%- else -%}
+                                    <span class="text-in-mb md:hidden">
+                                      {{ 'products.product.quick_view' | t }}
+                                    </span>
+                                    <span class="{{ class_text }}">
+                                      <span class="{{ class_text_inner }}">{{ 'products.product.quick_view' | t }}</span>
+                                    </span>
+                                    <svg
+                                      class="quickview-button__icon"
+                                      aria-hidden="true"
+                                      focusable="false"
+                                      xmlns="http://www.w3.org/2000/svg"
+                                      viewBox="0 0 20 20"
+                                      width="16"
+                                      height="16"
+                                    >
+                                      {% render 'icon', icon: 'eye' %}
+                                    </svg>
+                                  {%- endif -%}
+                                  {%- render 'loading-spinner' -%}
+                                </button>
+                              </modal-opener>
+                            </div>
+                          </div>
                         </div>
                       {%- endif -%}
                     </div>
@@ -211,6 +293,9 @@
   "blocks": [
     {
       "type": "_blog-tag-spotlight-item"
+    },
+    {
+      "type": "_top-tags"
     }
   ],
   "settings": [
@@ -239,14 +324,31 @@
       "content": "Product Card Settings"
     },
     {
+      "type": "range",
+      "id": "products_limit",
+      "min": 1,
+      "max": 6,
+      "step": 1,
+      "default": 4,
+      "label": "Maximum products to show"
+    },
+    {
       "type": "select",
       "id": "card_image_ratio",
-      "label": "Image ratio / Tỷ lệ ảnh",
+      "label": "Image ratio",
       "options": [
         { "value": "square", "label": "Square (1:1)" },
-        { "value": "portrait", "label": "Portrait (4:5)" }
+        { "value": "portrait", "label": "Portrait (4:5)" },
+        { "value": "custom", "label": "Custom ratio" }
       ],
       "default": "square"
+    },
+    {
+      "type": "text",
+      "id": "custom_image_ratio",
+      "label": "Custom image ratio (width/height)",
+      "default": "441/318",
+      "info": "Enter ratio like 441/318 or 16/9. Only applies when Custom ratio is selected above."
     },
     {
       "type": "range",

@@ -1,0 +1,191 @@
+{% doc %}
+  Renders popular top tags as buttons with customizable button styling.
+{% enddoc %}
+
+{%- liquid
+  assign bl_stts = block.settings
+  assign tags_raw = bl_stts.tags_list
+  if tags_raw == blank
+    assign tags_array = blog.all_tags
+  else
+    assign tags_array = tags_raw | split: ','
+  endif
+
+  if bl_stts.custom_padding_button
+    assign btn_padding_block = bl_stts.button_padding_block | times: 0.1 | append: 'rem'
+    assign btn_padding_inline = bl_stts.button_padding_inline | times: 0.1 | append: 'rem'
+    assign btn_padding_style = 'padding: ' | append: btn_padding_block | append: ' ' | append: btn_padding_inline | append: ' !important;'
+  else
+    assign btn_padding_style = nil
+  endif
+-%}
+
+<div 
+  class="blog-top-tags flex flex-wrap items-center justify-center gap-xs spacing-style"
+  style="{% render 'spacing-style', settings: bl_stts %}"
+  {{ block.shopify_attributes }}
+>
+  {%- for tag_item in tags_array -%}
+    {%- assign clean_tag = tag_item | strip -%}
+    {%- if clean_tag != blank -%}
+      {%- assign tag_handle = clean_tag | handleize -%}
+      {%- assign tag_url = blog.url | append: '/tagged/' | append: tag_handle -%}
+      {% render 'button',
+        link: tag_url,
+        label: clean_tag,
+        style_class: bl_stts.style_class,
+        button_style: bl_stts.button_style,
+        button_border_width: bl_stts.button_border_width,
+        button_border_radius: bl_stts.button_border_radius,
+        button_type_font: bl_stts.button_type_font,
+        button_type_size: bl_stts.button_type_size,
+        button_type_line_height: bl_stts.button_type_line_height,
+        button_type_letter_spacing: bl_stts.button_type_letter_spacing,
+        button_font_weight: bl_stts.button_font_weight,
+        button_text_case: bl_stts.button_text_case,
+        button_type_alignment: bl_stts.button_type_alignment,
+        buttons_shadow_horizontal_offset: bl_stts.buttons_shadow_horizontal_offset,
+        buttons_shadow_vertical_offset: bl_stts.buttons_shadow_vertical_offset,
+        buttons_shadow_blur: bl_stts.buttons_shadow_blur,
+        style: btn_padding_style
+      %}
+    {%- endif -%}
+  {%- endfor -%}
+</div>
+
+{% schema %}
+{
+  "name": "Top Tags",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Tags Content"
+    },
+    {
+      "type": "text",
+      "id": "tags_list",
+      "label": "Tags list (Comma-separated)",
+      "default": "HISTORY AND ETHOS, BEHIND THE SCENES, NEWS AND EVENTS, REVIEWS, BUYING GUIDES, RECIPES, OUTFIT INSPIRATION, PRODUCT CARE",
+      "info": "Leave empty to display all blog tags automatically."
+    },
+    {
+      "type": "header",
+      "content": "Button Styling"
+    },
+    {
+      "type": "select",
+      "id": "style_class",
+      "label": "Button style class",
+      "options": [
+        { "value": "button-secondary", "label": "Secondary" },
+        { "value": "button-primary", "label": "Primary" },
+        { "value": "button-outline", "label": "Outline" }
+      ],
+      "default": "button-secondary"
+    },
+    {
+      "type": "select",
+      "id": "button_style",
+      "label": "Button style mode",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "custom", "label": "Custom" }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "button_border_width",
+      "label": "Border width",
+      "min": 0,
+      "max": 10,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "range",
+      "id": "button_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "button_type_size",
+      "label": "Font size",
+      "options": [
+        { "value": "1.2rem", "label": "12px" },
+        { "value": "1.4rem", "label": "14px" },
+        { "value": "1.5rem", "label": "15px" },
+        { "value": "1.6rem", "label": "16px" }
+      ],
+      "default": "1.4rem"
+    },
+    {
+      "type": "select",
+      "id": "button_text_case",
+      "label": "Text case",
+      "options": [
+        { "value": "default", "label": "Default" },
+        { "value": "uppercase", "label": "Uppercase" }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_padding_button",
+      "label": "Custom button padding",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "button_padding_block",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "button_padding_inline",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "header",
+      "content": "Spacing"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 0,
+      "unit": "px",
+      "label": "Top padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "min": 0,
+      "max": 100,
+      "step": 4,
+      "default": 20,
+      "unit": "px",
+      "label": "Bottom padding"
+    }
+  ]
+}
+{% endschema %}
