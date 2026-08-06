@@ -1,0 +1,156 @@
+{% assign current_article = article %}
+{% assign target_blog = blog %}
+{% assign posts_to_show = block.settings.posts_to_show | default: 2 %}
+
+{% assign target_tag = '' %}
+{% for tag in current_article.tags %}
+  {% assign tag_downcase = tag | downcase %}
+  {% unless tag_downcase contains 'author:' or tag_downcase contains 'author-' %}
+    {% assign target_tag = tag %}
+    {% break %}
+  {% endunless %}
+{% endfor %}
+
+{% if target_tag == blank and current_article.tags.size > 0 %}
+  {% assign target_tag = current_article.tags.first %}
+{% endif %}
+
+{% if target_tag != blank %}
+  {% assign tag_handle = target_tag | handle %}
+  {% assign view_more_url = target_blog.url | append: '/tagged/' | append: tag_handle %}
+{% else %}
+  {% assign view_more_url = target_blog.url %}
+{% endif %}
+
+<div
+  class="blog-post-similar spacing-style{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+  style="{% render 'spacing-style', settings: block.settings %}"
+  {{ block.shopify_attributes }}
+>
+  <div class="similar-posts__header flex items-center justify-between">
+    <h3 class="similar-posts__title">{{ block.settings.heading | default: 'Similar Posts' }}</h3>
+    <a href="{{ view_more_url }}" class="similar-posts__view-more">
+      {{ block.settings.view_more_text | default: 'View More' }}
+    </a>
+  </div>
+
+  <div class="similar-posts__grid">
+    {% assign count = 0 %}
+    {% assign rendered_ids = '' %}
+
+    {% if target_tag != blank %}
+      {% for art in target_blog.articles %}
+        {% if art.id == current_article.id %}{% continue %}{% endif %}
+        {% if art.tags contains target_tag %}
+          {% assign art_id_str = art.id | append: ',' %}
+          {% assign rendered_ids = rendered_ids | append: art_id_str %}
+          
+          <div class="similar-post-card">
+            {% if art.image != blank %}
+              <a href="{{ art.url }}" class="similar-post-card__media">
+                {{ art.image | image_url: width: 800 | image_tag: loading: 'lazy', alt: art.title }}
+              </a>
+            {% endif %}
+            <div class="similar-post-card__content">
+              <h4 class="similar-post-card__title">
+                <a href="{{ art.url }}">{{ art.title }}</a>
+              </h4>
+              <div class="similar-post-card__meta">
+                {{ art.author }} on {{ art.published_at | date: "%-d/%-m/%Y" }}
+              </div>
+            </div>
+          </div>
+
+          {% assign count = count | plus: 1 %}
+          {% if count >= posts_to_show %}{% break %}{% endif %}
+        {% endif %}
+      {% endfor %}
+    {% endif %}
+
+    {% if count < posts_to_show %}
+      {% for art in target_blog.articles %}
+        {% if art.id == current_article.id %}{% continue %}{% endif %}
+        {% assign art_id_str = art.id | append: ',' %}
+        {% unless rendered_ids contains art_id_str %}
+          <div class="similar-post-card">
+            {% if art.image != blank %}
+              <a href="{{ art.url }}" class="similar-post-card__media">
+                {{ art.image | image_url: width: 800 | image_tag: loading: 'lazy', alt: art.title }}
+              </a>
+            {% endif %}
+            <div class="similar-post-card__content">
+              <h4 class="similar-post-card__title">
+                <a href="{{ art.url }}">{{ art.title }}</a>
+              </h4>
+              <div class="similar-post-card__meta">
+                {{ art.author }} on {{ art.published_at | date: "%-d/%-m/%Y" }}
+              </div>
+            </div>
+          </div>
+
+          {% assign count = count | plus: 1 %}
+          {% if count >= posts_to_show %}{% break %}{% endif %}
+        {% endunless %}
+      {% endfor %}
+    {% endif %}
+  </div>
+</div>
+
+{% schema %}
+{
+  "name": "Similar Posts",
+  "class": "blog-post-similar-block",
+  "settings": [
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Similar Posts"
+    },
+    {
+      "type": "text",
+      "id": "view_more_text",
+      "label": "View More Text",
+      "default": "View More"
+    },
+    {
+      "type": "range",
+      "id": "posts_to_show",
+      "label": "Number of posts to show",
+      "min": 2,
+      "max": 6,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    }
+  ],
+  "presets": [
+    {
+      "name": "Similar Posts"
+    }
+  ]
+}
+{% endschema %}

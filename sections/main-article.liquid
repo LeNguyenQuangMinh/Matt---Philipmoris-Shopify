@@ -167,20 +167,34 @@
         {%- if blog.next_article or blog.previous_article -%}
           <div class="article__pagination flex items-center justify-between{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}">
             <div class="article__pagination--item article__pagination--prev">
-              <a
-                class="button button--prev{% unless blog.previous_article %} disabled{% endunless %}"
-                href="{{ blog.previous_article }}"
-              >
-                <span class="text"> {{ 'blogs.article.previous_post' | t }}</span>
-              </a>
+              {%- if blog.previous_article -%}
+                <a class="article-nav-link article-nav-link--prev" href="{{ blog.previous_article.url }}">
+                  <span class="article-nav-icon">
+                    <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8.5 15L1.5 8L8.5 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                  <div class="article-nav-text">
+                    <span class="article-nav-label">{{ 'blogs.article.previous_post' | t }}</span>
+                    <span class="article-nav-title">{{ blog.previous_article.title }}</span>
+                  </div>
+                </a>
+              {%- endif -%}
             </div>
             <div class="article__pagination--item article__pagination--next">
-              <a
-                class="button button--next{% unless blog.next_article %} disabled{% endunless %}"
-                href="{{ blog.next_article }}"
-              >
-                <span class="text">{{ 'blogs.article.next_post' | t }} </span>
-              </a>
+              {%- if blog.next_article -%}
+                <a class="article-nav-link article-nav-link--next" href="{{ blog.next_article.url }}">
+                  <div class="article-nav-text text-right">
+                    <span class="article-nav-label">{{ 'blogs.article.next_post' | t }}</span>
+                    <span class="article-nav-title">{{ blog.next_article.title }}</span>
+                  </div>
+                  <span class="article-nav-icon">
+                    <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1.5 1L8.5 8L1.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </span>
+                </a>
+              {%- endif -%}
             </div>
           </div>
         {%- endif -%}
