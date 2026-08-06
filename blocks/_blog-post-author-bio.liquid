@@ -1,0 +1,92 @@
+{% assign target_article = article | default: block.settings.article %}
+
+{% assign meta_profile = target_article.metafields.custom.author_profile.value | default: target_article.metafields.custom.author_profile %}
+
+{% assign author_name = target_article.author %}
+{% assign author_avatar = null %}
+{% assign author_bio = null %}
+
+{% if meta_profile != blank %}
+  {% assign meta_name = meta_profile.name.value | default: meta_profile.name | default: meta_profile.author_name.value | default: meta_profile.author_name %}
+  {% if meta_name != blank %}
+    {% assign author_name = meta_name %}
+  {% endif %}
+
+  {% assign author_avatar = meta_profile.avatar.value | default: meta_profile.avatar | default: meta_profile.image.value | default: meta_profile.image | default: meta_profile.photo.value | default: meta_profile.photo %}
+
+  {% assign author_bio = meta_profile.bio | default: meta_profile.biography | default: meta_profile.description %}
+{% endif %}
+
+{% if author_name != blank or author_bio != blank or author_avatar != blank %}
+  {% assign author_handle = author_name | handle %}
+  {% assign author_tag_url = blog.url | append: '/tagged/author:' | append: author_handle %}
+  <div
+    class="blogPost__intro spacing-style{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    style="{% render 'spacing-style', settings: block.settings %}"
+    {{ block.shopify_attributes }}
+  >
+    <div class="container container-1091 p-0">
+      <div class="intro-block">
+        {% if author_avatar != blank %}
+          <a href="{{ author_tag_url }}">
+            <div class="intro-image">
+              <img
+                src="{{ author_avatar | image_url: width: 300 }}"
+                alt="{{ author_name | escape }}"
+                loading="lazy"
+                width="130"
+                height="130"
+              >
+            </div>
+          </a>
+        {% endif %}
+        <div class="intro-content">
+          <h5 class="intro-title">Posted by {{ author_name }}</h5>
+          {% if author_bio != blank %}
+            <div class="intro-text rte">
+              {{ author_bio | metafield_tag }}
+            </div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Author Bio",
+  "class": "blog-post-author-bio",
+  "settings": [
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 30
+    }
+  ],
+  "presets": [
+    {
+      "name": "Author Bio"
+    }
+  ]
+}
+{% endschema %}
