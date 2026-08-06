@@ -20,6 +20,44 @@
   endif
 -%}
 
+{%- style -%}
+  @media screen and (max-width: 767px) {
+    .blog-top-tags {
+      flex-wrap: nowrap !important;
+      justify-content: flex-start !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      max-width: 100% !important;
+      width: 100% !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.05);
+    }
+
+    .blog-top-tags::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .blog-top-tags::-webkit-scrollbar-track {
+      background: rgba(0, 0, 0, 0.05);
+      border-radius: 2px;
+    }
+
+    .blog-top-tags::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.3);
+      border-radius: 2px;
+    }
+
+    .blog-top-tags > * {
+      flex-shrink: 0 !important;
+      white-space: nowrap !important;
+    }
+  }
+{%- endstyle -%}
+
 <div 
   class="blog-top-tags flex flex-wrap items-center justify-center gap-xs spacing-style"
   style="{% render 'spacing-style', settings: bl_stts %}"

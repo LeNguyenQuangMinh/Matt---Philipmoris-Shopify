@@ -46,6 +46,23 @@
   {{ block.shopify_attributes }}
 {% endcapture %}
 
+{%- style -%}
+  @media screen and (max-width: 767px) {
+    .blog-post-card__image-container {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+
+    .blog-post-card__image-container > a,
+    .blog-post-card__image-container img,
+    .blog-post-card__image-container .image-block,
+    .blog-post-card__image-container svg {
+      width: 100% !important;
+      max-width: 100% !important;
+    }
+  }
+{%- endstyle -%}
+
 <div
   class="
     blog-post-card {% if block_settings.layout_type == 'classic' and first == true %} grid{% else %} md:flex max-md:grid{% endif %}
@@ -180,6 +197,49 @@
           {%- else -%}
             {%- assign tags_btn_padding_style = nil -%}
           {%- endif -%}
+
+          {%- style -%}
+            @media screen and (max-width: 767px) {
+              .blog-post-card__content {
+                min-width: 0 !important;
+                max-width: 100% !important;
+              }
+
+              .blog-post-card__tags {
+                flex-wrap: nowrap !important;
+                justify-content: flex-start !important;
+                overflow-x: auto !important;
+                overflow-y: hidden !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                min-width: 0 !important;
+                box-sizing: border-box !important;
+                -webkit-overflow-scrolling: touch;
+                padding-bottom: 8px;
+                scrollbar-width: thin;
+                scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.05);
+              }
+
+              .blog-post-card__tags::-webkit-scrollbar {
+                height: 4px;
+              }
+
+              .blog-post-card__tags::-webkit-scrollbar-track {
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: 2px;
+              }
+
+              .blog-post-card__tags::-webkit-scrollbar-thumb {
+                background: rgba(0, 0, 0, 0.3);
+                border-radius: 2px;
+              }
+
+              .blog-post-card__tags > * {
+                flex-shrink: 0 !important;
+                white-space: nowrap !important;
+              }
+            }
+          {%- endstyle -%}
 
           <div class="blog-post-card__tags flex flex-wrap items-center justify-center gap-xs">
             {%- for tag in article.tags -%}

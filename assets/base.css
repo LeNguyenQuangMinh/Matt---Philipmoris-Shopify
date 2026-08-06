@@ -8295,6 +8295,21 @@ animate-image {
   display: inline-block;
 }
 
+@media screen and (max-width: 767px) {
+  .blog-post-card__image-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .blog-post-card__image-container > a,
+  .blog-post-card__image-container img,
+  .blog-post-card__image-container .image-block,
+  .blog-post-card__image-container svg {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
 .blog-post-card--custom .blog-post-card__tags {
   display: flex;
   flex-wrap: wrap;
