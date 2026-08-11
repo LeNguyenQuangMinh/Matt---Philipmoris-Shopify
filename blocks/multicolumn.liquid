@@ -101,7 +101,7 @@
           class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} max-lg:grid-layout--{{ small_desktop_columns }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}{% if block.settings.items_same_height %} items-same-height{% endif %}"
           role="list"
           aria-label="{{ 'content.grid.name' | t }}"
-          style="--grid-desktop-horizontal-spacing: {{ block.settings.column_gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.vertical_gap }}px;"
+          style="--grid-desktop-horizontal-spacing: {{ block.settings.column_gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.vertical_gap }}px; --grid-mobile-horizontal-spacing: {{ block.settings.column_gap }}px; --grid-mobile-vertical-spacing: {{ block.settings.vertical_gap }}px;"
         >
           {{- list_items -}}
         </ul>

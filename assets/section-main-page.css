@@ -1,5 +1,7 @@
 .page-title {
   margin-top: 0;
+
+  background-color: red !important;
 }
 
 .page-placeholder-wrapper {

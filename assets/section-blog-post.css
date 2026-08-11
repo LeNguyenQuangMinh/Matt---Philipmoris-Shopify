@@ -418,3 +418,559 @@
 
 
 
+/**
+ * blog-widgets.css
+ * 
+ * CSS extracted from Philip Morris BigCommerce theme (Cornerstone 6.16.1)
+ * covering all classes used in the blog post widget HTML inside the CSV.
+ *
+ * Usage in Shopify (Ella 7):
+ *   - Add this file to your Shopify theme as assets/blog-widgets.css
+ *   - Reference it in theme.liquid (or blog-post template) with:
+ *       {{ 'blog-widgets.css' | asset_url | stylesheet_tag }}
+ *
+ * Variables resolved from Cornerstone defaults:
+ *   $fontSize-root = 14px  →  root - 2 = 12px, root + 2 = 16px, root - 1 = 13px
+ *   $fontWeight-normal = 400, $fontWeight-medium = 500, $fontWeight-bold = 700
+ *   $blog-title-color / color-textHeading = #6D3F49
+ */
+
+/* =============================================================================
+   1. CONTAINER UTILITIES
+   ============================================================================= */
+
+.container {
+  display: block;
+  width: 100%;
+  position: relative;
+  max-width: 100%;
+  padding: 0 15px;
+  margin: 0 auto;
+}
+
+.container.container-full {
+  padding: 0;
+}
+
+@media (min-width: 992px) {
+  .container {
+    padding: 0 15px;
+  }
+}
+
+@media (min-width: 1121px) {
+  .container.container-1091 {
+    max-width: 1121px;
+  }
+}
+
+@media (min-width: 1400px) {
+  .container.container-1400 {
+    max-width: 1400px;
+  }
+}
+
+.p-0 {
+  padding: 0;
+}
+
+
+/* =============================================================================
+   2. ANIMATION (data-section-load="animation")
+   ============================================================================= */
+
+.custom-animation [data-step-animate],
+.custom-animation[data-step-animate] {
+  transform: translateY(100px);
+}
+
+.js [data-step-animate] {
+  transition-property: transform, opacity;
+  transition-timing-function: ease;
+  transform: translateY(100px);
+  opacity: 0;
+}
+
+/* Generate transition delays 0–10 */
+.js [data-step-animate='0'] {
+  transition-delay: 0.10s;
+  transition-duration: 0.30s;
+}
+
+.js [data-step-animate='1'] {
+  transition-delay: 0.12s;
+  transition-duration: 0.40s;
+}
+
+.js [data-step-animate='2'] {
+  transition-delay: 0.14s;
+  transition-duration: 0.50s;
+}
+
+.js [data-step-animate='3'] {
+  transition-delay: 0.16s;
+  transition-duration: 0.60s;
+}
+
+.js [data-step-animate='4'] {
+  transition-delay: 0.18s;
+  transition-duration: 0.70s;
+}
+
+.js [data-step-animate='5'] {
+  transition-delay: 0.20s;
+  transition-duration: 0.80s;
+}
+
+.js [data-step-animate='6'] {
+  transition-delay: 0.22s;
+  transition-duration: 0.90s;
+}
+
+.js [data-step-animate='7'] {
+  transition-delay: 0.24s;
+  transition-duration: 1.00s;
+}
+
+.js [data-step-animate='8'] {
+  transition-delay: 0.26s;
+  transition-duration: 1.10s;
+}
+
+.js [data-step-animate='9'] {
+  transition-delay: 0.28s;
+  transition-duration: 1.20s;
+}
+
+.js [data-step-animate='10'] {
+  transition-delay: 0.30s;
+  transition-duration: 1.30s;
+}
+
+.js .animated [data-step-animate],
+.js .animated[data-step-animate] {
+  transform: translateY(0);
+  opacity: 1;
+}
+
+
+/* =============================================================================
+   3. BLOG POST CONTENT (.blogPost__content)
+   ============================================================================= */
+
+.blogPost__content .title {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #6D3F49;
+}
+
+.blogPost__content.style-2 {
+  border-top: 1px solid #DDDDDD;
+  margin-top: 40px;
+}
+
+.blogPost__content.style-2 .title {
+  text-align: center;
+  margin-top: 24px;
+}
+
+.blogPost__content.style-2 .text {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+/* content__row / content__col — two-column image+text layout */
+.content__row {
+  display: flex;
+  gap: 20px;
+}
+
+@media (max-width: 550px) {
+  .content__row {
+    flex-direction: column;
+  }
+}
+
+.content__col {
+  width: 50%;
+}
+
+@media (max-width: 550px) {
+  .content__col {
+    width: 100%;
+  }
+}
+
+.content__col.image > a {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 66.6%;
+}
+
+.content__col.image > a > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.content__col.image > img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.content__col.text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.content__col.products {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  row-gap: 27px;
+  column-gap: 12px;
+}
+
+.content__col.products > a {
+  position: relative;
+  display: inline-block;
+  width: 100%;
+  padding-bottom: 100%;
+}
+
+.content__col.products > a > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+
+/* =============================================================================
+   4. BLOG POST INTRO (.blogPost__intro)
+   ============================================================================= */
+
+.blogPost__intro {
+  margin-bottom: 42px;
+  padding-top: 32px;
+}
+
+@media (max-width: 550px) {
+  .blogPost__intro {
+    padding-top: 70px;
+  }
+}
+
+/* .intro-block */
+.intro-block {
+  position: relative;
+  display: flex;
+  justify-content: flex-end;
+}
+
+/* .intro-image */
+.intro-image {
+  width: 123px;
+  height: 123px;
+  border-radius: 50%;
+  overflow: hidden;
+  position: absolute;
+  top: 50%;
+  left: 0;
+  transform: translateY(-50%);
+}
+
+@media (max-width: 550px) {
+  .intro-image {
+    width: 80px;
+    height: 80px;
+    top: unset;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+}
+
+.intro-image img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* .intro-content */
+.intro-content {
+  background-color: rgba(240, 235, 229, 0.50);
+  padding: 15px 25px 25px 75px;
+  width: calc(100% - 70px);
+}
+
+@media (max-width: 550px) {
+  .intro-content {
+    width: 100%;
+    padding: 60px 20px 20px;
+  }
+}
+
+/* .intro-title */
+.intro-title {
+  font-size: 12px;
+  letter-spacing: 0;
+  line-height: 18px;
+  color: #6D3F49;
+  margin-top: 0;
+  margin-bottom: 10px;
+  text-transform: capitalize;
+}
+
+/* .intro-text */
+.intro-text {
+  margin-bottom: 0;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+
+/* =============================================================================
+   5. SIMILAR POSTS (.similarPost)
+   ============================================================================= */
+
+.similarPost {
+  border-bottom: 1px solid #DDDDDD;
+  margin-bottom: 30px;
+}
+
+.similarPost__top {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 5px;
+}
+
+.similarPost__title {
+  font-size: 16px;
+  line-height: 24px;
+  letter-spacing: 0;
+  font-weight: 700;
+  margin-top: 0;
+  margin-bottom: 8px;
+  color: #6D3F49;
+}
+
+.similarPost__content {
+  display: flex;
+  gap: 1.125rem;
+}
+
+@media (max-width: 550px) {
+  .similarPost__content {
+    flex-direction: column;
+  }
+}
+
+.similarPost__content .blog-tags__row {
+  list-style: none;
+}
+
+.similarPost__content .blog-date {
+  margin-top: 15px;
+  line-height: 18px;
+  color: #3E3E3E;
+  margin-bottom: 36px;
+}
+
+.similarPost__content .blog-tags {
+  display: none;
+}
+
+.similarPost__viewAll {
+  text-decoration: none;
+  color: #6D3F49;
+  font-size: 12px;
+  text-align: right;
+}
+
+.similarPost__viewAll:hover {
+  text-decoration: underline;
+}
+
+
+/* =============================================================================
+   6. TOP PROMOTION BAR (.top-promotion)
+   ============================================================================= */
+
+.top-promotion {
+  background-color: #792f46;
+}
+
+.top-promotion .promotion {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+@media (max-width: 1024px) {
+  .top-promotion .promotion {
+    white-space: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    flex-wrap: nowrap;
+    gap: 50px;
+  }
+
+  .top-promotion .promotion::-webkit-scrollbar {
+    display: none;
+  }
+
+  @keyframes top-promo-scroll {
+    0% {
+      transform: translateX(0);
+    }
+
+    100% {
+      transform: translateX(-400px);
+    }
+  }
+
+  .top-promotion .promotion.auto-scroll .promotion-item {
+    animation: top-promo-scroll 5s linear infinite;
+  }
+}
+
+.top-promotion .promotion .promotion-item span {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.top-promotion .promotion .promotion-item.review-rating {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+}
+
+.top-promotion .promotion .promotion-item.review-rating .spr-icon::before {
+  content: "\2605";
+  color: #ffffff;
+}
+
+
+/* =============================================================================
+   7. REVIEW RATING / STAR ICONS (.review-rating, .spr-*)
+   ============================================================================= */
+
+.review-rating {
+  display: inline-block;
+  vertical-align: bottom;
+  margin-left: -2px;
+}
+
+.review-rating .spr-badge-starrating {
+  font-size: 18px;
+}
+
+@media (min-width: 1025px) {
+  .review-rating .spr-badge-starrating {
+    padding-right: 13px;
+  }
+}
+
+.review-rating .spr-icon::before {
+  font-family: inherit;
+  font-size: 28px;
+  font-style: normal;
+  width: auto;
+  height: auto;
+  font-weight: normal;
+  display: inline-block;
+  text-decoration: inherit;
+  text-align: center;
+  font-variant: normal;
+  text-transform: none;
+}
+
+.review-rating .spr-icon.spr-icon-star::before {
+  content: "\2605";
+  color: #3e3e3e;
+}
+
+.review-rating .spr-icon.spr-icon-star-empty::before {
+  content: "\2605";
+  color: #5d5852;
+}
+
+.review-rating .spr-badge-caption {
+  display: inline-block;
+  vertical-align: middle;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 22px;
+  margin: 0 0 0 10px;
+  text-transform: capitalize;
+  letter-spacing: 0.02em;
+}
+
+
+/* =============================================================================
+   8. BLOG POST general typography
+   ============================================================================= */
+
+.blog-post p {
+  margin-bottom: 16px;
+  font-size: 12px;
+  line-height: 18px;
+  font-weight: 400;
+}
+
+/* Ensure images inside blog widgets are responsive */
+.blogPost__content img,
+.blogPost__intro img {
+  max-width: 100%;
+  height: auto;
+}
+
+
+/* =============================================================================
+   9. SPACER UTILITY  (.sd-spacer-*)
+   The BC widget generates these inline via <style> tags so we provide a
+   sensible default fallback here. The inline <style> in each post will
+   override this with the exact pixel value.
+   ============================================================================= */
+
+[class^="sd-spacer-"] {
+  display: block;
+}
+
+
+/* =============================================================================
+   10. PRODUCT SET WIDGET placeholder
+   The BC product-set-widget renders via JS into #sd-product-set-{id}.
+   On Shopify the JS won't run, so we hide the empty placeholder div to
+   avoid stray whitespace.
+   ============================================================================= */
+
+[id^="sd-product-set-"]:empty {
+  display: none;
+}
+
+
+/* =============================================================================
+   11. RESPONSIVE IMAGE DIV (sd-image widget background pattern)
+   BC renders images as CSS background-image on a wrapper div with
+   opacity:0 on the <img>. Make the img visible for Shopify where JS won't run.
+   ============================================================================= */
+
+[id^="sd-image-"] img {
+  opacity: 1 !important;
+  width: 100%;
+  height: auto;
+  display: block;
+}

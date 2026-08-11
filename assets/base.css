@@ -2205,6 +2205,8 @@ details[open] > summary .icon-plus-wrapper {
 }
 
 @media screen and (min-width: 750px) {
+
+  .swiper.swiper-initialized .grid-layout.md\:grid,
   .grid-layout {
     --card-grid-gap: var(--grid-desktop-vertical-spacing) var(--grid-desktop-horizontal-spacing);
   }
@@ -10331,12 +10333,11 @@ more-payment-options-link a:hover {
   .contact-form-row {
     width: 100%;
     padding: 0 var(--padding-gap);
-    margin-bottom: var(--margin-sm);
+    margin-bottom: 2.7rem;
 
     @media screen and (min-width: 750px) {
       width: calc(var(--formRowWidth, 50%));
       padding: 0 var(--padding-gap);
-      margin-bottom: var(--margin-md);
     }
   }
 
@@ -20558,4 +20559,93 @@ ul.items-same-height > li {
   color: #6d3f49;
   width: 28px;
   height: 17px;
+}
+
+
+
+.custom-page-content {
+  h2 {
+    font-size: 25px;
+  }
+
+  h3 {
+    font-size: 22px;
+  }
+
+  ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  blockquote,
+  dd,
+  div,
+  dl,
+  dt,
+  form,
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6,
+  li,
+  ol,
+  p,
+  pre,
+  td,
+  th,
+  ul {
+    margin: 0;
+    padding: 0;
+  }
+
+  p {
+    margin-bottom: 1.5rem;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 400;
+    letter-spacing: 0;
+    margin-bottom: 12px;
+    text-transform: none !important;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-weight: 400;
+    margin-top: 36px;
+  }
+}
+
+.page-Careers h2 {
+  font-size: 18px;
+  text-transform: uppercase;
+  margin: 0;
+  padding: 4px 0 0;
+  line-height: 23px;
+}
+
+.page-Careers p {
+  line-height: 17px;
+  margin-bottom: 17px;
+}
+
+.required-text {
+  float: right;
+  margin-top: 6px;
+  color: #757575;
+  font-size: 1rem;
+  text-transform: uppercase;
+  vertical-align: bottom;
 }
