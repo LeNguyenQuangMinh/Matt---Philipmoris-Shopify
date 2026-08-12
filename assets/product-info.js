@@ -720,7 +720,7 @@ if (!customElements.get('product-info')) {
       }
 
       setRecentlyViewed() {
-        const name = '_halo_recently_viewed';
+        const name = '_bspoq_recently_viewed';
         const productId = parseInt(this.dataset.productId);
         let listItems = JSON.parse(localStorage.getItem(name) || '[]');
         if (!productId) return;

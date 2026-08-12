@@ -17,11 +17,14 @@
     --search-heading-color: {{ bl_stts.heading_color }};
     --search-bar-bg: {{ bl_stts.bar_background }};
     --search-bar-text: {{ bl_stts.bar_text_color }};
-    --search-placeholder-color: {{ bl_stts.placeholder_color }};
+    --search-placeholder-color: {{ bl_stts.placeholder_color | default: bl_stts.bar_text_color }};
     --search-icon-color: {{ bl_stts.icon_color }};
     --search-icon-circle-color: {{ bl_stts.icon_circle_color }};
     --search-bar-max-width: {{ bl_stts.max_width }}px;
     --search-bar-height: {{ bl_stts.bar_height }}px;
+    --search-bar-border-color: {{ bl_stts.bar_border_color | default: bl_stts.border_color | default: 'transparent' }};
+    --search-bar-border-radius: {{ bl_stts.bar_border_radius | default: bl_stts.border_radius | default: 0 }}px;
+    --search-input-text-align: {{ bl_stts.text_alignment | default: 'center' }};
   "
   {{ block.shopify_attributes }}
 >

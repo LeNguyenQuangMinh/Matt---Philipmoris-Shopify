@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "Карусель используется на мобильных устройствах",
     "cart_drawer_empty_info": "Видно, когда ящик тележки пуст.",
     "cart_drawer_info": "Чтобы отобразить ящик корзины, выберите тип корзины «Ящик» в своем [theme settings](/editor?context=theme&category=cart).",
-    "category_menu_info": "Загрузите изображения с тем же именем, что и у дескриптора меню, чтобы отобразить изображения для каждой категории. [Learn more](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "Загрузите изображения с тем же именем, что и у дескриптора меню, чтобы отобразить изображения для каждой категории. [Learn more](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "Кнопка будет центрирована на изображении при наведении",
     "checkout_buttons": "Позволяет покупателям быстрее оформлять заказ и может улучшить конверсию. [Learn more](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "Один столбец — это макет для мобильных устройств по умолчанию, когда количество столбцов на компьютере установлено равным 1.",

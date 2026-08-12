@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "कैरोसेल का उपयोग मोबाइल पर किया जाता है",
     "cart_drawer_empty_info": "गाड़ी की दराज खाली होने पर दिखाई देता है।",
     "cart_drawer_info": "अपना कार्ट ड्रॉअर प्रदर्शित करने के लिए, अपने [theme settings](/editor?context=theme&category=cart) में कार्ट प्रकार 'ड्रॉअर' चुनें।",
-    "category_menu_info": "प्रत्येक श्रेणी के लिए चित्र दिखाने के लिए मेनू हैंडल के समान नाम से चित्र अपलोड करें। [Learn more](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "प्रत्येक श्रेणी के लिए चित्र दिखाने के लिए मेनू हैंडल के समान नाम से चित्र अपलोड करें। [Learn more](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "होवर करने पर बटन छवि पर केन्द्रित होगा",
     "checkout_buttons": "खरीदारों को तेजी से जांच करने की अनुमति देता है और रूपांतरण में सुधार कर सकता है। [Learn more](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "जब डेस्कटॉप पर कॉलम की संख्या 1 पर सेट होती है तो एक कॉलम डिफ़ॉल्ट मोबाइल लेआउट होता है।",

@@ -33,8 +33,8 @@
       editCartPopup: "{{ 'edit-cart.js' | asset_url }}",
     };
 
-    window.__haloLoadedScripts = window.__haloLoadedScripts || {};
-    window.__haloLoadedStyles = window.__haloLoadedStyles || {};
+    window.__bspoqLoadedScripts = window.__bspoqLoadedScripts || {};
+    window.__bspoqLoadedStyles = window.__bspoqLoadedStyles || {};
 
     const hasQuickOrderListSection = Boolean(
       document.querySelector('quick-order-list')
@@ -56,8 +56,8 @@
     }
 
     function loadScriptOnce(src) {
-      if (!src || window.__haloLoadedScripts[src]) return Promise.resolve();
-      window.__haloLoadedScripts[src] = true;
+      if (!src || window.__bspoqLoadedScripts[src]) return Promise.resolve();
+      window.__bspoqLoadedScripts[src] = true;
 
       return new Promise((resolve, reject) => {
         const s = document.createElement('script');
@@ -70,8 +70,8 @@
     }
 
     function loadStyleOnce(href) {
-      if (!href || window.__haloLoadedStyles[href]) return;
-      window.__haloLoadedStyles[href] = true;
+      if (!href || window.__bspoqLoadedStyles[href]) return;
+      window.__bspoqLoadedStyles[href] = true;
       const l = document.createElement('link');
       l.rel = 'stylesheet';
       l.href = href;

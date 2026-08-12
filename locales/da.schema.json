@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "Karrusel bruges på mobil",
     "cart_drawer_empty_info": "Synlig når vognskuffen er tom.",
     "cart_drawer_info": "For at vise din vognskuffe skal du vælge vogntypen 'Skuffe' i din [temaindstillinger](/editor?context=theme&category=cart).",
-    "category_menu_info": "Upload billeder med samme navn som menuhåndtaget for at vise billeder for hver kategori. [Få flere oplysninger](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "Upload billeder med samme navn som menuhåndtaget for at vise billeder for hver kategori. [Få flere oplysninger](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "Knappen vil være centreret på billedet, når du holder musemarkøren",
     "checkout_buttons": "Giver købere mulighed for at tjekke ud hurtigere og kan forbedre konverteringen. [Få flere oplysninger](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "Én kolonne er standard mobillayout, når antallet af kolonner på skrivebordet er indstillet til 1.",

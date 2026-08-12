@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "Carrossel é usado em dispositivos móveis",
     "cart_drawer_empty_info": "Visível quando a gaveta do carrinho está vazia.",
     "cart_drawer_info": "Para exibir a gaveta do seu carrinho, escolha o tipo de carrinho 'Gaveta' em seu [theme settings](/editor?context=theme&category=cart).",
-    "category_menu_info": "Faça upload de imagens com o mesmo nome do identificador do menu para mostrar imagens de cada categoria. [Learn more](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "Faça upload de imagens com o mesmo nome do identificador do menu para mostrar imagens de cada categoria. [Learn more](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "O botão ficará centralizado na imagem ao passar o mouse",
     "checkout_buttons": "Permite que os compradores finalizem a compra com mais rapidez e melhorem a conversão. [Learn more](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "Uma coluna é o layout móvel padrão quando o número de colunas no desktop é definido como 1.",

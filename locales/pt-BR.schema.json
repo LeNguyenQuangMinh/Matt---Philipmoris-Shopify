@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "O carrossel é usado em dispositivos móveis",
     "cart_drawer_empty_info": "Visível quando o carrinho está vazio.",
     "cart_drawer_info": "Para exibir o painel do carrinho, selecione o tipo 'Drawer' nas [configurações do tema](/editor?context=theme&category=cart).",
-    "category_menu_info": "Faça upload de imagens nomeadas conforme o slug do menu para exibir imagens de cada categoria. [Saiba mais](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "Faça upload de imagens nomeadas conforme o slug do menu para exibir imagens de cada categoria. [Saiba mais](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "O botão ficará centralizado na imagem ao passar o mouse",
     "checkout_buttons": "Permite compras rápidas e melhora a conversão. [Saiba mais](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "Uma coluna é o padrão do layout mobile quando no desktop está definido para 1 coluna.",

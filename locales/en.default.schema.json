@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "Carousel is used on mobile",
     "cart_drawer_empty_info": "Visible when cart drawer is empty.",
     "cart_drawer_info": "To display your cart drawer, choose the cart type 'Drawer' in your [theme settings](/editor?context=theme&category=cart).",
-    "category_menu_info": "Upload images with the same name as the menu handle to show images for each category. [Learn more](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "Upload images with the same name as the menu handle to show images for each category. [Learn more](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "Button will be centered on the image when hover",
     "checkout_buttons": "Allows buyers to check out faster and can improve conversion. [Learn more](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "One column is the default mobile layout when the number of columns on desktop is set to 1.",

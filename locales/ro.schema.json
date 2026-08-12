@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "Caruselul este folosit pe mobil",
     "cart_drawer_empty_info": "Vizibil atunci când sertarul căruciorului este gol.",
     "cart_drawer_info": "Pentru a afișa sertarul coșului, alegeți tipul de coș „Drawer” în [theme settings](/editor?context=theme&category=cart).",
-    "category_menu_info": "Încărcați imagini cu același nume ca și mânerul de meniu pentru a afișa imagini pentru fiecare categorie. [Learn more](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "Încărcați imagini cu același nume ca și mânerul de meniu pentru a afișa imagini pentru fiecare categorie. [Learn more](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "Butonul va fi centrat pe imagine când treceți cu mouse-ul",
     "checkout_buttons": "Permite cumpărătorilor să verifice mai repede și poate îmbunătăți conversia. [Learn more](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "O coloană este aspectul mobil prestabilit atunci când numărul de coloane de pe desktop este setat la 1.",

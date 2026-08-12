@@ -7,7 +7,7 @@ class AgeVerificationPopup extends HTMLElement {
     this._storage = this.getBestStorage();
 
     const popupId = this.id || 'global';
-    this.dismissKey = `_halo_age_verification_popup_dismiss_${popupId}`;
+    this.dismissKey = `_bspoq_age_verification_popup_dismiss_${popupId}`;
 
     this.overlay = this.querySelector('.drawer__overlay') || this.querySelector('[id^="Drawer-Overlay-"]');
     this.content = this.querySelector('.popup__inner');

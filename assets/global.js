@@ -26,7 +26,7 @@ if (typeof window.MainEvents === 'undefined') {
   window.MainEvents.mediaStartedPlaying = 'media:started-playing';
 }
 console.log(
-  `%c${window.info.name} %c(${window.info.version})%c by Halothemes\n%cLearn more at %chttps://halothemes.net/`,
+  `%c${window.info.name} %c(${window.info.version})%c by bspoq\n%cLearn more at %chttps://bspoq.net/`,
   'color: #ff8800; font-weight: bold; font-size: 1.2rem;',
   'color: #ffa733; font-style: italic; font-size: 1.1rem;',
   'color: #ffa733; font-size: 1rem;',
@@ -2873,7 +2873,7 @@ class RecentlyViewedProducts extends HTMLElement {
 
   getUrl() {
     const listItems = JSON.parse(
-      localStorage.getItem("_halo_recently_viewed") || "[]"
+      localStorage.getItem("_bspoq_recently_viewed") || "[]"
     );
 
     if (

@@ -248,7 +248,7 @@
     "carousel_layout_on_mobile": "轮播在移动设备上使用",
     "cart_drawer_empty_info": "当购物车抽屉为空时可见。",
     "cart_drawer_info": "要显示您的购物车抽屉，请在 [theme settings](/editor?context=theme&category=cart) 中选择购物车类型“抽屉”。",
-    "category_menu_info": "上传与菜单句柄同名的图像以显示每个类别的图像。 [Learn more](https://halosoft.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
+    "category_menu_info": "上传与菜单句柄同名的图像以显示每个类别的图像。 [Learn more](https://bspoq.gitbook.io/ella-documentation/sections/all-sections-in-theme/slideshow#how-to-show-category-block-for-slideshow-like-on-the-supermarket-homepage)",
     "center_button_info": "悬停时按钮将位于图像中央",
     "checkout_buttons": "让买家能够更快地结账并提高转化率。 [Learn more](https://help.shopify.com/manual/online-store/dynamic-checkout)",
     "columns_mobile_info": "当桌面上的列数设置为 1 时，一列是默认的移动布局。",
