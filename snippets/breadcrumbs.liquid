@@ -54,21 +54,26 @@
         "name": "{{ product.title | escape }}",
         "item": "{{ product.url | prepend: request.host | prepend: 'https://' }}"
       }
-    {%- elsif template.name contains 'blog' and blog -%}
-      ,{
-        "@type": "ListItem",
-        "position": {{ position }},
-        "name": "{{ 'content.breadcrumb.blogs' | t | escape }}",
-        "item": "{{ routes.blogs_url | prepend: request.host | prepend: 'https://' }}"
-      }
-      {%- assign position = position | plus: 1 -%}
-      ,{
-        "@type": "ListItem",
-        "position": {{ position }},
-        "name": "{{ blog.title | escape }}",
-        "item": "{{ blog.url | prepend: request.host | prepend: 'https://' }}"
-      }
-      {%- assign position = position | plus: 1 -%}
+    {%- elsif template.name contains 'blog' or template.name contains 'article' -%}
+      {%- assign current_blog = blog | default: article.blog -%}
+      {%- if current_blog -%}
+        {%- if routes.blogs_url != blank -%}
+          ,{
+            "@type": "ListItem",
+            "position": {{ position }},
+            "name": "{{ 'content.breadcrumb.blogs' | t | escape }}",
+            "item": "{{ routes.blogs_url | prepend: request.host | prepend: 'https://' }}"
+          }
+          {%- assign position = position | plus: 1 -%}
+        {%- endif -%}
+        ,{
+          "@type": "ListItem",
+          "position": {{ position }},
+          "name": "{{ current_blog.title | escape }}",
+          "item": "{{ current_blog.url | prepend: request.host | prepend: 'https://' }}"
+        }
+        {%- assign position = position | plus: 1 -%}
+      {%- endif -%}
       {%- if article -%}
         ,{
           "@type": "ListItem",
@@ -262,31 +267,36 @@
           <span>{{ product.title | escape }}</span>
         </a>
       </li>
-    {% elsif template.name contains 'blog' and blog %}
-      <li {{ attr_item }}>
-        <a
-          href="{{ routes.blogs_url }}"
-          title="{{ 'content.breadcrumb.blogs' | t }}"
-          {{ class_link }}
-        >
-          <span>{{ 'content.breadcrumb.blogs' | t }}</span>
-        </a>
-        <span class="breadcrumbs__separator">
-          {{ separator }}
-        </span>
-      </li>
-      {% assign position = position | plus: 1 %}
-      <li {{ attr_item }}>
-        <a href="{{ blog.url }}" title="{{ blog.title | escape }}" {% if article %}{{ class_link }}{% else %}class="link link--underline"{% endif %}>
-          <span>{{ blog.title | escape }}</span>
-        </a>
-        {% if article %}
-          <span class="breadcrumbs__separator">
-            {{ separator }}
-          </span>
+    {% elsif template.name contains 'blog' or template.name contains 'article' %}
+      {% assign current_blog = blog | default: article.blog %}
+      {% if current_blog %}
+        {% if routes.blogs_url != blank %}
+          <li {{ attr_item }}>
+            <a
+              href="{{ routes.blogs_url }}"
+              title="{{ 'content.breadcrumb.blogs' | t }}"
+              {{ class_link }}
+            >
+              <span>{{ 'content.breadcrumb.blogs' | t }}</span>
+            </a>
+            <span class="breadcrumbs__separator">
+              {{ separator }}
+            </span>
+          </li>
+          {% assign position = position | plus: 1 %}
         {% endif %}
-      </li>
-      {% assign position = position | plus: 1 %}
+        <li {{ attr_item }}>
+          <a href="{{ current_blog.url }}" title="{{ current_blog.title | escape }}" {% if article %}{{ class_link }}{% else %}class="link link--underline"{% endif %}>
+            <span>{{ current_blog.title | escape }}</span>
+          </a>
+          {% if article %}
+            <span class="breadcrumbs__separator">
+              {{ separator }}
+            </span>
+          {% endif %}
+        </li>
+        {% assign position = position | plus: 1 %}
+      {% endif %}
       {% if article %}
         <li {{ attr_item }}>
           <a href="{{ article.url }}" class="link link--underline">

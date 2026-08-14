@@ -17,15 +17,93 @@
   {% assign author_bio = meta_profile.bio | default: meta_profile.biography | default: meta_profile.description %}
 {% endif %}
 
-{% if author_name != blank or author_bio != blank or author_avatar != blank %}
+{% assign has_author_content = false %}
+{% if author_avatar != blank or author_bio != blank %}
+  {% assign has_author_content = true %}
+{% endif %}
+
+{% if has_author_content or request.design_mode %}
+  {% if author_name == blank %}
+    {% assign author_name = 'Author Name' %}
+  {% endif %}
+
+  {% if author_bio == blank and request.design_mode %}
+    {% assign author_bio = 'Author biography placeholder text for theme editor preview. Add author profile metafield to display actual author details.' %}
+  {% endif %}
+
   {% assign author_handle = author_name | handle %}
   {% assign author_tag_url = blog.url | append: '/tagged/author:' | append: author_handle %}
+  {% assign b_id = block.id %}
+
   <div
+    id="author-bio-{{ b_id }}"
     class="blogPost__intro spacing-style{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-    style="{% render 'spacing-style', settings: block.settings %}"
+    style="
+      {%- if block.settings.margin_bottom != 42 and block.settings.margin_bottom != blank -%}
+        --author-bio-margin-bottom: {{ block.settings.margin_bottom }}px;
+      {%- endif -%}
+      {%- if block.settings.padding_top_desktop != 32 and block.settings.padding_top_desktop != blank -%}
+        --author-bio-padding-top-desktop: {{ block.settings.padding_top_desktop }}px;
+      {%- endif -%}
+      {%- if block.settings.padding_top_mobile != 70 and block.settings.padding_top_mobile != blank -%}
+        --author-bio-padding-top-mobile: {{ block.settings.padding_top_mobile }}px;
+      {%- endif -%}
+      {%- if block.settings.avatar_size_desktop != 123 and block.settings.avatar_size_desktop != blank -%}
+        --author-bio-avatar-size-desktop: {{ block.settings.avatar_size_desktop }}px;
+      {%- endif -%}
+      {%- if block.settings.avatar_size_mobile != 80 and block.settings.avatar_size_mobile != blank -%}
+        --author-bio-avatar-size-mobile: {{ block.settings.avatar_size_mobile }}px;
+      {%- endif -%}
+      {%- if block.settings.avatar_border_radius != 50 and block.settings.avatar_border_radius != blank -%}
+        --author-bio-avatar-border-radius: {{ block.settings.avatar_border_radius }}%;
+      {%- endif -%}
+      {%- if block.settings.box_bg_color != 'rgba(240, 235, 229, 0.5)' and block.settings.box_bg_color != 'rgba(240, 235, 229, 0.50)' and block.settings.box_bg_color != blank -%}
+        --author-bio-box-bg: {{ block.settings.box_bg_color }};
+      {%- endif -%}
+      {%- if block.settings.box_border_radius != 0 and block.settings.box_border_radius != blank -%}
+        --author-bio-box-border-radius: {{ block.settings.box_border_radius }}px;
+      {%- endif -%}
+      {%- if block.settings.box_width_offset_desktop != 70 and block.settings.box_width_offset_desktop != blank -%}
+        --author-bio-box-width-desktop: calc(100% - {{ block.settings.box_width_offset_desktop }}px);
+      {%- endif -%}
+      {%- if block.settings.box_padding_top_desktop != 15 or block.settings.box_padding_right_desktop != 25 or block.settings.box_padding_bottom_desktop != 25 or block.settings.box_padding_left_desktop != 75 -%}
+        --author-bio-box-padding-desktop: {{ block.settings.box_padding_top_desktop | default: 15 }}px {{ block.settings.box_padding_right_desktop | default: 25 }}px {{ block.settings.box_padding_bottom_desktop | default: 25 }}px {{ block.settings.box_padding_left_desktop | default: 75 }}px;
+      {%- endif -%}
+      {%- if block.settings.box_padding_top_mobile != 60 or block.settings.box_padding_inline_mobile != 20 or block.settings.box_padding_bottom_mobile != 20 -%}
+        --author-bio-box-padding-mobile: {{ block.settings.box_padding_top_mobile | default: 60 }}px {{ block.settings.box_padding_inline_mobile | default: 20 }}px {{ block.settings.box_padding_bottom_mobile | default: 20 }}px;
+      {%- endif -%}
+      {%- if block.settings.title_font_size != 12 and block.settings.title_font_size != blank -%}
+        --author-bio-title-font-size: {{ block.settings.title_font_size }}px;
+      {%- endif -%}
+      {%- if block.settings.title_letter_spacing != 0 and block.settings.title_letter_spacing != blank -%}
+        --author-bio-title-letter-spacing: {{ block.settings.title_letter_spacing }}px;
+      {%- endif -%}
+      {%- if block.settings.title_line_height != 18 and block.settings.title_line_height != blank -%}
+        --author-bio-title-line-height: {{ block.settings.title_line_height }}px;
+      {%- endif -%}
+      {%- if block.settings.title_color != '#6D3F49' and block.settings.title_color != '#6d3f49' and block.settings.title_color != blank -%}
+        --author-bio-title-color: {{ block.settings.title_color }};
+      {%- endif -%}
+      {%- if block.settings.title_margin_bottom != 10 and block.settings.title_margin_bottom != blank -%}
+        --author-bio-title-margin-bottom: {{ block.settings.title_margin_bottom }}px;
+      {%- endif -%}
+      {%- if block.settings.title_text_transform != 'capitalize' and block.settings.title_text_transform != blank -%}
+        --author-bio-title-text-transform: {{ block.settings.title_text_transform }};
+      {%- endif -%}
+      {%- if block.settings.text_font_size != 12 and block.settings.text_font_size != blank -%}
+        --author-bio-text-font-size: {{ block.settings.text_font_size }}px;
+      {%- endif -%}
+      {%- if block.settings.text_line_height != 18 and block.settings.text_line_height != blank -%}
+        --author-bio-text-line-height: {{ block.settings.text_line_height }}px;
+      {%- endif -%}
+      {%- if block.settings.text_color != blank and block.settings.text_color != 'rgba(0,0,0,0)' and block.settings.text_color != '#000000' -%}
+        --author-bio-text-color: {{ block.settings.text_color }};
+      {%- endif -%}
+      {% render 'spacing-style', settings: block.settings %}
+    "
     {{ block.shopify_attributes }}
   >
-    <div class="container container-1091 p-0">
+    <div class="container {{ block.settings.container_class | default: 'container-1091' }} p-0">
       <div class="intro-block">
         {% if author_avatar != blank %}
           <a href="{{ author_tag_url }}">
@@ -34,17 +112,31 @@
                 src="{{ author_avatar | image_url: width: 300 }}"
                 alt="{{ author_name | escape }}"
                 loading="lazy"
-                width="130"
-                height="130"
+                width="{{ block.settings.avatar_size_desktop | default: 123 }}"
+                height="{{ block.settings.avatar_size_desktop | default: 123 }}"
               >
+            </div>
+          </a>
+        {% elsif request.design_mode %}
+          <a href="#">
+            <div class="intro-image" style="background-color: #e5e7eb; display: flex; align-items: center; justify-content: center;">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#9ca3af" style="width: 55%; height: 55%;">
+                <path fill-rule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.6-7.812-1.7a.75.75 0 01-.437-.695z" clip-rule="evenodd" />
+              </svg>
             </div>
           </a>
         {% endif %}
         <div class="intro-content">
-          <h5 class="intro-title">Posted by {{ author_name }}</h5>
+          <h5 class="intro-title">
+            {% if block.settings.author_prefix != blank %}{{ block.settings.author_prefix }} {% endif %}{{ author_name }}
+          </h5>
           {% if author_bio != blank %}
             <div class="intro-text rte">
-              {{ author_bio | metafield_tag }}
+              {% if meta_profile != blank and author_bio != 'Author biography placeholder text for theme editor preview. Add author profile metafield to display actual author details.' %}
+                {{ author_bio | metafield_tag }}
+              {% else %}
+                <p>{{ author_bio }}</p>
+              {% endif %}
             </div>
           {% endif %}
         </div>
@@ -60,27 +152,310 @@
   "settings": [
     {
       "type": "header",
-      "content": "t:content.padding"
+      "content": "Author Information"
+    },
+    {
+      "type": "text",
+      "id": "author_prefix",
+      "label": "Author Prefix Text",
+      "default": "Posted by"
+    },
+    {
+      "type": "select",
+      "id": "container_class",
+      "label": "Container Width",
+      "options": [
+        {
+          "value": "container-1091",
+          "label": "1091px (Default)"
+        },
+        {
+          "value": "container-1200",
+          "label": "1200px"
+        },
+        {
+          "value": "container",
+          "label": "Full Container"
+        },
+        {
+          "value": "w-full",
+          "label": "Full Width"
+        }
+      ],
+      "default": "container-1091"
+    },
+    {
+      "type": "header",
+      "content": "Section Spacing"
     },
     {
       "type": "range",
-      "id": "padding-block-start",
-      "label": "t:settings.top",
+      "id": "padding_top_desktop",
+      "label": "Top Padding (Desktop)",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "padding_top_mobile",
+      "label": "Top Padding (Mobile)",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "margin_bottom",
+      "label": "Bottom Margin",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 42
+    },
+    {
+      "type": "header",
+      "content": "Avatar Settings"
+    },
+    {
+      "type": "range",
+      "id": "avatar_size_desktop",
+      "label": "Avatar Size (Desktop)",
+      "min": 40,
+      "max": 140,
+      "step": 1,
+      "unit": "px",
+      "default": 123
+    },
+    {
+      "type": "range",
+      "id": "avatar_size_mobile",
+      "label": "Avatar Size (Mobile)",
+      "min": 30,
+      "max": 130,
+      "step": 1,
+      "unit": "px",
+      "default": 80
+    },
+    {
+      "type": "range",
+      "id": "avatar_border_radius",
+      "label": "Avatar Border Radius",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "%",
+      "default": 50
+    },
+    {
+      "type": "header",
+      "content": "Content Box Settings"
+    },
+    {
+      "type": "color",
+      "id": "box_bg_color",
+      "label": "Box Background Color",
+      "default": "rgba(240, 235, 229, 0.5)"
+    },
+    {
+      "type": "range",
+      "id": "box_border_radius",
+      "label": "Box Border Radius",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "box_width_offset_desktop",
+      "label": "Desktop Box Width Offset",
+      "info": "Width = calc(100% - offset)",
+      "min": 0,
+      "max": 150,
+      "step": 5,
+      "unit": "px",
+      "default": 70
+    },
+    {
+      "type": "range",
+      "id": "box_padding_top_desktop",
+      "label": "Desktop Padding Top",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 30
+      "default": 15
     },
     {
       "type": "range",
-      "id": "padding-block-end",
-      "label": "t:settings.bottom",
+      "id": "box_padding_right_desktop",
+      "label": "Desktop Padding Right",
       "min": 0,
       "max": 100,
       "step": 1,
       "unit": "px",
-      "default": 30
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "box_padding_bottom_desktop",
+      "label": "Desktop Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "box_padding_left_desktop",
+      "label": "Desktop Padding Left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 75
+    },
+    {
+      "type": "range",
+      "id": "box_padding_top_mobile",
+      "label": "Mobile Padding Top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 60
+    },
+    {
+      "type": "range",
+      "id": "box_padding_inline_mobile",
+      "label": "Mobile Padding Sides",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "range",
+      "id": "box_padding_bottom_mobile",
+      "label": "Mobile Padding Bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Title Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_font_size",
+      "label": "Title Font Size",
+      "min": 8,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "title_line_height",
+      "label": "Title Line Height",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "range",
+      "id": "title_letter_spacing",
+      "label": "Title Letter Spacing",
+      "min": -2,
+      "max": 10,
+      "step": 0.5,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#6D3F49"
+    },
+    {
+      "type": "select",
+      "id": "title_text_transform",
+      "label": "Title Text Transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        }
+      ],
+      "default": "capitalize"
+    },
+    {
+      "type": "range",
+      "id": "title_margin_bottom",
+      "label": "Title Margin Bottom",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 10
+    },
+    {
+      "type": "header",
+      "content": "Bio Text Typography"
+    },
+    {
+      "type": "range",
+      "id": "text_font_size",
+      "label": "Bio Text Font Size",
+      "min": 8,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 12
+    },
+    {
+      "type": "range",
+      "id": "text_line_height",
+      "label": "Bio Line Height",
+      "min": 10,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "text_color",
+      "label": "Bio Text Color",
+      "default": "#000000"
     }
   ],
   "presets": [

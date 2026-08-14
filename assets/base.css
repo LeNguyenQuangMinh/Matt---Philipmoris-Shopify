@@ -3986,7 +3986,7 @@ details[open] > .share-button__fallback {
   }
 }
 
-.rte blockquote {
+.rte blockquote:not(.tiktok-embed) {
   display: inline-flex;
 
   & > * {
@@ -8355,10 +8355,11 @@ animate-image {
   opacity: 0.7;
 }
 
+/* 
 .blog-post-content {
   max-width: var(--normal-content-width);
   margin: 0 auto;
-}
+} */
 
 .blog-post-card__content-text a {
   color: var(--color-primary);
