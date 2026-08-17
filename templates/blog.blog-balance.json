@@ -523,7 +523,7 @@
         "section_width": "custom",
         "page_width_custom": 1670,
         "columns_gap": 60,
-        "limit_blog_posts": 6,
+        "limit_blog_posts": 20,
         "blog_post_gap": 0,
         "blog_post_gap_mobile": 40,
         "pagination_alignment": "flex-end",

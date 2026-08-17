@@ -373,9 +373,9 @@
       "button_next": "Next",
       "button_previous": "Prev",
       "label": "Pagination",
-      "next": "Next page",
+      "next": "Next",
       "page": "Page {{ number }}",
-      "previous": "Previous page"
+      "previous": "Previous"
     },
     "password_page": {
       "admin_link_html": "Are you the store owner? <a href=\"/admin\" class=\"link link--underline\">Log in here</a>",

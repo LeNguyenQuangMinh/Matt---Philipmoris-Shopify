@@ -3,28 +3,15 @@
 
   @param {object} paginate - Shopify paginate object
   @param {object} section - section object with settings
+  @param {object} settings - optional settings override
+  @param {string} suffix - optional suffix for spacing
+  @param {string} anchor - optional anchor url
 {% enddoc %}
 
 {% liquid
-  assign sec_stts = section.settings
+  assign sec_stts = settings | default: section.settings
   assign pagination_type = sec_stts.pagination_type
 %}
-
-{% capture list_class %}
-  pagination__list list-unstyled flex flex-wrap
-{% endcapture %}
-
-{% capture item_class %}
-  pagination__item inline-flex items-center justify-center relative w-full p-0 decoration-none color-foreground border-style
-{% endcapture %}
-
-{% capture icons_style %}
-  {% if sec_stts.pagination_icons_type == 'chevron' %}
-    {{- 'icon-caret.svg' | inline_asset_content -}}
-  {% else %}
-    {{- 'icon-arrow.svg' | inline_asset_content -}}
-  {% endif %}
-{% endcapture %}
 
 {%- if paginate.parts.size > 0 -%}
   <div
@@ -42,67 +29,81 @@
     <nav
       class="pagination{% if pagination_type == 'infinite' or pagination_type == 'viewmore' %} hidden{% endif %}"
       role="navigation"
-      aria-label="{{ 'content.pagination.label' | t }}"
+      aria-label="{{ 'content.pagination.label' | t | default: 'Pagination' }}"
     >
-      <ul class="{{ list_class }}" role="list">
-        {%- if paginate.previous -%}
-          <li>
+      <div class="pagination__container">
+        <div class="pagination__prev-wrap">
+          {%- if paginate.previous -%}
             <a
               href="{{ paginate.previous.url }}{{ anchor }}"
-              class="{{ item_class }} pagination__item--prev pagination__item-arrow link motion-reduce"
-              aria-label="{{ 'content.pagination.previous' | t }}"
+              class="pagination__item pagination__item--prev pagination__nav-link link motion-reduce"
+              aria-label="{{ 'content.pagination.previous' | t | default: 'Previous' }}"
             >
-              <span class="visually-hidden">{{ 'content.pagination.button_previous' | t }}</span>
-              <span class="svg-wrapper">
-                {{ icons_style }}
-              </span>
+              <svg class="pagination__nav-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+              <span class="pagination__nav-text">{{ 'content.pagination.previous' | t | default: 'Previous' }}</span>
             </a>
-          </li>
-        {%- endif -%}
+          {%- else -%}
+            <span class="pagination__nav-link pagination__nav-link--disabled is-hidden" aria-hidden="true">
+              <svg class="pagination__nav-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M15 18l-6-6 6-6"/>
+              </svg>
+              <span class="pagination__nav-text">{{ 'content.pagination.previous' | t | default: 'Previous' }}</span>
+            </span>
+          {%- endif -%}
+        </div>
 
-        {%- for part in paginate.parts -%}
-          <li>
-            {%- if part.is_link -%}
-              <a
-                href="{{ part.url }}{{ anchor }}"
-                class="{{ item_class }} link"
-                aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
-              >
-                {{- part.title -}}
-              </a>
-            {%- else -%}
-              {%- if part.title == paginate.current_page -%}
+        <ul class="pagination__list list-unstyled" role="list">
+          {%- for part in paginate.parts -%}
+            <li class="pagination__list-item">
+              {%- if part.is_link -%}
                 <a
-                  role="link"
-                  aria-disabled="true"
-                  class="{{ item_class }} pagination__item--current light"
-                  aria-current="page"
-                  aria-label="{{ 'content.pagination.page' | t: number: part.title }}"
+                  href="{{ part.url }}{{ anchor }}"
+                  class="pagination__item pagination__item--link link"
+                  aria-label="{{ 'content.pagination.page' | t: number: part.title | default: part.title }}"
                 >
                   {{- part.title -}}
                 </a>
               {%- else -%}
-                <span class="pagination__item">{{ part.title }}</span>
+                {%- if part.title == paginate.current_page -%}
+                  <span
+                    class="pagination__item pagination__item--current"
+                    aria-current="page"
+                    aria-label="{{ 'content.pagination.page' | t: number: part.title | default: part.title }}"
+                  >
+                    {{- part.title -}}
+                  </span>
+                {%- else -%}
+                  <span class="pagination__item pagination__item--gap">{{ part.title }}</span>
+                {%- endif -%}
               {%- endif -%}
-            {%- endif -%}
-          </li>
-        {%- endfor -%}
+            </li>
+          {%- endfor -%}
+        </ul>
 
-        {%- if paginate.next -%}
-          <li>
+        <div class="pagination__next-wrap">
+          {%- if paginate.next -%}
             <a
               href="{{ paginate.next.url }}{{ anchor }}"
-              class="{{ item_class }} pagination__item--next pagination__item-arrow link motion-reduce"
-              aria-label="{{ 'content.pagination.next' | t }}"
+              class="pagination__item pagination__item--next pagination__nav-link link motion-reduce"
+              aria-label="{{ 'content.pagination.next' | t | default: 'Next' }}"
             >
-              <span class="visually-hidden">{{ 'content.pagination.button_next' | t }}</span>
-              <span class="svg-wrapper">
-                {{ icons_style }}
-              </span>
+              <span class="pagination__nav-text">{{ 'content.pagination.next' | t | default: 'Next' }}</span>
+              <svg class="pagination__nav-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
             </a>
-          </li>
-        {%- endif -%}
-      </ul>
+          {%- else -%}
+            <span class="pagination__nav-link pagination__nav-link--disabled is-hidden" aria-hidden="true">
+              <span class="pagination__nav-text">{{ 'content.pagination.next' | t | default: 'Next' }}</span>
+              <svg class="pagination__nav-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M9 18l6-6-6-6"/>
+              </svg>
+            </span>
+          {%- endif -%}
+        </div>
+      </div>
     </nav>
 
     {% if sec_stts.pagination_type == 'infinite' or sec_stts.pagination_type == 'viewmore' %}

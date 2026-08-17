@@ -2,7 +2,7 @@
 
 {%- liquid
   assign sec_stts = section.settings
-  assign limit = sec_stts.limit_blog_posts
+  assign limit = sec_stts.limit_blog_posts | default: 20
 -%}
 
 <div class="blog-posts-wrapper">
@@ -34,9 +34,59 @@
       </div>
 
       {%- if sec_stts.enable_drawer_sidebar -%}
+        {%- capture drawer_btn_style -%}
+          {% render 'button-style',
+            settings: sec_stts,
+            style_class: sec_stts.drawer_button_style_class,
+            button_style: sec_stts.drawer_button_style,
+            button_border_width: sec_stts.drawer_button_border_width,
+            button_border_radius: sec_stts.drawer_button_border_radius,
+            button_type_font: sec_stts.drawer_button_type_font,
+            button_type_size: sec_stts.drawer_button_type_size,
+            button_font_weight: sec_stts.drawer_button_font_weight,
+            button_text_case: sec_stts.drawer_button_text_case
+          %}
+          {%- if sec_stts.drawer_button_custom_padding -%}
+            padding: {{ sec_stts.drawer_button_padding_block | times: 0.1 }}rem {{ sec_stts.drawer_button_padding_inline | times: 0.1 }}rem !important;
+          {%- endif -%}
+        {%- endcapture -%}
         <side-drawer-opener class="blog-filter-opener" data-side-drawer="#Drawer-Blog-Sidebar">
-          <button class="button-show-filters focus-inset" type="button">
-            <span>{{ sec_stts.drawer_button_label | default: 'SHOW FILTERS +' }}</span>
+          <button
+            class="
+              button-show-filters
+              {{ sec_stts.drawer_button_style_class | default: 'button' }}
+              {% if sec_stts.drawer_button_style == 'outline' %}button--outline{% endif %}
+              {% if sec_stts.drawer_button_show_icon %}button--icon{% endif %}
+              focus-inset
+            "
+            type="button"
+            style="{{ drawer_btn_style }}"
+          >
+            {%- if sec_stts.drawer_button_style_class == 'button' or sec_stts.drawer_button_style_class == blank -%}
+              <span class="button-overflow relative overflow-hidden" data-button-text="{{ sec_stts.drawer_button_label | default: 'SHOW FILTERS' }}">
+                <span class="button-text-main inline-block relative z-1">
+                  {{ sec_stts.drawer_button_label | default: 'SHOW FILTERS' }}
+                </span>
+              </span>
+            {%- else -%}
+              <span class="text">{{ sec_stts.drawer_button_label | default: 'SHOW FILTERS' }}</span>
+            {%- endif -%}
+            {%- if sec_stts.drawer_button_show_icon -%}
+              <span class="icon-button">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                  focusable="false"
+                  class="icon"
+                  width="14"
+                  height="14"
+                  fill="none"
+                  viewBox="{% if sec_stts.drawer_button_icon == 'plus' or sec_stts.drawer_button_icon == blank %}0 0 20 20{% else %}0 0 24 24{% endif %}"
+                >
+                  {% render 'icon', icon: sec_stts.drawer_button_icon | default: 'plus' %}
+                </svg>
+              </span>
+            {%- endif -%}
           </button>
         </side-drawer-opener>
       {%- else -%}
@@ -49,7 +99,6 @@
         </side-drawer-opener>
       {%- endif -%}
     </div>
-    {% content_for 'block', id: 'static-blog-post-group-basic', type: 'group' %}
     {% content_for 'block', id: 'static-blog-tag-spotlight', type: '_blog-post-spotlight' %}
     <div class="blog-posts__main grid">
       {% content_for 'block', id: 'static-blog-post-sidebar', type: '_blog-post-sidebar' %}
@@ -174,14 +223,284 @@
     {
       "type": "checkbox",
       "id": "enable_drawer_sidebar",
-      "label": "Enable filter drawer (Off-canvas)",
+      "label": "Enable filter drawer",
       "default": false
     },
     {
       "type": "text",
       "id": "drawer_button_label",
       "label": "Filter button label",
-      "default": "SHOW FILTERS +"
+      "default": "SHOW FILTERS"
+    },
+    {
+      "type": "checkbox",
+      "id": "drawer_button_show_icon",
+      "label": "Show icon",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "drawer_button_icon",
+      "label": "t:settings.icon",
+      "visible_if": "{{ section.settings.drawer_button_show_icon }}",
+      "options": [
+        {
+          "value": "plus",
+          "label": "Plus (+)"
+        },
+        {
+          "value": "arrow_right",
+          "label": "Arrow right"
+        },
+        {
+          "value": "arrow",
+          "label": "t:options.arrow"
+        },
+        {
+          "value": "arrow_long",
+          "label": "t:options.arrow_long"
+        },
+        {
+          "value": "double_chevron",
+          "label": "Double chevron"
+        },
+        {
+          "value": "caret",
+          "label": "Caret"
+        },
+        {
+          "value": "check_mark",
+          "label": "t:options.check_mark"
+        },
+        {
+          "value": "shopping-bag",
+          "label": "t:options.shopping_bag"
+        },
+        {
+          "value": "cart",
+          "label": "t:options.cart"
+        },
+        {
+          "value": "heart",
+          "label": "t:options.heart"
+        },
+        {
+          "value": "fire",
+          "label": "t:options.fire"
+        },
+        {
+          "value": "lightning_bolt",
+          "label": "t:options.lightning_bolt"
+        }
+      ],
+      "default": "plus"
+    },
+    {
+      "type": "select",
+      "id": "drawer_button_style_class",
+      "label": "t:settings.style",
+      "options": [
+        {
+          "value": "button",
+          "label": "t:options.primary"
+        },
+        {
+          "value": "button-secondary",
+          "label": "t:options.secondary"
+        },
+        {
+          "value": "link",
+          "label": "t:options.link"
+        }
+      ],
+      "default": "button"
+    },
+    {
+      "type": "select",
+      "id": "drawer_button_style",
+      "label": "t:settings.type",
+      "visible_if": "{{ section.settings.drawer_button_style_class == 'button' or section.settings.drawer_button_style_class == 'button-secondary' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "outline",
+          "label": "t:options.outline"
+        },
+        {
+          "value": "custom",
+          "label": "t:options.custom"
+        }
+      ],
+      "default": "default"
+    },
+    {
+      "type": "range",
+      "id": "drawer_button_border_width",
+      "min": 0,
+      "max": 4,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_width",
+      "default": 1,
+      "visible_if": "{{ section.settings.drawer_button_style == 'custom' and section.settings.drawer_button_style_class != 'link' }}"
+    },
+    {
+      "type": "range",
+      "id": "drawer_button_border_radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "label": "t:settings.border_radius",
+      "default": 4,
+      "visible_if": "{{ section.settings.drawer_button_style == 'custom' and section.settings.drawer_button_style_class != 'link' }}"
+    },
+    {
+      "type": "select",
+      "id": "drawer_button_type_font",
+      "label": "t:settings.font",
+      "visible_if": "{{ section.settings.drawer_button_style == 'custom' and section.settings.drawer_button_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "var(--font-body--family)",
+          "label": "t:options.body"
+        },
+        {
+          "value": "var(--font-subheading--family)",
+          "label": "t:options.subheading"
+        },
+        {
+          "value": "var(--font-heading--family)",
+          "label": "t:options.heading"
+        }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "select",
+      "id": "drawer_button_type_size",
+      "label": "t:settings.size",
+      "visible_if": "{{ section.settings.drawer_button_style == 'custom' and section.settings.drawer_button_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "",
+          "label": "t:options.default"
+        },
+        {
+          "value": "1.0rem",
+          "label": "10px"
+        },
+        {
+          "value": "1.2rem",
+          "label": "12px"
+        },
+        {
+          "value": "1.4rem",
+          "label": "14px"
+        },
+        {
+          "value": "1.6rem",
+          "label": "16px"
+        },
+        {
+          "value": "1.8rem",
+          "label": "18px"
+        },
+        {
+          "value": "2.0rem",
+          "label": "20px"
+        },
+        {
+          "value": "2.2rem",
+          "label": "22px"
+        },
+        {
+          "value": "2.4rem",
+          "label": "24px"
+        },
+        {
+          "value": "2.6rem",
+          "label": "26px"
+        },
+        {
+          "value": "2.8rem",
+          "label": "28px"
+        }
+      ],
+      "default": "1.2rem"
+    },
+    {
+      "type": "select",
+      "id": "drawer_button_font_weight",
+      "label": "t:settings.button_text_weight",
+      "visible_if": "{{ section.settings.drawer_button_style == 'custom' and section.settings.drawer_button_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "400",
+          "label": "t:options.regular"
+        },
+        {
+          "value": "600",
+          "label": "t:options.semibold"
+        },
+        {
+          "value": "700",
+          "label": "t:options.bold"
+        }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "drawer_button_text_case",
+      "label": "t:settings.button_text_case",
+      "visible_if": "{{ section.settings.drawer_button_style == 'custom' and section.settings.drawer_button_style_class != 'link' }}",
+      "options": [
+        {
+          "value": "default",
+          "label": "t:options.default"
+        },
+        {
+          "value": "uppercase",
+          "label": "t:options.uppercase"
+        }
+      ],
+      "default": "uppercase"
+    },
+    {
+      "type": "checkbox",
+      "id": "drawer_button_custom_padding",
+      "label": "Custom button padding",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "drawer_button_padding_block",
+      "label": "Vertical padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.drawer_button_custom_padding }}"
+    },
+    {
+      "type": "range",
+      "id": "drawer_button_padding_inline",
+      "label": "Horizontal padding",
+      "min": 0,
+      "max": 50,
+      "step": 1,
+      "unit": "px",
+      "default": 18,
+      "visible_if": "{{ section.settings.drawer_button_custom_padding }}"
     },
     {
       "type": "text",
@@ -207,10 +526,10 @@
       "type": "range",
       "id": "limit_blog_posts",
       "min": 1,
-      "max": 12,
+      "max": 50,
       "step": 1,
       "label": "t:settings.limit_blog_posts",
-      "default": 7
+      "default": 20
     },
     {
       "type": "range",
