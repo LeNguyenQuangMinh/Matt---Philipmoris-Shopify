@@ -22,7 +22,8 @@
   >
     {%- if block.settings.show_author and target_article.author != blank -%}
       <span class="blog-author">
-        Posted by {{ target_article.author }}
+        Posted by {{ target_article.author }} 
+        {%- if block.settings.show_date and target_article.published_at != blank -%}on{%- endif -%}
       </span>
     {%- endif -%}
 

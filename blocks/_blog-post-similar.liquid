@@ -22,16 +22,78 @@
   {% assign view_more_url = target_blog.url %}
 {% endif %}
 
+{% capture meta_markup %}
+{% endcapture %}
+
 <div
+  id="blog-post-similar-{{ block.id }}"
   class="blog-post-similar spacing-style{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-  style="{% render 'spacing-style', settings: block.settings %}"
+  style="
+    {%- if block.settings.columns_desktop != 2 and block.settings.columns_desktop != blank -%}
+      --similar-cols-desktop: {{ block.settings.columns_desktop }};
+    {%- endif -%}
+    {%- if block.settings.columns_mobile != 1 and block.settings.columns_mobile != blank -%}
+      --similar-cols-mobile: {{ block.settings.columns_mobile }};
+    {%- endif -%}
+    {%- if block.settings.grid_gap_desktop != 25 and block.settings.grid_gap_desktop != blank -%}
+      --similar-gap-desktop: {{ block.settings.grid_gap_desktop }}px;
+    {%- endif -%}
+    {%- if block.settings.grid_gap_mobile != 20 and block.settings.grid_gap_mobile != blank -%}
+      --similar-gap-mobile: {{ block.settings.grid_gap_mobile }}px;
+    {%- endif -%}
+    {%- if block.settings.title_size_desktop != 22 and block.settings.title_size_desktop != blank -%}
+      --similar-title-size-desktop: {{ block.settings.title_size_desktop }}px;
+    {%- endif -%}
+    {%- if block.settings.title_size_mobile != 18 and block.settings.title_size_mobile != blank -%}
+      --similar-title-size-mobile: {{ block.settings.title_size_mobile }}px;
+    {%- endif -%}
+    {%- if block.settings.title_color != '#7d4747' and block.settings.title_color != '#7D4747' and block.settings.title_color != blank -%}
+      --similar-title-color: {{ block.settings.title_color }};
+    {%- endif -%}
+    {%- if block.settings.title_text_transform != 'none' and block.settings.title_text_transform != blank -%}
+      --similar-title-text-transform: {{ block.settings.title_text_transform }};
+    {%- endif -%}
+    {%- if block.settings.view_more_size != 14 and block.settings.view_more_size != blank -%}
+      --similar-view-more-size: {{ block.settings.view_more_size }}px;
+    {%- endif -%}
+    {%- if block.settings.view_more_color != '#7d4747' and block.settings.view_more_color != '#7D4747' and block.settings.view_more_color != blank -%}
+      --similar-view-more-color: {{ block.settings.view_more_color }};
+    {%- endif -%}
+    {%- if block.settings.aspect_ratio != '16 / 10' and block.settings.aspect_ratio != blank -%}
+      --similar-card-aspect-ratio: {{ block.settings.aspect_ratio }};
+    {%- endif -%}
+    {%- if block.settings.card_border_radius != 4 and block.settings.card_border_radius != blank -%}
+      --similar-card-radius: {{ block.settings.card_border_radius }}px;
+    {%- endif -%}
+    {%- if block.settings.card_alignment != 'center' and block.settings.card_alignment != blank -%}
+      --similar-card-align: {{ block.settings.card_alignment }};
+    {%- endif -%}
+    {%- if block.settings.card_title_size_desktop != 22 and block.settings.card_title_size_desktop != blank -%}
+      --similar-card-title-size-desktop: {{ block.settings.card_title_size_desktop }}px;
+    {%- endif -%}
+    {%- if block.settings.card_title_size_mobile != 18 and block.settings.card_title_size_mobile != blank -%}
+      --similar-card-title-size-mobile: {{ block.settings.card_title_size_mobile }}px;
+    {%- endif -%}
+    {%- if block.settings.card_title_color != '#7d4747' and block.settings.card_title_color != '#7D4747' and block.settings.card_title_color != blank -%}
+      --similar-card-title-color: {{ block.settings.card_title_color }};
+    {%- endif -%}
+    {%- if block.settings.card_meta_size != 13 and block.settings.card_meta_size != blank -%}
+      --similar-card-meta-size: {{ block.settings.card_meta_size }}px;
+    {%- endif -%}
+    {%- if block.settings.card_meta_color != '#666666' and block.settings.card_meta_color != blank -%}
+      --similar-card-meta-color: {{ block.settings.card_meta_color }};
+    {%- endif -%}
+    {% render 'spacing-style', settings: block.settings %}
+  "
   {{ block.shopify_attributes }}
 >
   <div class="similar-posts__header flex items-center justify-between">
     <h3 class="similar-posts__title">{{ block.settings.heading | default: 'Similar Posts' }}</h3>
-    <a href="{{ view_more_url }}" class="similar-posts__view-more">
-      {{ block.settings.view_more_text | default: 'View More' }}
-    </a>
+    {% if block.settings.show_view_more != false %}
+      <a href="{{ view_more_url }}" class="similar-posts__view-more">
+        {{ block.settings.view_more_text | default: 'View More' }}
+      </a>
+    {% endif %}
   </div>
 
   <div class="similar-posts__grid">
@@ -55,9 +117,20 @@
               <h4 class="similar-post-card__title">
                 <a href="{{ art.url }}">{{ art.title }}</a>
               </h4>
-              <div class="similar-post-card__meta">
-                {{ art.author }} on {{ art.published_at | date: "%-d/%-m/%Y" }}
-              </div>
+              {%- if block.settings.show_author != false or block.settings.show_date != false -%}
+                <div class="similar-post-card__meta">
+                  {%- if block.settings.show_author != false and art.author != blank -%}
+                    <span>
+                      {{ art.author }}
+                    </span>
+                  {%- endif -%}
+                  {%- if block.settings.show_date != false -%}
+                    <span>
+                      on {{ art.published_at | date: "%-d/%-m/%Y" }}
+                    </span>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
             </div>
           </div>
 
@@ -82,9 +155,20 @@
               <h4 class="similar-post-card__title">
                 <a href="{{ art.url }}">{{ art.title }}</a>
               </h4>
-              <div class="similar-post-card__meta">
-                {{ art.author }} on {{ art.published_at | date: "%-d/%-m/%Y" }}
-              </div>
+              {%- if block.settings.show_author != false or block.settings.show_date != false -%}
+                <div class="similar-post-card__meta">
+                  {%- if block.settings.show_author != false and art.author != blank -%}
+                    <span>
+                      {{ art.author }}
+                    </span>
+                  {%- endif -%}
+                  {%- if block.settings.show_date != false -%}
+                    <span>
+                      on {{ art.published_at | date: "%-d/%-m/%Y" }}
+                    </span>
+                  {%- endif -%}
+                </div>
+              {%- endif -%}
             </div>
           </div>
 
@@ -102,10 +186,20 @@
   "class": "blog-post-similar-block",
   "settings": [
     {
+      "type": "header",
+      "content": "General Settings"
+    },
+    {
       "type": "text",
       "id": "heading",
       "label": "Heading",
       "default": "Similar Posts"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_view_more",
+      "label": "Show View More Link",
+      "default": true
     },
     {
       "type": "text",
@@ -121,6 +215,253 @@
       "max": 6,
       "step": 1,
       "default": 2
+    },
+    {
+      "type": "header",
+      "content": "Layout & Grid"
+    },
+    {
+      "type": "range",
+      "id": "columns_desktop",
+      "label": "Columns on Desktop",
+      "min": 1,
+      "max": 4,
+      "step": 1,
+      "default": 2
+    },
+    {
+      "type": "select",
+      "id": "columns_mobile",
+      "label": "Columns on Mobile",
+      "options": [
+        {
+          "value": "1",
+          "label": "1 Column"
+        },
+        {
+          "value": "2",
+          "label": "2 Columns"
+        }
+      ],
+      "default": "1"
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_desktop",
+      "label": "Desktop Grid Gap",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "grid_gap_mobile",
+      "label": "Mobile Grid Gap",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 20
+    },
+    {
+      "type": "header",
+      "content": "Section Title Settings"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "label": "Title Font Size (Desktop)",
+      "min": 12,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title Font Size (Mobile)",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#7d4747"
+    },
+    {
+      "type": "select",
+      "id": "title_text_transform",
+      "label": "Title Text Transform",
+      "options": [
+        {
+          "value": "none",
+          "label": "None"
+        },
+        {
+          "value": "capitalize",
+          "label": "Capitalize"
+        },
+        {
+          "value": "uppercase",
+          "label": "Uppercase"
+        },
+        {
+          "value": "lowercase",
+          "label": "Lowercase"
+        }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "View More Link Settings"
+    },
+    {
+      "type": "range",
+      "id": "view_more_size",
+      "label": "View More Font Size",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "color",
+      "id": "view_more_color",
+      "label": "View More Color",
+      "default": "#7d4747"
+    },
+    {
+      "type": "header",
+      "content": "Card Media Settings"
+    },
+    {
+      "type": "select",
+      "id": "aspect_ratio",
+      "label": "Image Aspect Ratio",
+      "options": [
+        {
+          "value": "16 / 10",
+          "label": "16:10 (Default)"
+        },
+        {
+          "value": "16 / 9",
+          "label": "16:9 Landscape"
+        },
+        {
+          "value": "4 / 3",
+          "label": "4:3 Standard"
+        },
+        {
+          "value": "1 / 1",
+          "label": "1:1 Square"
+        },
+        {
+          "value": "3 / 4",
+          "label": "3:4 Portrait"
+        },
+        {
+          "value": "3 / 2",
+          "label": "3:2 Portrait"
+        }
+      ],
+      "default": "16 / 10"
+    },
+    {
+      "type": "range",
+      "id": "card_border_radius",
+      "label": "Image Border Radius",
+      "min": 0,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 4
+    },
+    {
+      "type": "header",
+      "content": "Card Content Typography"
+    },
+    {
+      "type": "select",
+      "id": "card_alignment",
+      "label": "Content Alignment",
+      "options": [
+        {
+          "value": "left",
+          "label": "Left"
+        },
+        {
+          "value": "center",
+          "label": "Center"
+        },
+        {
+          "value": "right",
+          "label": "Right"
+        }
+      ],
+      "default": "center"
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_desktop",
+      "label": "Card Title Font Size (Desktop)",
+      "min": 12,
+      "max": 36,
+      "step": 1,
+      "unit": "px",
+      "default": 22
+    },
+    {
+      "type": "range",
+      "id": "card_title_size_mobile",
+      "label": "Card Title Font Size (Mobile)",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "color",
+      "id": "card_title_color",
+      "label": "Card Title Color",
+      "default": "#7d4747"
+    },
+    {
+      "type": "range",
+      "id": "card_meta_size",
+      "label": "Card Meta Font Size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "card_meta_color",
+      "label": "Card Meta Color",
+      "default": "#666666"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_author",
+      "label": "Show Author",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_date",
+      "label": "Show Date",
+      "default": true
     },
     {
       "type": "header",

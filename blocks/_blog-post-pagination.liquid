@@ -1,0 +1,292 @@
+{%- if blog.next_article or blog.previous_article or request.design_mode -%}
+  {%- assign prev_art = blog.previous_article -%}
+  {%- assign next_art = blog.next_article -%}
+
+  {%- if prev_art == blank and next_art == blank and request.design_mode -%}
+    {%- assign prev_title_placeholder = 'Previous Article Title' -%}
+    {%- assign next_title_placeholder = 'Next Article Title' -%}
+  {%- endif -%}
+
+  {%- capture border_top_style -%}
+    {%- if block.settings.show_top_border != false -%}
+      {{ block.settings.border_thickness | default: 1 }}px solid {{ block.settings.border_color | default: '#eaeaea' }}
+    {%- else -%}
+      none
+    {%- endif -%}
+  {%- endcapture -%}
+
+  {%- capture border_bottom_style -%}
+    {%- if block.settings.show_bottom_border != false -%}
+      {{ block.settings.border_thickness | default: 1 }}px solid {{ block.settings.border_color | default: '#eaeaea' }}
+    {%- else -%}
+      none
+    {%- endif -%}
+  {%- endcapture -%}
+
+  <div
+    class="article__pagination w-full flex items-center justify-between spacing-style{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
+    style="
+      --pagination-border-top: {{ border_top_style | strip }};
+      --pagination-border-bottom: {{ border_bottom_style | strip }};
+      {%- if block.settings.label_size != 13 and block.settings.label_size != blank -%}
+        --pagination-label-size: {{ block.settings.label_size }}px;
+      {%- endif -%}
+      {%- if block.settings.label_color != '#7d4747' and block.settings.label_color != '#7D4747' and block.settings.label_color != blank -%}
+        --pagination-label-color: {{ block.settings.label_color }};
+      {%- endif -%}
+      {%- if block.settings.title_size_desktop != 15 and block.settings.title_size_desktop != blank -%}
+        --pagination-title-size-desktop: {{ block.settings.title_size_desktop }}px;
+      {%- endif -%}
+      {%- if block.settings.title_size_mobile != 14 and block.settings.title_size_mobile != blank -%}
+        --pagination-title-size-mobile: {{ block.settings.title_size_mobile }}px;
+      {%- endif -%}
+      {%- if block.settings.title_weight != '600' and block.settings.title_weight != blank -%}
+        --pagination-title-weight: {{ block.settings.title_weight }};
+      {%- endif -%}
+      {%- if block.settings.title_color != '#7d4747' and block.settings.title_color != '#7D4747' and block.settings.title_color != blank -%}
+        --pagination-title-color: {{ block.settings.title_color }};
+      {%- endif -%}
+      {%- if block.settings.icon_color != '#7d4747' and block.settings.icon_color != '#7D4747' and block.settings.icon_color != blank -%}
+        --pagination-icon-color: {{ block.settings.icon_color }};
+      {%- endif -%}
+      {% render 'spacing-style', settings: block.settings %}
+    "
+    {{ block.shopify_attributes }}
+  >
+    <div class="article__pagination--item article__pagination--prev">
+      {%- if prev_art -%}
+        <a class="article-nav-link article-nav-link--prev" href="{{ prev_art.url }}">
+          {%- if block.settings.show_icons != false -%}
+            <span class="article-nav-icon">
+              <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.5 15L1.5 8L8.5 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          {%- endif -%}
+          <div class="article-nav-text">
+            <span class="article-nav-label">{{ 'blogs.article.previous_post' | t }}</span>
+            <span class="article-nav-title">{{ prev_art.title }}</span>
+          </div>
+        </a>
+      {%- elsif request.design_mode -%}
+        <a class="article-nav-link article-nav-link--prev" href="#">
+          {%- if block.settings.show_icons != false -%}
+            <span class="article-nav-icon">
+              <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8.5 15L1.5 8L8.5 1" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          {%- endif -%}
+          <div class="article-nav-text">
+            <span class="article-nav-label">{{ 'blogs.article.previous_post' | t }}</span>
+            <span class="article-nav-title">{{ prev_title_placeholder }}</span>
+          </div>
+        </a>
+      {%- endif -%}
+    </div>
+
+    <div class="article__pagination--item article__pagination--next">
+      {%- if next_art -%}
+        <a class="article-nav-link article-nav-link--next" href="{{ next_art.url }}">
+          <div class="article-nav-text text-right">
+            <span class="article-nav-label">{{ 'blogs.article.next_post' | t }}</span>
+            <span class="article-nav-title">{{ next_art.title }}</span>
+          </div>
+          {%- if block.settings.show_icons != false -%}
+            <span class="article-nav-icon">
+              <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.5 1L8.5 8L1.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          {%- endif -%}
+        </a>
+      {%- elsif request.design_mode -%}
+        <a class="article-nav-link article-nav-link--next" href="#">
+          <div class="article-nav-text text-right">
+            <span class="article-nav-label">{{ 'blogs.article.next_post' | t }}</span>
+            <span class="article-nav-title">{{ next_title_placeholder }}</span>
+          </div>
+          {%- if block.settings.show_icons != false -%}
+            <span class="article-nav-icon">
+              <svg width="10" height="16" viewBox="0 0 10 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M1.5 1L8.5 8L1.5 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </span>
+          {%- endif -%}
+        </a>
+      {%- endif -%}
+    </div>
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Post Pagination",
+  "class": "blog-post-pagination-block w-full",
+  "settings": [
+    {
+      "type": "header",
+      "content": "Borders & Style"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_top_border",
+      "label": "Show Top Border",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "show_bottom_border",
+      "label": "Show Bottom Border",
+      "default": true
+    },
+    {
+      "type": "range",
+      "id": "border_thickness",
+      "label": "Border Thickness",
+      "min": 1,
+      "max": 5,
+      "step": 1,
+      "unit": "px",
+      "default": 1
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border Color",
+      "default": "#eaeaea"
+    },
+    {
+      "type": "header",
+      "content": "Navigation Label Typography"
+    },
+    {
+      "type": "range",
+      "id": "label_size",
+      "label": "Label Font Size",
+      "min": 10,
+      "max": 20,
+      "step": 1,
+      "unit": "px",
+      "default": 13
+    },
+    {
+      "type": "color",
+      "id": "label_color",
+      "label": "Label Color",
+      "default": "#7d4747"
+    },
+    {
+      "type": "header",
+      "content": "Article Title Typography"
+    },
+    {
+      "type": "range",
+      "id": "title_size_desktop",
+      "label": "Title Font Size (Desktop)",
+      "min": 12,
+      "max": 30,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "range",
+      "id": "title_size_mobile",
+      "label": "Title Font Size (Mobile)",
+      "min": 10,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "title_weight",
+      "label": "Title Font Weight",
+      "options": [
+        { "value": "400", "label": "Normal (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi Bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "color",
+      "id": "title_color",
+      "label": "Title Color",
+      "default": "#7d4747"
+    },
+    {
+      "type": "header",
+      "content": "Icon Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_icons",
+      "label": "Show Arrow Icons",
+      "default": true
+    },
+    {
+      "type": "color",
+      "id": "icon_color",
+      "label": "Icon Color",
+      "default": "#7d4747"
+    },
+    {
+      "type": "header",
+      "content": "t:content.margin"
+    },
+    {
+      "type": "range",
+      "id": "margin-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "range",
+      "id": "margin-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 40
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 25
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 25
+    }
+  ],
+  "presets": [
+    {
+      "name": "Post Pagination"
+    }
+  ]
+}
+{% endschema %}

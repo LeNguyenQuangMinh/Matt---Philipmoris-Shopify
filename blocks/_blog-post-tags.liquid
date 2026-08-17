@@ -19,9 +19,11 @@
   assign button_text_case = bl_stts.button_text_case | default: bl_stts.tags_button_text_case | default: 'uppercase'
 
   if bl_stts.custom_padding_button
-    assign btn_padding_block = bl_stts.button_padding_block | times: 0.1 | append: 'rem'
-    assign btn_padding_inline = bl_stts.button_padding_inline | times: 0.1 | append: 'rem'
-    assign btn_padding_style = 'padding: ' | append: btn_padding_block | append: ' ' | append: btn_padding_inline | append: ' !important;'
+    assign btn_padding_block_rem = bl_stts.button_padding_block | divided_by: 10.0 | append: 'rem'
+    assign btn_padding_inline_rem = bl_stts.button_padding_inline | divided_by: 10.0 | append: 'rem'
+    assign btn_padding_block_px = bl_stts.button_padding_block | append: 'px'
+    assign btn_padding_inline_px = bl_stts.button_padding_inline | append: 'px'
+    assign btn_padding_style = '--button-padding-vertical: ' | append: btn_padding_block_rem | append: ' !important; --button-padding-horizontal: ' | append: btn_padding_inline_rem | append: ' !important; --button-padding-vertical-mobile: ' | append: btn_padding_block_rem | append: ' !important; --button-padding-horizontal-mobile: ' | append: btn_padding_inline_rem | append: ' !important; padding-block: ' | append: btn_padding_block_px | append: ' !important; padding-inline: ' | append: btn_padding_inline_px | append: ' !important; padding: ' | append: btn_padding_block_px | append: ' ' | append: btn_padding_inline_px | append: ' !important;'
   else
     assign btn_padding_style = nil
   endif
@@ -37,6 +39,12 @@
           {%- for tag in article.tags -%}
             {%- assign tag_handle = tag | handleize -%}
             {%- assign tag_url = blog.url | append: '/tagged/' | append: tag_handle -%}
+            {%- liquid
+              assign btn_width = nil
+              if bl_stts.custom_padding_button
+                assign btn_width = 'custom'
+              endif
+            -%}
             {% render 'button',
               link: tag_url,
               label: tag,
@@ -54,6 +62,9 @@
               buttons_shadow_horizontal_offset: bl_stts.buttons_shadow_horizontal_offset,
               buttons_shadow_vertical_offset: bl_stts.buttons_shadow_vertical_offset,
               buttons_shadow_blur: bl_stts.buttons_shadow_blur,
+              width: btn_width,
+              buttons_padding_vertical: bl_stts.button_padding_block,
+              buttons_padding_horizontal: bl_stts.button_padding_inline,
               style: 'width: auto !important; max-width: max-content; ' | append: btn_padding_style
             %}
           {%- endfor -%}
@@ -213,7 +224,8 @@
       "max": 50,
       "step": 1,
       "unit": "px",
-      "default": 10
+      "default": 10,
+      "visible_if": "{{ block.settings.custom_padding_button }}"
     },
     {
       "type": "range",
@@ -223,7 +235,8 @@
       "max": 50,
       "step": 1,
       "unit": "px",
-      "default": 16
+      "default": 16,
+      "visible_if": "{{ block.settings.custom_padding_button }}"
     },
     {
       "type": "header",
