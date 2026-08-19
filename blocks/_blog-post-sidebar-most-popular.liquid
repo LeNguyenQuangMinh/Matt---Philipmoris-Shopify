@@ -1,0 +1,357 @@
+{%- liquid
+  assign bl_stts = block.settings
+  assign heading = bl_stts.heading | default: 'Most Popular'
+  assign number = bl_stts.number | default: 7
+  assign custom_articles = bl_stts.article_list
+  assign target_blog = blogs[bl_stts.blog]
+  if target_blog == blank or target_blog.articles == empty
+    assign target_blog = blog
+  endif
+  assign filter_tag = bl_stts.tag | strip | downcase
+
+  assign collapse = bl_stts.collapse
+  assign collapse_default = bl_stts.collapse_default
+  if collapse == true
+    assign element = 'accordion-custom'
+    if collapse_default == 'open'
+      assign is_open = true
+    else
+      assign is_open = false
+    endif
+  else
+    assign element = 'div'
+  endif
+-%}
+
+<{{ element }}
+  id="BlogSidebarBlock-{{ block.id }}"
+  class="blog-sidebar__block blog-sidebar__most-popular blog-posts__sidebar-item"
+  style="
+    --sidebar-heading-color: {{ bl_stts.heading_color | default: '#72253d' }};
+    --sidebar-heading-font: {{ bl_stts.heading_font | default: 'var(--font-heading--family)' }};
+    --sidebar-heading-size: {{ bl_stts.heading_font_size | default: 18 | divided_by: 10.0 }}rem;
+    --sidebar-heading-weight: {{ bl_stts.heading_font_weight | default: '600' }};
+    --sidebar-heading-case: {{ bl_stts.heading_text_case | default: 'none' }};
+
+    --sidebar-post-color: {{ bl_stts.post_title_color | default: '#2b2b2b' }};
+    --sidebar-post-hover-color: {{ bl_stts.post_title_hover_color | default: '#72253d' }};
+    --sidebar-post-font: {{ bl_stts.post_title_font | default: 'var(--font-body--family)' }};
+    --sidebar-post-size: {{ bl_stts.post_title_font_size | default: 14 | divided_by: 10.0 }}rem;
+    --sidebar-post-weight: {{ bl_stts.post_title_font_weight | default: '400' }};
+    --sidebar-post-line-height: {{ bl_stts.post_title_line_height | default: '1.5' }};
+    --sidebar-post-case: {{ bl_stts.post_title_text_case | default: 'none' }};
+
+    --sidebar-posts-gap: {{ bl_stts.posts_gap | default: 16 }}px;
+    --sidebar-content-pt: {{ bl_stts.content_padding_top | default: 16 }}px;
+    --sidebar-block-mb: {{ bl_stts.block_margin_bottom | default: 24 }}px;
+  "
+  {% if is_open %}
+    open-by-default-on-desktop
+    open-by-default-on-mobile
+  {% endif %}
+  {{ block.shopify_attributes }}
+>
+  {% if collapse %}
+    <details
+      {% if is_open %}
+        open
+      {% endif %}
+    >
+      <summary class="blog-sidebar__summary cursor-pointer">
+  {% endif %}
+
+  {% if heading != blank %}
+    <h3 class="blog-sidebar__heading blog-posts__sidebar-heading">
+      {{ heading }}
+    </h3>
+  {% endif %}
+
+  {% if collapse %}
+      <span class="svg-wrapper icon-plus-wrapper">
+        {{- 'icon-plus.svg' | inline_asset_content -}}
+      </span>
+    </summary>
+  {% endif %}
+
+  {% if collapse %}
+    <div class="details-content">
+  {% endif %}
+
+  <ul class="blog-sidebar__article-list list-unstyled" role="list">
+    {%- if custom_articles != blank and custom_articles.count > 0 -%}
+      {%- for article in custom_articles limit: number -%}
+        <li class="blog-sidebar__article-item">
+          <a href="{{ article.url }}" class="blog-sidebar__article-link link">
+            {{- article.title -}}
+          </a>
+        </li>
+      {%- endfor -%}
+    {%- else -%}
+      {%- assign rendered_count = 0 -%}
+      {%- for article in target_blog.articles -%}
+        {%- if filter_tag != blank -%}
+          {%- assign article_tags = article.tags | join: ' ' | downcase -%}
+          {%- unless article_tags contains filter_tag -%}
+            {%- continue -%}
+          {%- endunless -%}
+        {%- endif -%}
+        <li class="blog-sidebar__article-item">
+          <a href="{{ article.url }}" class="blog-sidebar__article-link link">
+            {{- article.title -}}
+          </a>
+        </li>
+        {%- assign rendered_count = rendered_count | plus: 1 -%}
+        {%- if rendered_count >= number -%}{%- break -%}{%- endif -%}
+      {%- else -%}
+        {%- for i in (1..number) -%}
+          <li class="blog-sidebar__article-item">
+            <a href="#" class="blog-sidebar__article-link link">
+              Popular blog post title {{ i }}
+            </a>
+          </li>
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endif -%}
+  </ul>
+
+  {% if collapse %}
+    </div>
+    </details>
+  {% endif %}
+</{{ element }}>
+
+{% schema %}
+{
+  "name": "Most Popular",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Heading Settings"
+    },
+    {
+      "type": "text",
+      "id": "heading",
+      "label": "Heading",
+      "default": "Most Popular"
+    },
+    {
+      "type": "color",
+      "id": "heading_color",
+      "label": "Heading color",
+      "default": "#72253d"
+    },
+    {
+      "type": "select",
+      "id": "heading_font",
+      "label": "Heading font",
+      "options": [
+        { "value": "var(--font-heading--family)", "label": "Heading" },
+        { "value": "var(--font-body--family)", "label": "Body" },
+        { "value": "var(--font-subheading--family)", "label": "Subheading" }
+      ],
+      "default": "var(--font-heading--family)"
+    },
+    {
+      "type": "range",
+      "id": "heading_font_size",
+      "label": "Heading font size",
+      "min": 12,
+      "max": 32,
+      "step": 1,
+      "unit": "px",
+      "default": 18
+    },
+    {
+      "type": "select",
+      "id": "heading_font_weight",
+      "label": "Heading font weight",
+      "options": [
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi Bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "600"
+    },
+    {
+      "type": "select",
+      "id": "heading_text_case",
+      "label": "Heading text case",
+      "options": [
+        { "value": "none", "label": "Default" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Post Title Settings"
+    },
+    {
+      "type": "color",
+      "id": "post_title_color",
+      "label": "Post title color",
+      "default": "#2b2b2b"
+    },
+    {
+      "type": "color",
+      "id": "post_title_hover_color",
+      "label": "Post title hover color",
+      "default": "#72253d"
+    },
+    {
+      "type": "select",
+      "id": "post_title_font",
+      "label": "Post title font",
+      "options": [
+        { "value": "var(--font-body--family)", "label": "Body" },
+        { "value": "var(--font-heading--family)", "label": "Heading" },
+        { "value": "var(--font-subheading--family)", "label": "Subheading" }
+      ],
+      "default": "var(--font-body--family)"
+    },
+    {
+      "type": "range",
+      "id": "post_title_font_size",
+      "label": "Post title font size",
+      "min": 12,
+      "max": 24,
+      "step": 1,
+      "unit": "px",
+      "default": 14
+    },
+    {
+      "type": "select",
+      "id": "post_title_font_weight",
+      "label": "Post title font weight",
+      "options": [
+        { "value": "300", "label": "Light (300)" },
+        { "value": "400", "label": "Regular (400)" },
+        { "value": "500", "label": "Medium (500)" },
+        { "value": "600", "label": "Semi Bold (600)" },
+        { "value": "700", "label": "Bold (700)" }
+      ],
+      "default": "400"
+    },
+    {
+      "type": "select",
+      "id": "post_title_line_height",
+      "label": "Post title line height",
+      "options": [
+        { "value": "1.2", "label": "Tight (1.2)" },
+        { "value": "1.35", "label": "Compact (1.35)" },
+        { "value": "1.5", "label": "Normal (1.5)" },
+        { "value": "1.6", "label": "Relaxed (1.6)" },
+        { "value": "1.8", "label": "Loose (1.8)" }
+      ],
+      "default": "1.5"
+    },
+    {
+      "type": "select",
+      "id": "post_title_text_case",
+      "label": "Post title text case",
+      "options": [
+        { "value": "none", "label": "Default" },
+        { "value": "uppercase", "label": "Uppercase" },
+        { "value": "capitalize", "label": "Capitalize" }
+      ],
+      "default": "none"
+    },
+    {
+      "type": "header",
+      "content": "Layout & Spacing"
+    },
+    {
+      "type": "range",
+      "id": "posts_gap",
+      "label": "Gap between posts",
+      "min": 4,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "content_padding_top",
+      "label": "Space below heading",
+      "min": 0,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "default": 16
+    },
+    {
+      "type": "range",
+      "id": "block_margin_bottom",
+      "label": "Bottom spacing of block",
+      "min": 0,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "default": 15
+    },
+    {
+      "type": "header",
+      "content": "Posts Selection & Accordion"
+    },
+    {
+      "type": "article_list",
+      "id": "article_list",
+      "label": "Select popular articles",
+      "limit": 15,
+      "info": "Pick specific articles to highlight as most popular"
+    },
+    {
+      "type": "blog",
+      "id": "blog",
+      "label": "Fallback blog",
+      "info": "Used if no specific articles are selected above"
+    },
+    {
+      "type": "text",
+      "id": "tag",
+      "label": "Filter fallback by tag (optional)"
+    },
+    {
+      "type": "range",
+      "id": "number",
+      "label": "Number of posts",
+      "min": 1,
+      "max": 15,
+      "step": 1,
+      "default": 7
+    },
+    {
+      "type": "checkbox",
+      "id": "collapse",
+      "label": "Enable accordion (collapsible)",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "collapse_default",
+      "label": "Default accordion state",
+      "visible_if": "{{ block.settings.collapse == true }}",
+      "options": [
+        {
+          "value": "open",
+          "label": "Open"
+        },
+        {
+          "value": "close",
+          "label": "Closed"
+        }
+      ],
+      "default": "open"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Most Popular"
+    }
+  ]
+}
+{% endschema %}

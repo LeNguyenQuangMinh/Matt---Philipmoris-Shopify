@@ -15915,10 +15915,6 @@ collapsible-text {
   line-height: var(--body-xs-line-height);
 }
 
-.blog-posts__sidebar {
-  row-gap: 2rem;
-}
-
 .blog-posts__sidebar-heading {
   font-size: var(--font-size--sidebar-heading, var(--body-s-font-size));
 

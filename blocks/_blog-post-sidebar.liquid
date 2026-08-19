@@ -10,7 +10,6 @@
   class="blog-posts__sidebar-drawer drawer__container{% if enable_drawer %} blog-posts__sidebar-drawer--desktop-drawer{% endif %}"
   id="Drawer-Blog-Sidebar"
   data-drawer-direction="left"
-  data-moved="false"
 >
   <div id="Drawer-Overlay-Blog-Sidebar" class="drawer__overlay fixed inset-0 cursor-pointer{% unless enable_drawer %} lg:none{% endunless %}"></div>
   <div class="blog-posts__sidebar-container" data-drawer-content>
@@ -55,6 +54,8 @@
   "name": "t:names.sidebar",
   "tag": null,
   "blocks": [
+    { "type": "_blog-post-sidebar-most-recent" },
+    { "type": "_blog-post-sidebar-most-popular" },
     { "type": "_blog-post-sidebar-category" },
     { "type": "_blog-post-sidebar-recent-posts" },
     { "type": "_blog-post-sidebar-products" },
@@ -67,6 +68,14 @@
     {
       "name": "t:names.sidebar",
       "blocks": {
+        "most_recent": {
+          "type": "_blog-post-sidebar-most-recent",
+          "name": "Most Recent"
+        },
+        "most_popular": {
+          "type": "_blog-post-sidebar-most-popular",
+          "name": "Most Popular"
+        },
         "category": {
           "type": "_blog-post-sidebar-category",
           "name": "Category"

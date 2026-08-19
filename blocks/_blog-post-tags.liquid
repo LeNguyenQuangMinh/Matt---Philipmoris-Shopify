@@ -27,15 +27,79 @@
   else
     assign btn_padding_style = nil
   endif
+
+  assign has_recipe = false
+  if article.content contains 'blogPost__recipes'
+    assign has_recipe = true
+  endif
 -%}
+
+<style>
+  .article-tag.blog-tags {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+
+  .article-tag.blog-tags .blog-post-card__tags {
+    flex: 1 1 auto;
+  }
+
+  .blog-post-jump-recipe {
+    flex-shrink: 0;
+    margin: 0 auto;
+  }
+
+  .button--jump-recipe {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 9px 20px;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 18px;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    text-decoration: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  .button--jump-recipe svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.2s ease;
+    fill: transparent !important;
+    ;
+  }
+
+  .button--jump-recipe:hover svg {
+    transform: translateY(2px);
+  }
+
+  @media only screen and (max-width: 768px) {
+    .article-tag.blog-tags {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+    .blog-post-jump-recipe {
+      width: 100%;
+    }
+    .button--jump-recipe {
+      width: 100%;
+    }
+  }
+</style>
 
 <div class="spacing-style w-full mx-auto" style="margin-left: auto; margin-right: auto; {% render 'spacing-style', settings: bl_stts %}">
   {% render 'group', children: children, shopify_attributes: block.shopify_attributes %}
 
   {%- if show_tags -%}
     {%- if article.tags.size > 0 -%}
-      <div class="article-tag w-full{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}">
-        <div class="blog-post-card__tags w-full flex flex-wrap items-center {{ align_class }}" style="gap: {{ bl_stts.gap | default: 8 }}px;">
+      <div class="article-tag blog-tags w-full flex items-center justify-between flex-wrap gap-4{% if has_recipe %} has-jump-recipe has-jumb-recipe{% endif %}{% if settings.banner_animation == 'effect_fade_up' %} scroll-trigger animate--slide-in{% endif %}">
+        <div class="blog-post-card__tags flex flex-wrap items-center {{ align_class }}" style="gap: {{ bl_stts.gap | default: 8 }}px;">
           {%- for tag in article.tags -%}
             {%- assign tag_handle = tag | handleize -%}
             {%- assign tag_url = blog.url | append: '/tagged/' | append: tag_handle -%}
@@ -69,10 +133,74 @@
             %}
           {%- endfor -%}
         </div>
+
+        <div class="blog-post-jump-recipe{% unless has_recipe %} hidden{% endunless %}">
+          <a href="#blogPost__recipes" class="button button--primary button--jump-recipe" role="button" aria-label="Jump to recipe">
+            <span>JUMP TO RECIPE</span>
+            <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+              <line x1="12" y1="5" x2="12" y2="19"></line>
+              <polyline points="19 12 12 19 5 12"></polyline>
+            </svg>
+          </a>
+        </div>
       </div>
     {%- endif -%}
   {%- endif -%}
 </div>
+
+<script>
+  (function() {
+    function initJumpToRecipe(scope) {
+      const root = scope || document;
+      const recipeEl = document.querySelector('.blogPost__recipes');
+      const jumpWrappers = root.querySelectorAll('.blog-post-jump-recipe');
+      const tagContainers = root.querySelectorAll('.article-tag.blog-tags');
+
+      if (recipeEl) {
+        jumpWrappers.forEach(function(el) {
+          el.classList.remove('hidden');
+        });
+        tagContainers.forEach(function(el) {
+          el.classList.add('has-jump-recipe', 'has-jumb-recipe');
+        });
+      } else {
+        jumpWrappers.forEach(function(el) {
+          el.classList.add('hidden');
+        });
+      }
+
+      root.querySelectorAll('.button--jump-recipe').forEach(function(btn) {
+        if (btn.dataset.jumpInit) return;
+        btn.dataset.jumpInit = 'true';
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          const target = document.querySelector('.blogPost__recipes');
+          if (target) {
+            const header = document.querySelector('.header') || document.querySelector('#header-group') || document.querySelector('.sticky-header');
+            const headerHeight = header ? header.offsetHeight : 0;
+            const targetTop = target.getBoundingClientRect().top + window.pageYOffset - headerHeight - 20;
+            window.scrollTo({
+              top: targetTop,
+              behavior: 'smooth'
+            });
+          }
+        });
+      });
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', function() {
+        initJumpToRecipe();
+      });
+    } else {
+      initJumpToRecipe();
+    }
+
+    document.addEventListener('shopify:section:load', function(e) {
+      initJumpToRecipe(e.target);
+    });
+  })();
+</script>
 
 {% schema %}
 {

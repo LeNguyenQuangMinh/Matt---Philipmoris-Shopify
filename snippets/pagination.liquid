@@ -6,11 +6,20 @@
   @param {object} settings - optional settings override
   @param {string} suffix - optional suffix for spacing
   @param {string} anchor - optional anchor url
+  @param {boolean} [show_all_pages] - optional flag to show all page numbers without ellipsis
 {% enddoc %}
 
 {% liquid
   assign sec_stts = settings | default: section.settings
   assign pagination_type = sec_stts.pagination_type
+
+  if show_all_pages == nil
+    if template.name == 'blog' or request.page_type == 'blog'
+      assign show_all_pages = true
+    else
+      assign show_all_pages = false
+    endif
+  endif
 %}
 
 {%- if paginate.parts.size > 0 -%}
@@ -55,31 +64,103 @@
         </div>
 
         <ul class="pagination__list list-unstyled" role="list">
-          {%- for part in paginate.parts -%}
-            <li class="pagination__list-item">
-              {%- if part.is_link -%}
-                <a
-                  href="{{ part.url }}{{ anchor }}"
-                  class="pagination__item pagination__item--link link"
-                  aria-label="{{ 'content.pagination.page' | t: number: part.title | default: part.title }}"
-                >
-                  {{- part.title -}}
-                </a>
+          {%- if show_all_pages -%}
+            {%- assign page_url_template = nil -%}
+            {%- for part in paginate.parts -%}
+              {%- if part.is_link and part.url contains 'page=' -%}
+                {%- assign current_page_param = 'page=' | append: part.title -%}
+                {%- assign page_url_template = part.url | replace: current_page_param, 'page=PAGE_NUM_PLACEHOLDER' -%}
+                {%- break -%}
+              {%- endif -%}
+            {%- endfor -%}
+
+            {%- if page_url_template == nil and paginate.next -%}
+              {%- assign next_page_num = paginate.current_page | plus: 1 -%}
+              {%- assign next_param = 'page=' | append: next_page_num -%}
+              {%- if paginate.next.url contains next_param -%}
+                {%- assign page_url_template = paginate.next.url | replace: next_param, 'page=PAGE_NUM_PLACEHOLDER' -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- if page_url_template == nil and paginate.previous -%}
+              {%- assign prev_page_num = paginate.current_page | minus: 1 -%}
+              {%- assign prev_param = 'page=' | append: prev_page_num -%}
+              {%- if paginate.previous.url contains prev_param -%}
+                {%- assign page_url_template = paginate.previous.url | replace: prev_param, 'page=PAGE_NUM_PLACEHOLDER' -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- if page_url_template == nil -%}
+              {%- if paginate.parts.first.url contains '?' -%}
+                {%- assign page_url_template = paginate.parts.first.url | append: '&page=PAGE_NUM_PLACEHOLDER' -%}
+              {%- elsif paginate.parts.first.url -%}
+                {%- assign page_url_template = paginate.parts.first.url | append: '?page=PAGE_NUM_PLACEHOLDER' -%}
+              {%- elsif canonical_url contains '?' -%}
+                {%- assign page_url_template = canonical_url | append: '&page=PAGE_NUM_PLACEHOLDER' -%}
               {%- else -%}
-                {%- if part.title == paginate.current_page -%}
+                {%- assign page_url_template = canonical_url | append: '?page=PAGE_NUM_PLACEHOLDER' -%}
+              {%- endif -%}
+            {%- endif -%}
+
+            {%- for page_num in (1..paginate.pages) -%}
+              <li class="pagination__list-item">
+                {%- if page_num == paginate.current_page -%}
                   <span
                     class="pagination__item pagination__item--current"
                     aria-current="page"
+                    aria-label="{{ 'content.pagination.page' | t: number: page_num | default: page_num }}"
+                  >
+                    {{- page_num -}}
+                  </span>
+                {%- else -%}
+                  {%- assign page_num_str = page_num | append: '' -%}
+                  {%- assign page_url = nil -%}
+                  {%- for part in paginate.parts -%}
+                    {%- if part.is_link and part.title == page_num_str -%}
+                      {%- assign page_url = part.url -%}
+                      {%- break -%}
+                    {%- endif -%}
+                  {%- endfor -%}
+                  {%- if page_url == nil -%}
+                    {%- assign page_url = page_url_template | replace: 'PAGE_NUM_PLACEHOLDER', page_num -%}
+                  {%- endif -%}
+                  <a
+                    href="{{ page_url }}{{ anchor }}"
+                    class="pagination__item pagination__item--link link"
+                    aria-label="{{ 'content.pagination.page' | t: number: page_num | default: page_num }}"
+                  >
+                    {{- page_num -}}
+                  </a>
+                {%- endif -%}
+              </li>
+            {%- endfor -%}
+          {%- else -%}
+            {%- for part in paginate.parts -%}
+              <li class="pagination__list-item">
+                {%- if part.is_link -%}
+                  <a
+                    href="{{ part.url }}{{ anchor }}"
+                    class="pagination__item pagination__item--link link"
                     aria-label="{{ 'content.pagination.page' | t: number: part.title | default: part.title }}"
                   >
                     {{- part.title -}}
-                  </span>
+                  </a>
                 {%- else -%}
-                  <span class="pagination__item pagination__item--gap">{{ part.title }}</span>
+                  {%- if part.title == paginate.current_page -%}
+                    <span
+                      class="pagination__item pagination__item--current"
+                      aria-current="page"
+                      aria-label="{{ 'content.pagination.page' | t: number: part.title | default: part.title }}"
+                    >
+                      {{- part.title -}}
+                    </span>
+                  {%- else -%}
+                    <span class="pagination__item pagination__item--gap">{{ part.title }}</span>
+                  {%- endif -%}
                 {%- endif -%}
-              {%- endif -%}
-            </li>
-          {%- endfor -%}
+              </li>
+            {%- endfor -%}
+          {%- endif -%}
         </ul>
 
         <div class="pagination__next-wrap">

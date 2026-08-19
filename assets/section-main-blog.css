@@ -109,32 +109,37 @@
 }
 
 /* Desktop & Mobile Drawer Mode styles */
-.blog-posts__sidebar-drawer--desktop-drawer {
+.blog-posts__sidebar-drawer--desktop-drawer,
+side-drawer#Drawer-Blog-Sidebar {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 9999;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
   transition: opacity 0.3s ease;
   opacity: 0;
   pointer-events: none;
 }
 
 .blog-posts__sidebar-drawer--desktop-drawer.open,
-.blog-posts__sidebar-drawer--desktop-drawer.active {
+.blog-posts__sidebar-drawer--desktop-drawer.active,
+side-drawer#Drawer-Blog-Sidebar.open,
+side-drawer#Drawer-Blog-Sidebar.active {
   opacity: 1;
   pointer-events: auto;
 }
 
+.blog-posts__sidebar-drawer .drawer__overlay,
 .blog-posts__sidebar-drawer--desktop-drawer .drawer__overlay {
   display: block;
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.5);
   z-index: 1;
 }
 
+.blog-posts__sidebar-drawer .blog-posts__sidebar-container,
 .blog-posts__sidebar-drawer--desktop-drawer .blog-posts__sidebar-container {
   width: min(90vw, 360px);
   height: 100%;
@@ -143,7 +148,7 @@
   position: relative;
   display: flex;
   flex-direction: column;
-  box-shadow: 2px 0 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 2px 0 16px rgba(0, 0, 0, 0.2);
 }
 
 .blog-posts__sidebar-drawer--desktop-drawer .blog-posts__sidebar {
@@ -152,7 +157,10 @@
   display: flex;
   flex-direction: column;
   padding: 0;
-  overflow: hidden;
+}
+
+.blog-posts__sidebar-container .drawer__footer {
+  padding-bottom: 0 !important;
 }
 
 /* Drawer Header matching Image 2 */
@@ -160,35 +168,41 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 16px 20px;
-  background-color: #fdfdfd;
+  background-color: #f5f5f5;
+  padding: 8px 30px 7px 30px;
   border-bottom: 1px solid #f0f0f0;
   margin: 0;
 }
 
 .blog-posts__sidebar-drawer--desktop-drawer .drawer__heading {
-  font-size: 1.6rem;
-  font-weight: 700;
-  color: #6b3b47;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
+  letter-spacing: 0;
+  line-height: 25px;
   margin: 0;
+  font-weight: 500;
+  color: #72253d;
+  font-size: 18px;
 }
 
 .blog-posts__sidebar-drawer--desktop-drawer .drawer__close--square {
-  background-color: #6b3b47;
-  color: #ffffff;
-  width: 36px;
-  height: 36px;
-  min-width: 36px;
+  position: absolute;
+  top: 0;
+  width: 40px;
+  height: 40px;
+  z-index: 10;
+  line-height: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  border: none;
-  border-radius: 0;
-  cursor: pointer;
-  padding: 0;
-  transition: background-color 0.2s ease;
+  pointer-events: auto;
+  padding: 12px;
+  right: 0;
+  background-color: #792f46;
+  -webkit-transform: translateX(100%);
+  transform: translateX(100%);
+  margin-right: 0;
+  min-width: 40px;
+  min-height: 40px;
 }
 
 .blog-posts__sidebar-drawer--desktop-drawer .drawer__close--square:hover {
@@ -196,8 +210,10 @@
 }
 
 .blog-posts__sidebar-drawer--desktop-drawer .drawer__close--square svg {
-  width: 14px;
-  height: 14px;
+  width: 12px;
+  height: 12px;
+  min-width: 12px;
+  min-height: 12px;
   stroke: #ffffff;
   fill: #ffffff;
 }
@@ -206,18 +222,15 @@
 .blog-posts__sidebar-drawer--desktop-drawer .drawer__body-content {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px;
+  padding: 20px 30px 10px 30px;
   display: flex;
   flex-direction: column;
-  gap: 2rem;
 }
 
 /* Accordion headings & items inside drawer matching Image 2 */
 .blog-posts__sidebar-drawer .blog-posts__sidebar-heading {
-  color: #6b3b47;
-  font-weight: 600;
-  font-size: 1.6rem;
   margin: 0;
+  padding: 0;
 }
 
 .blog-posts__sidebar-drawer summary {
@@ -225,7 +238,7 @@
   align-items: center;
   justify-content: space-between;
   cursor: pointer;
-  padding-bottom: 8px;
+  padding-bottom: 1rem;
   user-select: none;
 }
 
@@ -259,6 +272,83 @@
 .blog-posts__sidebar-drawer .blog-post__recent-posts-item .blog-title a:hover,
 .blog-posts__sidebar-drawer .blog-post__category-list-link:hover {
   color: #6b3b47;
+}
+
+/* Most Recent & Most Popular Sidebar Blocks */
+.blog-sidebar__block {
+  width: 100%;
+  margin-bottom: var(--sidebar-block-mb, 2.4rem);
+}
+
+.blog-sidebar__heading {
+  color: var(--sidebar-heading-color, #72253d);
+  font-family: var(--sidebar-heading-font, inherit);
+  font-size: var(--sidebar-heading-size, 1.8rem);
+  font-weight: var(--sidebar-heading-weight, 600);
+  text-transform: var(--sidebar-heading-case, none);
+  line-height: 1.3;
+  margin: 0;
+}
+
+.blog-sidebar__summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  cursor: pointer;
+  padding-bottom: 8px;
+  user-select: none;
+  list-style: none;
+}
+
+.blog-sidebar__summary::-webkit-details-marker {
+  display: none;
+}
+
+.blog-sidebar__summary .icon-plus-wrapper {
+  color: var(--sidebar-heading-color, #72253d);
+  width: 14px;
+  height: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.blog-sidebar__summary .icon-plus-wrapper svg {
+  width: 14px;
+  height: 14px;
+  stroke: var(--sidebar-heading-color, #72253d);
+}
+
+.blog-sidebar__article-list {
+  list-style: none;
+  margin: 0;
+  padding: var(--sidebar-content-pt, 1.6rem) 0 0.5rem 0;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sidebar-posts-gap, 1.6rem);
+}
+
+.blog-sidebar__article-item {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.blog-sidebar__article-link {
+  color: var(--sidebar-post-color, #2b2b2b);
+  font-family: var(--sidebar-post-font, inherit);
+  font-size: var(--sidebar-post-size, 1.4rem);
+  font-weight: var(--sidebar-post-weight, 400);
+  line-height: var(--sidebar-post-line-height, 1.45);
+  text-transform: var(--sidebar-post-case, none);
+  text-decoration: none;
+  display: block;
+  transition: color 0.2s ease;
+}
+
+.blog-sidebar__article-link:hover {
+  color: var(--sidebar-post-hover-color, #72253d);
 }
 
 /* Drawer Footer matching Image 2 */
@@ -472,3 +562,13 @@
 .blog-title a:hover {
   color: #757575;
 } */
+
+.template-blog {
+  .pagination__list > li:not(:last-child) {
+    margin-right: 0;
+  }
+
+  .pagination__list > li {
+    min-width: 2.8rem;
+  }
+}

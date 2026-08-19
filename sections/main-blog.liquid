@@ -125,7 +125,7 @@
           {%- endfor -%}
 
           {%- if paginate.pages > 1 -%}
-            {%- render 'pagination', paginate: paginate, settings: sec_stts, suffix: 'pagination' -%}
+            {%- render 'pagination', paginate: paginate, settings: sec_stts, suffix: 'pagination', show_all_pages: true -%}
           {%- endif -%}
         </div>
       {%- endpaginate -%}
