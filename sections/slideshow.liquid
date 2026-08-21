@@ -196,7 +196,7 @@
         direction: sec_stts.slide_direction
       -%}
     >
-      <div class="swiper slideshow__slides w-full" style="--swiper-speed: {{ speed }}ms;">
+      <div class="swiper slideshow__slides w-full" style="--swiper-speed: {{ speed }}ms;{% if dot_bottom != blank %} --dot-bottom: {{ dot_bottom }}px;{% endif %}">
         <div class="swiper-wrapper w-full">
           {% content_for 'blocks' %}
         </div>
@@ -210,11 +210,11 @@
               {% if pagination_type == 'fraction' %} body-xl-font-size{% endif %}
             {%- endcapture -%}
 
-            {% if dot_appearance %}
-              {%- capture pagi_style -%}
-                style="--bg-color: {{ dot_background }}; --corner-radius: {{ dot_border_radius }}px; --p: 0.4rem; --dot-bottom:{{ dot_bottom }}px;"
-              {%- endcapture -%}
-            {% endif %}
+            {%- capture pagi_style -%}
+              {%- if dot_appearance or dot_bottom != blank -%}
+                style="{% if dot_appearance %}--bg-color: {{ dot_background }}; --corner-radius: {{ dot_border_radius }}px; --p: 0.4rem;{% endif %}{% if dot_bottom != blank %} --dot-bottom: {{ dot_bottom }}px;{% endif %}"
+              {%- endif -%}
+            {%- endcapture -%}
 
             {%- capture pagi_html -%}
               <div class="{{ pagi_class }}" {{ pagi_style }}></div>
@@ -806,7 +806,7 @@
       "max": 100,
       "step": 1,
       "unit": "px",
-      "visible_if": "{{ section.settings.dot_appearance == true and section.settings.pagination_type == 'bullets' }}"
+      "visible_if": "{{ section.settings.navigation == 'pagination' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "header",

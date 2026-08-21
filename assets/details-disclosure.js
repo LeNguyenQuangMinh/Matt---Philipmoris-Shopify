@@ -521,9 +521,27 @@ class DropdownDetails extends HTMLDetailsElement {
 
   onHover(event) {
     cancelAnimationFrame(this._hoverRaf);
-    this._hoverRaf = requestAnimationFrame(() => {
-      this.isOpen = event.type === 'mouseenter';
-    });
+    if (this._closeTimeout) {
+      clearTimeout(this._closeTimeout);
+      this._closeTimeout = null;
+    }
+    if (event.type === 'mouseenter') {
+      const parentList = this.closest('.list-menu, .list-menu--inline, header-menu, .header-menu');
+      if (parentList) {
+        parentList.querySelectorAll('details[is="dropdown-details"], details.details--dropdown').forEach(d => {
+          if (d !== this && d.isOpen) {
+            d.isOpen = false;
+          }
+        });
+      }
+      this._hoverRaf = requestAnimationFrame(() => {
+        this.isOpen = true;
+      });
+    } else if (event.type === 'mouseleave') {
+      this._closeTimeout = setTimeout(() => {
+        this.isOpen = false;
+      }, 300);
+    }
   }
 
   _toggleOpen(event) {
@@ -539,6 +557,10 @@ class DropdownDetails extends HTMLDetailsElement {
   }
 
   close() {
+    if (this._closeTimeout) {
+      clearTimeout(this._closeTimeout);
+      this._closeTimeout = null;
+    }
     this.isOpen = false;
     this._animate(false);
   }
@@ -626,22 +648,32 @@ if (!customElements.get('mega-menu-details')) customElements.define('mega-menu-d
     function setupSafariHoverFallback(details) {
       const summary = details.querySelector('summary');
       const dropdown = details.querySelector('.details__list');
+      let safariCloseTimeout = null;
       
       if (summary && dropdown) {
-        summary.addEventListener('mouseenter', () => {
+        details.addEventListener('mouseenter', () => {
+          if (safariCloseTimeout) {
+            clearTimeout(safariCloseTimeout);
+            safariCloseTimeout = null;
+          }
           details.setAttribute('open', 'true');
           transitionIn(dropdown);
         });
         
         details.addEventListener('mouseleave', () => {
-          const transitionPromise = transitionOut(dropdown);
-          if (transitionPromise && transitionPromise.then) {
-            transitionPromise.then(() => {
-              details.setAttribute('open', 'false');
-            });
-          } else {
-            details.setAttribute('open', 'false');
+          if (safariCloseTimeout) {
+            clearTimeout(safariCloseTimeout);
           }
+          safariCloseTimeout = setTimeout(() => {
+            const transitionPromise = transitionOut(dropdown);
+            if (transitionPromise && transitionPromise.then) {
+              transitionPromise.then(() => {
+                details.setAttribute('open', 'false');
+              });
+            } else {
+              details.setAttribute('open', 'false');
+            }
+          }, 300);
         });
       }
     }

@@ -25,7 +25,7 @@
 {%- else -%}
   <div
     id="MegaMenu-Content-{{ section.id }}-{{ forloopIndex }}-{{ block_id }}"
-    class="list-menu--wrapper mega-menu--2"
+    class="list-menu--wrapper mega-menu--2{% if bl_stts.width == 'custom' or bl_stts.width == 'page-width' %} mega-menu__container--custom-width{% endif %}"
     tabindex="-1"
     style="--columns-count: {{ bl_stts.grid }}; --gap-x: 1.6rem; --gap-y: 1.6rem"
   >
@@ -95,7 +95,7 @@
     {%- endfor -%}
     {%- if has_mega_menu_images == true or bl_stts.show_brand -%}
       <div class="mega-menu__collage-wrapper{% if bl_stts.inherit_color_scheme == false %} color-{{ bl_stts.color_scheme }}{% endif %}{% if divider %} mega-menu__collage-wrapper--divider{% endif %}">
-        <div class="page-width page-width--{{ bl_stts.width }}"{% if bl_stts.width == 'custom' %} style="max-width: {{ bl_stts.custom_width }}px; margin: 0 auto;"{% endif %}>
+        <div class="page-width page-width--{{ bl_stts.width }}{% if bl_stts.width == 'custom' or bl_stts.width == 'page-width' %} mega-menu__container--custom-width{% endif %}"{% if bl_stts.width == 'custom' %} style="width: {{ bl_stts.custom_width }}px; max-width: 100%; margin: 0 auto;"{% endif %}>
           <div
             class="mega-menu__collage collage collage-3-columns collage--{{ mega_menu_images_size }}-items grid"
             style="

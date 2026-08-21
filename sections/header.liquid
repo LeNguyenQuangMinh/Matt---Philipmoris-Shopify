@@ -729,9 +729,23 @@
               {
                 "value": "full",
                 "label": "t:options.full"
+              },
+              {
+                "value": "custom",
+                "label": "Custom"
               }
             ],
             "default": "full"
+          },
+          {
+            "type": "range",
+            "id": "custom_width",
+            "min": 400,
+            "max": 1600,
+            "step": 20,
+            "unit": "px",
+            "label": "Custom width",
+            "default": 1200
           },
           {
             "type": "header",
@@ -849,6 +863,46 @@
             "id": "all_title",
             "label": "All column title",
             "default": "All",
+            "visible_if": "{{ block.settings.show_brand == true }}"
+          },
+          {
+            "type": "select",
+            "id": "brand_group_font_size",
+            "label": "Column title font size",
+            "options": [
+              { "value": "", "label": "t:options.default" },
+              { "value": "1.0rem", "label": "10px" },
+              { "value": "1.1rem", "label": "11px" },
+              { "value": "1.2rem", "label": "12px" },
+              { "value": "1.3rem", "label": "13px" },
+              { "value": "1.4rem", "label": "14px" },
+              { "value": "1.5rem", "label": "15px" },
+              { "value": "1.6rem", "label": "16px" },
+              { "value": "1.8rem", "label": "18px" },
+              { "value": "2.0rem", "label": "20px" },
+              { "value": "2.2rem", "label": "22px" },
+              { "value": "2.4rem", "label": "24px" },
+              { "value": "2.6rem", "label": "26px" },
+              { "value": "2.8rem", "label": "28px" },
+              { "value": "3.0rem", "label": "30px" }
+            ],
+            "default": "",
+            "visible_if": "{{ block.settings.show_brand == true }}"
+          },
+          {
+            "type": "select",
+            "id": "brand_group_font_weight",
+            "label": "Column title font weight",
+            "options": [
+              { "value": "", "label": "t:options.default" },
+              { "value": "300", "label": "Light" },
+              { "value": "400", "label": "t:options.regular" },
+              { "value": "500", "label": "Medium" },
+              { "value": "600", "label": "t:options.semibold" },
+              { "value": "700", "label": "t:options.bold" },
+              { "value": "800", "label": "Extra bold" }
+            ],
+            "default": "",
             "visible_if": "{{ block.settings.show_brand == true }}"
           },
           {
@@ -1211,6 +1265,179 @@
             "type": "url",
             "id": "top_link_url",
             "label": "Top link URL"
+          },
+          {
+            "type": "header",
+            "content": "Layout & Alignment"
+          },
+          {
+            "type": "select",
+            "id": "text_alignment",
+            "label": "t:settings.alignment",
+            "options": [
+              { "value": "center", "label": "t:options.center" },
+              { "value": "left", "label": "t:options.left" },
+              { "value": "right", "label": "t:options.right" }
+            ],
+            "default": "center"
+          },
+          {
+            "type": "range",
+            "id": "column_gap",
+            "label": "Column gap (X)",
+            "min": 10,
+            "max": 50,
+            "step": 2,
+            "unit": "px",
+            "default": 20
+          },
+          {
+            "type": "range",
+            "id": "row_gap",
+            "label": "Row gap (Y)",
+            "min": 10,
+            "max": 60,
+            "step": 2,
+            "unit": "px",
+            "default": 30
+          },
+          {
+            "type": "header",
+            "content": "Images"
+          },
+          {
+            "type": "select",
+            "id": "image_aspect_ratio",
+            "label": "Image aspect ratio",
+            "options": [
+              { "value": "square", "label": "Square (1:1)" },
+              { "value": "portrait", "label": "Portrait (3:4)" },
+              { "value": "landscape", "label": "Landscape (4:3)" }
+            ],
+            "default": "square"
+          },
+          {
+            "type": "range",
+            "id": "image_corner_radius",
+            "min": 0,
+            "max": 30,
+            "step": 1,
+            "unit": "px",
+            "label": "t:settings.image_corner_radius",
+            "default": 0
+          },
+          {
+            "type": "header",
+            "content": "Menu link level 2 (Titles)"
+          },
+          {
+            "type": "select",
+            "id": "level_2_font_size",
+            "label": "t:settings.size",
+            "options": [
+              { "value": "1.0rem", "label": "10px" },
+              { "value": "1.1rem", "label": "11px" },
+              { "value": "1.2rem", "label": "12px" },
+              { "value": "1.3rem", "label": "13px" },
+              { "value": "1.4rem", "label": "14px" },
+              { "value": "1.5rem", "label": "15px" },
+              { "value": "1.6rem", "label": "16px" },
+              { "value": "1.8rem", "label": "18px" },
+              { "value": "2.0rem", "label": "20px" }
+            ],
+            "default": "1.3rem"
+          },
+          {
+            "type": "select",
+            "id": "level_2_font_weight",
+            "label": "t:settings.weight",
+            "options": [
+              { "value": "400", "label": "t:options.regular" },
+              { "value": "500", "label": "Medium" },
+              { "value": "600", "label": "t:options.semibold" },
+              { "value": "700", "label": "t:options.bold" }
+            ],
+            "default": "600"
+          },
+          {
+            "type": "select",
+            "id": "level_2_case",
+            "label": "t:settings.case",
+            "options": [
+              { "value": "none", "label": "t:options.default" },
+              { "value": "uppercase", "label": "t:options.uppercase" },
+              { "value": "capitalize", "label": "t:options.capitalize" }
+            ],
+            "default": "uppercase"
+          },
+          {
+            "type": "checkbox",
+            "id": "level_2_underline",
+            "label": "Show underline",
+            "default": true
+          },
+          {
+            "type": "color",
+            "id": "level_2_color",
+            "label": "t:settings.color"
+          },
+          {
+            "type": "header",
+            "content": "Menu link level 3 (Sub links)"
+          },
+          {
+            "type": "select",
+            "id": "level_3_font_size",
+            "label": "t:settings.size",
+            "options": [
+              { "value": "1.0rem", "label": "10px" },
+              { "value": "1.1rem", "label": "11px" },
+              { "value": "1.2rem", "label": "12px" },
+              { "value": "1.3rem", "label": "13px" },
+              { "value": "1.4rem", "label": "14px" },
+              { "value": "1.5rem", "label": "15px" },
+              { "value": "1.6rem", "label": "16px" },
+              { "value": "1.8rem", "label": "18px" }
+            ],
+            "default": "1.3rem"
+          },
+          {
+            "type": "select",
+            "id": "level_3_font_weight",
+            "label": "t:settings.weight",
+            "options": [
+              { "value": "300", "label": "Light" },
+              { "value": "400", "label": "t:options.regular" },
+              { "value": "500", "label": "Medium" },
+              { "value": "600", "label": "t:options.semibold" }
+            ],
+            "default": "400"
+          },
+          {
+            "type": "select",
+            "id": "level_3_case",
+            "label": "t:settings.case",
+            "options": [
+              { "value": "none", "label": "t:options.default" },
+              { "value": "uppercase", "label": "t:options.uppercase" },
+              { "value": "capitalize", "label": "t:options.capitalize" }
+            ],
+            "default": "capitalize"
+          },
+          {
+            "type": "color",
+            "id": "level_3_color",
+            "label": "t:settings.color"
+          },
+          {
+            "type": "range",
+            "id": "level_3_gap",
+            "label": "Gap between links",
+            "min": 3,
+            "max": 20,
+            "step": 1,
+            "unit": "px",
+            "default": 8
           },
 
           {
@@ -2043,6 +2270,19 @@
         "visible_if": "{{ section.settings.show_message }}"
       },
       {
+        "type": "color",
+        "id": "message_text_color",
+        "label": "Text color",
+        "visible_if": "{{ section.settings.show_message }}"
+      },
+      {
+        "type": "checkbox",
+        "id": "message_underline",
+        "label": "Show underline",
+        "default": false,
+        "visible_if": "{{ section.settings.show_message }}"
+      },
+      {
         "type": "select",
         "id": "message_icon_custom",
         "label": "t:settings.custom_icon",
@@ -2075,6 +2315,17 @@
         "step": 1,
         "unit": "px",
         "default": 24,
+        "visible_if": "{{ section.settings.show_message }}"
+      },
+      {
+        "type": "range",
+        "id": "message_gap",
+        "label": "Gap between icon and text",
+        "min": 0,
+        "max": 50,
+        "step": 1,
+        "unit": "px",
+        "default": 8,
         "visible_if": "{{ section.settings.show_message }}"
       },
       {

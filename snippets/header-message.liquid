@@ -1,7 +1,17 @@
 {% if settings.show_message %}
-  <div class="header-message custom-typography custom-font-size max-md:hidden flex items-center gap-sm" style="{% render 'typography-style', settings: settings, preset: 'custom', case: settings.message_case %}">
-    {%- if settings.message_icon != 'none' or settings.message_icon_custom != 'none' -%}
-      <span class="message-icon flex items-center shrink-0">
+  <div class="header-message custom-typography custom-font-size max-md:hidden flex items-center{% if settings.message_underline %} header-message--underline{% endif %}" 
+    style="
+      {% render 'typography-style', settings: settings, preset: 'custom', case: settings.message_case %}
+      {%- if settings.message_gap != blank -%}gap: {{ settings.message_gap }}px;{%- endif -%}
+      {%- if settings.message_text_color != blank and settings.message_text_color != 'rgba(0,0,0,0)' -%}color: {{ settings.message_text_color }};{%- endif -%}
+    "
+  >
+    {%- if settings.message_icon_custom != 'none' or settings.message_icon != blank and settings.message_icon != 'none' -%}
+      <span class="message-icon flex items-center shrink-0"
+        {% if settings.message_icon_color != blank and settings.message_icon_color != 'rgba(0,0,0,0)' %}
+          style="color: {{ settings.message_icon_color }}; fill: {{ settings.message_icon_color }};"
+        {% endif %}
+      >
         {% render 'icon-or-image', 
           icon: settings.message_icon,
           icon_custom: settings.message_icon_custom,

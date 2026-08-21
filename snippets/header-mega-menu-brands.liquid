@@ -112,7 +112,12 @@
 <mega-menu-brands
   class="mega-menu-brands"
   id="MegaMenuBrands-{{ brands_uid }}"
-  style="--brand-columns: {{ brand_columns }}; display: block;"
+  style="
+    --brand-columns: {{ brand_columns }};
+    {%- if bl_stts.brand_group_font_size != blank -%}--brand-label-font-size: {{ bl_stts.brand_group_font_size }};{%- endif -%}
+    {%- if bl_stts.brand_group_font_weight != blank -%}--brand-label-font-weight: {{ bl_stts.brand_group_font_weight }};{%- endif -%}
+    display: block;
+  "
 >
   {%- if bl_stts.brand_text -%}
     <div class="mega-menu-brands__view-all center uppercase">
@@ -158,7 +163,12 @@
   <div class="mega-menu-brands__body">
     {%- if has_popular -%}
       <div class="mega-menu-brands__group mega-menu-brands__group--popular">
-        <p class="mega-menu-brands__label h5">
+        <p
+          class="mega-menu-brands__label h5"
+          {% if bl_stts.brand_group_font_size != blank or bl_stts.brand_group_font_weight != blank %}
+            style="{% if bl_stts.brand_group_font_size != blank %}font-size: {{ bl_stts.brand_group_font_size }} !important;{% endif %}{% if bl_stts.brand_group_font_weight != blank %}font-weight: {{ bl_stts.brand_group_font_weight }} !important;{% endif %}"
+          {% endif %}
+        >
           {{ bl_stts.popular_title | default: 'Popular' | escape }}
         </p>
         <ul class="mega-menu-brands__list list-unstyled" role="list">
@@ -174,7 +184,12 @@
     {%- endif -%}
 
     <div class="mega-menu-brands__group mega-menu-brands__group--all">
-      <p class="mega-menu-brands__label h5">
+      <p
+        class="mega-menu-brands__label h5"
+        {% if bl_stts.brand_group_font_size != blank or bl_stts.brand_group_font_weight != blank %}
+          style="{% if bl_stts.brand_group_font_size != blank %}font-size: {{ bl_stts.brand_group_font_size }} !important;{% endif %}{% if bl_stts.brand_group_font_weight != blank %}font-weight: {{ bl_stts.brand_group_font_weight }} !important;{% endif %}"
+        {% endif %}
+      >
         {{ bl_stts.all_title | default: 'All' | escape }}
       </p>
       <ul class="mega-menu-brands__list mega-menu-brands__list--columns list-unstyled" role="list">

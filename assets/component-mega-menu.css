@@ -236,7 +236,8 @@
   flex: 0 0 auto;
   margin: 0;
   text-transform: uppercase;
-  font-weight: 700;
+  font-size: var(--brand-label-font-size, inherit);
+  font-weight: var(--brand-label-font-weight, 700);
 }
 
 .mega-menu-brands__list {
