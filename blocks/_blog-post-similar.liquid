@@ -1,26 +1,82 @@
 {% assign current_article = article %}
 {% assign target_blog = blog %}
 {% assign posts_to_show = block.settings.posts_to_show | default: 2 %}
+{% assign excluded_tags_setting = block.settings.excluded_tags | default: 'all, blog, news, post, recipes, recipe, articles' | downcase %}
+{% assign excluded_tag_list = excluded_tags_setting | split: ',' %}
 
-{% assign target_tag = '' %}
-{% for tag in current_article.tags %}
-  {% assign tag_downcase = tag | downcase %}
-  {% unless tag_downcase contains 'author:' or tag_downcase contains 'author-' %}
-    {% assign target_tag = tag %}
-    {% break %}
-  {% endunless %}
-{% endfor %}
+{%- capture current_tags_clean -%}
+  {%- for tag in current_article.tags -%}
+    {%- assign tag_lower = tag | downcase | strip -%}
+    {%- unless tag_lower contains 'author:' or tag_lower contains 'author-' -%}
+      {{ tag_lower }}|||
+    {%- endunless -%}
+  {%- endfor -%}
+{%- endcapture -%}
+{%- assign current_tag_arr = current_tags_clean | split: '|||' -%}
 
-{% if target_tag == blank and current_article.tags.size > 0 %}
-  {% assign target_tag = current_article.tags.first %}
-{% endif %}
+{%- comment -%} Determine best tag for View More link {%- endcomment -%}
+{%- assign target_tag = '' -%}
+{%- for tag in current_tag_arr -%}
+  {%- if tag != blank -%}
+    {%- assign is_excluded = false -%}
+    {%- for excl in excluded_tag_list -%}
+      {%- assign excl_clean = excl | strip -%}
+      {%- if excl_clean != blank and tag == excl_clean -%}
+        {%- assign is_excluded = true -%}
+        {%- break -%}
+      {%- endif -%}
+    {%- endfor -%}
+    {%- unless is_excluded -%}
+      {%- assign target_tag = tag -%}
+      {%- break -%}
+    {%- endunless -%}
+  {%- endif -%}
+{%- endfor -%}
 
-{% if target_tag != blank %}
-  {% assign tag_handle = target_tag | handle %}
-  {% assign view_more_url = target_blog.url | append: '/tagged/' | append: tag_handle %}
-{% else %}
-  {% assign view_more_url = target_blog.url %}
-{% endif %}
+{%- if target_tag == blank and current_article.tags.size > 0 -%}
+  {%- assign target_tag = current_article.tags.first -%}
+{%- endif -%}
+
+{%- if target_tag != blank -%}
+  {%- assign tag_handle = target_tag | handle -%}
+  {%- assign view_more_url = target_blog.url | append: '/tagged/' | append: tag_handle -%}
+{%- else -%}
+  {%- assign view_more_url = target_blog.url -%}
+{%- endif -%}
+
+{%- comment -%} Compute relevance score for each article {%- endcomment -%}
+{%- assign max_score = 0 -%}
+{%- capture scored_data -%}
+  {%- for art in target_blog.articles -%}
+    {%- if art.id == current_article.id -%}{%- continue -%}{%- endif -%}
+    {%- assign score = 0 -%}
+    {%- for a_tag in art.tags -%}
+      {%- assign a_tag_lower = a_tag | downcase | strip -%}
+      {%- for c_tag in current_tag_arr -%}
+        {%- assign c_tag_clean = c_tag | strip -%}
+        {%- if c_tag_clean != blank and a_tag_lower == c_tag_clean -%}
+          {%- assign is_generic = false -%}
+          {%- for excl in excluded_tag_list -%}
+            {%- assign excl_clean = excl | strip -%}
+            {%- if excl_clean != blank and a_tag_lower == excl_clean -%}
+              {%- assign is_generic = true -%}
+              {%- break -%}
+            {%- endif -%}
+          {%- endfor -%}
+          {%- if is_generic -%}
+            {%- assign score = score | plus: 1 -%}
+          {%- else -%}
+            {%- assign score = score | plus: 3 -%}
+          {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
+    {%- endfor -%}
+    {%- if score > max_score -%}
+      {%- assign max_score = score -%}
+    {%- endif -%}
+    [{{ art.id }}:{{ score }}]
+  {%- endfor -%}
+{%- endcapture -%}
 
 {% capture meta_markup %}
 {% endcapture %}
@@ -100,13 +156,60 @@
     {% assign count = 0 %}
     {% assign rendered_ids = '' %}
 
-    {% if target_tag != blank %}
-      {% for art in target_blog.articles %}
-        {% if art.id == current_article.id %}{% continue %}{% endif %}
-        {% if art.tags contains target_tag %}
-          {% assign art_id_str = art.id | append: ',' %}
-          {% assign rendered_ids = rendered_ids | append: art_id_str %}
+    {%- comment -%} 1. Render articles by highest relevance score down to 1 {%- endcomment -%}
+    {%- if max_score > 0 -%}
+      {%- for eval_score in (1..max_score) reversed -%}
+        {%- if count >= posts_to_show -%}{%- break -%}{%- endif -%}
+        {%- for art in target_blog.articles -%}
+          {%- if art.id == current_article.id -%}{%- continue -%}{%- endif -%}
+          {%- assign art_id_str = art.id | append: ',' -%}
+          {%- if rendered_ids contains art_id_str -%}{%- continue -%}{%- endif -%}
           
+          {%- assign search_token = '[' | append: art.id | append: ':' | append: eval_score | append: ']' -%}
+          {%- if scored_data contains search_token -%}
+            {%- assign rendered_ids = rendered_ids | append: art_id_str -%}
+            
+            <div class="similar-post-card">
+              {% if art.image != blank %}
+                <a href="{{ art.url }}" class="similar-post-card__media">
+                  {{ art.image | image_url: width: 800 | image_tag: loading: 'lazy', alt: art.title }}
+                </a>
+              {% endif %}
+              <div class="similar-post-card__content">
+                <h4 class="similar-post-card__title">
+                  <a href="{{ art.url }}">{{ art.title }}</a>
+                </h4>
+                {%- if block.settings.show_author != false or block.settings.show_date != false -%}
+                  <div class="similar-post-card__meta">
+                    {%- if block.settings.show_author != false and art.author != blank -%}
+                      <span>
+                        {{ art.author }}
+                      </span>
+                    {%- endif -%}
+                    {%- if block.settings.show_date != false -%}
+                      <span>
+                        on {{ art.published_at | date: "%-d/%-m/%Y" }}
+                      </span>
+                    {%- endif -%}
+                  </div>
+                {%- endif -%}
+              </div>
+            </div>
+
+            {% assign count = count | plus: 1 %}
+            {% if count >= posts_to_show %}{% break %}{% endif %}
+          {%- endif -%}
+        {%- endfor -%}
+      {%- endfor -%}
+    {%- endif -%}
+
+    {%- comment -%} 2. Fallback: Fill remaining slots with newest other articles if needed {%- endcomment -%}
+    {%- if count < posts_to_show -%}
+      {%- for art in target_blog.articles -%}
+        {%- if art.id == current_article.id -%}{%- continue -%}{%- endif -%}
+        {%- assign art_id_str = art.id | append: ',' -%}
+        {%- unless rendered_ids contains art_id_str -%}
+          {%- assign rendered_ids = rendered_ids | append: art_id_str -%}
           <div class="similar-post-card">
             {% if art.image != blank %}
               <a href="{{ art.url }}" class="similar-post-card__media">
@@ -136,47 +239,9 @@
 
           {% assign count = count | plus: 1 %}
           {% if count >= posts_to_show %}{% break %}{% endif %}
-        {% endif %}
-      {% endfor %}
-    {% endif %}
-
-    {% if count < posts_to_show %}
-      {% for art in target_blog.articles %}
-        {% if art.id == current_article.id %}{% continue %}{% endif %}
-        {% assign art_id_str = art.id | append: ',' %}
-        {% unless rendered_ids contains art_id_str %}
-          <div class="similar-post-card">
-            {% if art.image != blank %}
-              <a href="{{ art.url }}" class="similar-post-card__media">
-                {{ art.image | image_url: width: 800 | image_tag: loading: 'lazy', alt: art.title }}
-              </a>
-            {% endif %}
-            <div class="similar-post-card__content">
-              <h4 class="similar-post-card__title">
-                <a href="{{ art.url }}">{{ art.title }}</a>
-              </h4>
-              {%- if block.settings.show_author != false or block.settings.show_date != false -%}
-                <div class="similar-post-card__meta">
-                  {%- if block.settings.show_author != false and art.author != blank -%}
-                    <span>
-                      {{ art.author }}
-                    </span>
-                  {%- endif -%}
-                  {%- if block.settings.show_date != false -%}
-                    <span>
-                      on {{ art.published_at | date: "%-d/%-m/%Y" }}
-                    </span>
-                  {%- endif -%}
-                </div>
-              {%- endif -%}
-            </div>
-          </div>
-
-          {% assign count = count | plus: 1 %}
-          {% if count >= posts_to_show %}{% break %}{% endif %}
-        {% endunless %}
-      {% endfor %}
-    {% endif %}
+        {%- endunless -%}
+      {%- endfor -%}
+    {%- endif -%}
   </div>
 </div>
 
@@ -215,6 +280,13 @@
       "max": 6,
       "step": 1,
       "default": 2
+    },
+    {
+      "type": "text",
+      "id": "excluded_tags",
+      "label": "Excluded generic tags (comma-separated)",
+      "info": "Tags with lower priority weight, e.g: all, blog, news, post, recipes, recipe, articles",
+      "default": "all, blog, news, post, recipes, recipe, articles"
     },
     {
       "type": "header",
