@@ -88,6 +88,8 @@
 
   assign page_width = sec_stts.page_width
 
+  assign always_show_swiper_button = sec_stts.always_show_swiper_button
+
   assign scroll_reveal = settings.animations_reveal_on_scroll
 -%}
 
@@ -575,6 +577,10 @@
             {%- else -%}
               {%- assign slides_per_view = columns_mobile -%}
             {%- endif -%}
+            {%- assign arrows_outside = false -%}
+            {%- if sec_stts.arrows_position == 'outside' -%}
+              {%- assign arrows_outside = true -%}
+            {%- endif -%}
             {%- capture breakpoints -%}
               {
                 "768": { "slidesPerView": {% if is_widget %}1{% else %}{{ columns_tablet }}{% endif %} },
@@ -583,13 +589,14 @@
               }
             {%- endcapture -%}
             <swiper-component
-              class="collection-carousel-swiper-component{% if has_media_banner %} overflow-hidden{% endif %}{% if sec_stts.full_width and page_width == 'page-width' %} full-width{% endif %}{% if widget_layout == 'spotlight' %} relative z-2 flex flex-column justify-end{% endif %}"
+              class="collection-carousel-swiper-component w-full block{% if has_media_banner %} overflow-hidden{% endif %}{% if sec_stts.full_width and page_width == 'page-width' %} full-width{% endif %}{% if widget_layout == 'spotlight' %} relative z-2 flex flex-column justify-end{% endif %}"
               {%- render 'swiper-data',
                 settings: section.settings,
                 slides_per_view: slides_per_view,
                 space_between: columns_gap_num,
                 watch_slides_progress: true,
-                breakpoints: breakpoints
+                breakpoints: breakpoints,
+                arrows_outside: arrows_outside
               -%}
               style="
                 {% render 'swiper-style',
@@ -599,6 +606,7 @@
                   columns_gap: columns_gap,
                 %}
               "
+              data-slide-id="{{ sec_id }}"
             >
               <div
                 class="swiper w-full"
@@ -621,12 +629,12 @@
                 {%- if enable_pagination -%}
                   <div class="swiper-pagination"></div>
                 {%- endif -%}
-                {%- if enable_navigation -%}
-                  <div class="swiper-btns-wrap small-hide swiper-btns-wrap--{{ sec_stts.arrows_position }}">
-                    {%- render 'swiper-button' -%}
-                  </div>
-                {%- endif -%}
               </div>
+              {%- if enable_navigation -%}
+                <div class="swiper-btns-wrap{% if sec_stts.arrows_position != 'outside' %} swiper-btns-wrap--{{ sec_stts.arrows_position }}{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
+                  {%- render 'swiper-button', slide_id: sec_id -%}
+                </div>
+              {%- endif -%}
             </swiper-component>
           {% when 'editorial' %}
             {% render 'editorial-product-grid', 
@@ -2222,9 +2230,20 @@
         {
           "value": "bottom",
           "label": "t:options.bottom_slide"
+        },
+        {
+          "value": "outside",
+          "label": "Outside slide"
         }
       ],
       "default": "inside",
+      "visible_if": "{{ section.settings.layout_type == 'carousel' and section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "always_show_swiper_button",
+      "label": "Always show swiper button",
+      "default": false,
       "visible_if": "{{ section.settings.layout_type == 'carousel' and section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {

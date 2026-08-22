@@ -44,6 +44,8 @@
   if block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination'
     assign enable_pagination = true
   endif
+
+  assign always_show_swiper_button = block.settings.always_show_swiper_button
 -%}
 
 {% capture list_items %}
@@ -107,7 +109,7 @@
         </ul>
         {%- if show_mobile_slider -%}
           {%- if enable_navigation -%}
-            <div class="swiper-btns-wrap">
+            <div class="swiper-btns-wrap{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
               {%- render 'swiper-button' -%}
             </div>
           {%- endif -%}
@@ -175,7 +177,7 @@
           {%- endif -%}
         </div>
         {%- if enable_navigation -%}
-          <div class="swiper-btns-wrap">
+          <div class="swiper-btns-wrap{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
             {%- render 'swiper-button', slide_id: block.id -%}
           </div>
         {%- endif -%}
@@ -411,6 +413,13 @@
         }
       ],
       "default": "arrows"
+    },
+    {
+      "type": "checkbox",
+      "id": "always_show_swiper_button",
+      "label": "Always show swiper button",
+      "default": false,
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "select",

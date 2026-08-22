@@ -39,6 +39,11 @@
   assign always_show_swiper_button = block.settings.always_show_swiper_button
   assign show_fraction_on_arrow = block.settings.show_fraction_on_arrow
 
+  assign arrows_outside = false
+  if block.settings.arrows_position == 'outside'
+    assign arrows_outside = true
+  endif
+
   assign swiper_loop = block.settings.loop
   assign swiper_autoplay = block.settings.autoplay
   assign swiper_autoplay_speed = block.settings.autoplay_speed
@@ -182,7 +187,8 @@
           autoplay: swiper_autoplay,
           autoplay_speed: swiper_autoplay_speed,
           loop: swiper_loop,
-          speed: swiper_speed
+          speed: swiper_speed,
+          arrows_outside: arrows_outside
         -%}
         style="
           {% render 'swiper-style',
@@ -193,6 +199,7 @@
             columns_gap: block.settings.gap,
           %}
         "
+        data-slide-id="{{ block.id }}"
       >
         <div class="swiper w-full" style="--swiper-navigation-top-offset: 50%;">
           <ul
@@ -203,15 +210,15 @@
             {{ list_items }}
           </ul>
 
-          {%- if enable_navigation -%}
-            <div class="swiper-btns-wrap {% if always_show_swiper_button %} always_show_swiper_button {%  else %} small-hide{% endif %}">
-              {%- render 'swiper-button', show_fraction_on_arrow: show_fraction_on_arrow -%}
-            </div>
-          {%- endif -%}
           {%- if enable_pagination -%}
             <div class="swiper-pagination"></div>
           {%- endif -%}
         </div>
+        {%- if enable_navigation -%}
+          <div class="swiper-btns-wrap{% if block.settings.arrows_position != 'outside' %} swiper-btns-wrap--{{ block.settings.arrows_position }}{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
+            {%- render 'swiper-button', slide_id: block.id, show_fraction_on_arrow: show_fraction_on_arrow -%}
+          </div>
+        {%- endif -%}
       </swiper-component>
   {% endcase %}
 </div>
@@ -509,6 +516,27 @@
         }
       ],
       "default": "bullets"
+    },
+    {
+      "type": "select",
+      "id": "arrows_position",
+      "label": "t:settings.arrows_position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "t:options.inside_slide"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom_slide"
+        },
+        {
+          "value": "outside",
+          "label": "Outside slide"
+        }
+      ],
+      "default": "inside",
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "checkbox",

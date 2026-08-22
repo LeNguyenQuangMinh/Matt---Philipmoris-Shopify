@@ -72,6 +72,12 @@
   endif
 
   assign scroll_reveal = false
+
+  assign always_show_swiper_button = sec_stts.always_show_swiper_button
+  assign arrows_outside = false
+  if sec_stts.arrows_position == 'outside'
+    assign arrows_outside = true
+  endif
 -%}
 
 {% comment %} Layout type [tabs-grid] and [tabs-carousel] {% endcomment %}
@@ -805,15 +811,17 @@
                               "1400": { "slidesPerView": {{ columns_desktop }} }
                             }
                           {%- endcapture -%}
+                          {%- assign slide_id = sec_id | append: '-' | append: forloop.index -%}
                           <swiper-component
-                            class="collection-carousel-swiper-component{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
+                            class="collection-carousel-swiper-component w-full block{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
                             {%- render 'swiper-data',
                               settings: section.settings,
                               loop: false,
                               slides_per_view: columns_mobile,
                               space_between: 30,
                               watch_slides_progress: true,
-                              breakpoints: breakpoints
+                              breakpoints: breakpoints,
+                              arrows_outside: arrows_outside
                             -%}
                             style="
                               {% render 'swiper-style',
@@ -823,6 +831,7 @@
                                 columns_gap: 30,
                               %}
                             "
+                            data-slide-id="{{ slide_id }}"
                           >
                             <div class="swiper"
                             style="
@@ -851,15 +860,15 @@
                                 {% endfor %}
                               </ul>
 
-                              {%- if enable_navigation -%}
-                                <div class="swiper-btns-wrap small-hide">
-                                  {%- render 'swiper-button' -%}
-                                </div>
-                              {%- endif -%}
                               {%- if enable_pagination -%}
                                 <div class="swiper-pagination"></div>
                               {%- endif -%}
                             </div>
+                            {%- if enable_navigation -%}
+                              <div class="swiper-btns-wrap{% if sec_stts.arrows_position != 'outside' %} swiper-btns-wrap--{{ sec_stts.arrows_position }}{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
+                                {%- render 'swiper-button', slide_id: slide_id -%}
+                              </div>
+                            {%- endif -%}
                           </swiper-component>
                           {%- if show_view_all and more_in_collection -%}
                             <div class="center collection__view-all{% if scroll_reveal %} scroll-trigger animate--slide-in{% endif %}">
@@ -943,15 +952,17 @@
                               "1400": { "slidesPerView": {{ columns_desktop }} }
                             }
                           {%- endcapture -%}
+                          {%- assign slide_id = sec_id | append: '-' | append: forloop.index -%}
                           <swiper-component
-                            class="collection-carousel-swiper-component{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
+                            class="collection-carousel-swiper-component w-full block{% if section.settings.full_width and section.settings.section_width == 'page-width' %} full-width{% endif %}"
                             {%- render 'swiper-data',
                               settings: section.settings,
                               loop: false,
                               slides_per_view: columns_mobile,
                               space_between: 30,
                               watch_slides_progress: true,
-                              breakpoints: breakpoints
+                              breakpoints: breakpoints,
+                              arrows_outside: arrows_outside
                             -%}
                             style="
                               {% render 'swiper-style',
@@ -961,6 +972,7 @@
                                 columns_gap: 30,
                               %}
                             "
+                            data-slide-id="{{ slide_id }}"
                           >
                             <div class="swiper">
                               <ul
@@ -981,15 +993,15 @@
                                 {% endfor %}
                               </ul>
 
-                              {%- if enable_navigation -%}
-                                <div class="swiper-btns-wrap small-hide">
-                                  {%- render 'swiper-button' -%}
-                                </div>
-                              {%- endif -%}
                               {%- if enable_pagination -%}
                                 <div class="swiper-pagination"></div>
                               {%- endif -%}
                             </div>
+                            {%- if enable_navigation -%}
+                              <div class="swiper-btns-wrap{% if sec_stts.arrows_position != 'outside' %} swiper-btns-wrap--{{ sec_stts.arrows_position }}{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
+                                {%- render 'swiper-button', slide_id: slide_id -%}
+                              </div>
+                            {%- endif -%}
                           </swiper-component>
                         </template>
                       </div>
@@ -1233,14 +1245,16 @@
                       "1400": { "slidesPerView": {{ columns_block_items }} }
                     }
                   {%- endcapture -%}
+                  {%- assign slide_id = sec_id | append: '-duo-' | append: forloop.index -%}
                   <swiper-component
-                    class="collection-carousel-swiper-component"
+                    class="collection-carousel-swiper-component w-full block"
                     {%- render 'swiper-data',
                       settings: section.settings,
                       loop: false,
                       slides_per_view: columns_block_items_mobile,
                       space_between: columns_gap,
-                      breakpoints: breakpoints
+                      breakpoints: breakpoints,
+                      arrows_outside: arrows_outside
                     -%}
                     style="
                       {% render 'swiper-style',
@@ -1250,6 +1264,7 @@
                         columns_gap: columns_gap,
                       %}
                     "
+                    data-slide-id="{{ slide_id }}"
                   >
                     <div class="swiper w-full">
                       <ul
@@ -1263,15 +1278,15 @@
                           </li>
                         {% endfor %}
                       </ul>
-                      {%- if enable_navigation -%}
-                        <div class="swiper-btns-wrap small-hide">
-                          {%- render 'swiper-button' -%}
-                        </div>
-                      {%- endif -%}
                       {%- if enable_pagination -%}
                         <div class="swiper-pagination"></div>
                       {%- endif -%}
                     </div>
+                    {%- if enable_navigation -%}
+                      <div class="swiper-btns-wrap{% if sec_stts.arrows_position != 'outside' %} swiper-btns-wrap--{{ sec_stts.arrows_position }}{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
+                        {%- render 'swiper-button', slide_id: slide_id -%}
+                      </div>
+                    {%- endif -%}
                   </swiper-component>
                 </div>
               {% endfor %}
@@ -1504,6 +1519,34 @@
         }
       ],
       "default": "arrows"
+    },
+    {
+      "type": "select",
+      "id": "arrows_position",
+      "label": "t:settings.arrows_position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "t:options.inside_slide"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom_slide"
+        },
+        {
+          "value": "outside",
+          "label": "Outside slide"
+        }
+      ],
+      "default": "inside",
+      "visible_if": "{{ section.settings.layout_type == 'tabs-carousel' or section.settings.layout_type == 'duo-carousel' and section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "always_show_swiper_button",
+      "label": "Always show swiper button",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type == 'tabs-carousel' or section.settings.layout_type == 'duo-carousel' and section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "select",
