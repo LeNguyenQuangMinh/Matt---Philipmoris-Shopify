@@ -9397,11 +9397,12 @@ marquee-component {
 @media screen and (min-width: 750px) {
   .product-details {
     position: sticky;
-    top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)));
+    /* top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px))); */
   }
 
   body:has(header-component[data-sticky-state="active"]) .product-details {
-    top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)));
+    /* top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px))); */
+    position: unset;
   }
 
   .product-details > .group-block {

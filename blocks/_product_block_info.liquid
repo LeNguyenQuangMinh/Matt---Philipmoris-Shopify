@@ -29,6 +29,7 @@
   assign stock_display_html = ""
 
   assign high_text_setting = block.settings.high_stock_text | default: "5+ In Stock - Available for immediate despatch"
+  assign untracked_text_setting = block.settings.untracked_stock_text | default: high_text_setting
   assign low_text_setting = block.settings.low_stock_text | default: "Available for immediate despatch"
   if low_text_setting == blank or low_text_setting contains 'left in stock' or low_text_setting contains 'Only'
     assign low_text_setting = "Available for immediate despatch"
@@ -40,7 +41,22 @@
     capture stock_display_html
       echo '<span class="stock-prefix">' | append: out_text_setting | append: '</span>'
     endcapture
-  elsif stock_management == blank or stock_policy == 'continue' or stock_qty > threshold
+  elsif stock_management == blank or stock_policy == 'continue'
+    assign stock_status_class = "in-stock"
+    assign formatted_untracked = untracked_text_setting
+    if formatted_untracked contains '-'
+      assign parts = formatted_untracked | split: '-'
+      assign prefix_part = parts[0] | append: '-'
+      assign suffix_part = formatted_untracked | remove_first: parts[0] | remove_first: '-'
+      capture stock_display_html
+        echo '<span class="stock-prefix">' | append: prefix_part | append: '</span><span class="stock-suffix">' | append: suffix_part | append: '</span>'
+      endcapture
+    else
+      capture stock_display_html
+        echo '<span class="stock-prefix">' | append: formatted_untracked | append: '</span>'
+      endcapture
+    endif
+  elsif stock_qty > threshold
     assign stock_status_class = "in-stock"
     assign formatted_high = high_text_setting | replace: "[qty]", stock_qty
     if formatted_high contains '-'
@@ -120,7 +136,7 @@
             data-stock-threshold="{{ threshold }}"
             data-high-stock-text="{{ block.settings.high_stock_text | default: '5+ In Stock - Available for immediate despatch' | escape }}"
             data-low-stock-text="{{ low_text_setting | escape }}"
-            data-untracked-stock-text="{{ block.settings.high_stock_text | default: '5+ In Stock - Available for immediate despatch' | escape }}"
+            data-untracked-stock-text="{{ untracked_text_setting | escape }}"
             data-out-of-stock-text="{{ block.settings.out_of_stock_text | default: 'Out of Stock' | escape }}">
             <span class="custom-product-stock" data-stock-left=""></span>
             <span class="custom-instock-text"></span>
@@ -160,7 +176,7 @@
         if (lowText.includes('left in stock') || lowText.includes('Only')) {
           lowText = 'Available for immediate despatch';
         }
-        const untrackedText = el.dataset.untrackedStockText || '5+ In Stock - Available for immediate despatch';
+        const untrackedText = el.dataset.untrackedStockText || highText;
         const outText = el.dataset.outOfStockText || 'Out of Stock';
 
         const stockTextEl = el.querySelector('.stock-text') || el;
@@ -250,6 +266,13 @@
       "id": "high_stock_text",
       "label": "High Stock Text (Stock > Threshold)",
       "default": "5+ In Stock - Available for immediate despatch"
+    },
+    {
+      "type": "inline_richtext",
+      "id": "untracked_stock_text",
+      "label": "Untracked Stock Text",
+      "default": "5+ In Stock - Available for immediate despatch",
+      "info": "Display text for items without inventory tracking or when continue selling is enabled"
     },
     {
       "type": "inline_richtext",
