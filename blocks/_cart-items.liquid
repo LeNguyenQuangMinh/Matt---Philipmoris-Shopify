@@ -34,6 +34,129 @@
   </div>
 </div>
 
+<script>
+  (function() {
+    let addonSyncBusy = false;
+    let syncTimer = null;
+
+    // Only listen for cart changes from the cart component (remove/qty change),
+    // not from product-form add-to-cart
+    document.addEventListener('cart:updated', function(event) {
+      // Skip events dispatched by our own sync to avoid infinite loop
+      if (event?.detail?._addonSyncSource) return;
+      // Skip if busy
+      if (addonSyncBusy) return;
+      // Debounce: wait 800ms to ensure addon product fetch (from embossing block) has completed
+      clearTimeout(syncTimer);
+      syncTimer = setTimeout(function() { syncAddonItems(); }, 800);
+    });
+
+    async function syncAddonItems() {
+      if (addonSyncBusy) return;
+      addonSyncBusy = true;
+
+      try {
+        const cartUrl = (window.routes?.cart_url || '/cart') + '.js';
+        const res = await fetch(cartUrl, { cache: 'no-store' });
+        if (!res.ok) return;
+        const cart = await res.json();
+        if (!cart || !cart.items || cart.items.length === 0) return;
+
+        const mainItems = [];
+        const addonItems = [];
+
+        cart.items.forEach(function(item) {
+          if (item.properties && item.properties._is_addon === 'true') {
+            addonItems.push(item);
+          } else {
+            mainItems.push(item);
+          }
+        });
+
+        // No addon items in cart — nothing to sync
+        if (addonItems.length === 0) return;
+
+        // Build a map: variant_id → total quantity of main (non-addon) items
+        const mainVariantQty = {};
+        mainItems.forEach(function(item) {
+          const vid = String(item.variant_id);
+          mainVariantQty[vid] = (mainVariantQty[vid] || 0) + item.quantity;
+        });
+
+        const updates = {};
+        let needsUpdate = false;
+
+        addonItems.forEach(function(addon) {
+          const parentVid = addon.properties?._main_variant_id;
+          if (!parentVid) return;
+
+          const parentQty = mainVariantQty[String(parentVid)];
+
+          if (!parentQty || parentQty <= 0) {
+            // Parent product was removed — remove addon too
+            updates[addon.key] = 0;
+            needsUpdate = true;
+          } else if (addon.quantity !== parentQty) {
+            // Parent quantity changed — sync addon quantity
+            updates[addon.key] = parentQty;
+            needsUpdate = true;
+          }
+        });
+
+        if (!needsUpdate) return;
+
+        // Apply updates via /cart/update.js
+        const updateUrl = (window.routes?.cart_update_url || '/cart/update') + '.js';
+        const updateRes = await fetch(updateUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'X-Requested-With': 'XMLHttpRequest' },
+          body: JSON.stringify({ updates: updates })
+        });
+        if (!updateRes.ok) return;
+        const updatedCart = await updateRes.json();
+
+        // Update cart count in header
+        if (updatedCart.item_count !== undefined) {
+          document.querySelectorAll('[data-cart-count]').forEach(function(el) {
+            el.textContent = updatedCart.item_count;
+          });
+        }
+
+        if (typeof window.updateCartEmptyStateVisibility === 'function' && updatedCart.item_count !== undefined) {
+          window.updateCartEmptyStateVisibility(updatedCart.item_count);
+        }
+
+        // Re-render cart sections by fetching fresh section HTML
+        const cartComponent = document.querySelector('cart-items-component') || document.querySelector('cart-drawer-items');
+        if (cartComponent && cartComponent.dataset.sectionId) {
+          const sectionId = cartComponent.dataset.sectionId;
+          const sectionUrl = new URL(window.location.href);
+          sectionUrl.searchParams.set('section_id', sectionId);
+          const sectionRes = await fetch(sectionUrl.toString(), { cache: 'no-store' });
+          if (sectionRes.ok) {
+            const sectionHtml = await sectionRes.text();
+            if (typeof cartComponent.updateSections === 'function') {
+              const sections = {};
+              sections[sectionId] = sectionHtml;
+              cartComponent.updateSections(sections, updatedCart);
+            }
+          }
+        }
+
+        // Dispatch cart:updated with a flag so we don't re-trigger ourselves
+        document.dispatchEvent(new CustomEvent('cart:updated', {
+          detail: Object.assign({}, updatedCart, { _addonSyncSource: true })
+        }));
+
+      } catch (err) {
+        console.warn('Addon sync error:', err);
+      } finally {
+        addonSyncBusy = false;
+      }
+    }
+  })();
+</script>
+
 {% schema %}
 {
   "name": "t:names.cart_items",

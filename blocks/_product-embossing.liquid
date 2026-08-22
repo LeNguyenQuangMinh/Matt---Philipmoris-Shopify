@@ -1,0 +1,586 @@
+{%- liquid
+  assign block_stts = block.settings
+  assign product = closest.product
+  if request.visual_preview_mode and product == blank
+    assign product = collections.all.products.first
+  endif
+
+  assign is_eligible = true
+  if block_stts.condition_type == 'tag'
+    assign required_tag = block_stts.required_tag | strip | downcase
+    assign is_eligible = false
+    for tag in product.tags
+      assign t_down = tag | downcase
+      if t_down == required_tag
+        assign is_eligible = true
+        break
+      endif
+    endfor
+  elsif block_stts.condition_type == 'metafield'
+    assign is_eligible = false
+    if block_stts.metafield_key != blank
+      assign key_parts = block_stts.metafield_key | split: '.'
+      if key_parts.size == 2
+        assign ns = key_parts[0]
+        assign k = key_parts[1]
+        assign meta_val = product.metafields[ns][k].value | default: product.metafields[ns][k]
+      else
+        assign k = key_parts[0]
+        assign meta_val = product.metafields.custom[k].value | default: product.metafields.custom[k]
+      endif
+      if meta_val == true or meta_val == 'true' or meta_val == 1 or meta_val != blank
+        assign is_eligible = true
+      endif
+    endif
+  endif
+
+  unless is_eligible or request.visual_preview_mode
+    break
+  endunless
+
+  assign price_text = block_stts.embossing_price
+  assign addon_variant_id = ''
+  if block_stts.addon_product != blank and all_products[block_stts.addon_product] != blank
+    assign addon_p = all_products[block_stts.addon_product]
+    assign price_text = addon_p.price | money
+    assign addon_variant_id = addon_p.selected_or_first_available_variant.id
+  endif
+
+  assign property_name = block_stts.property_name | default: 'Letters to Emboss'
+-%}
+
+<style>
+  .product-embossing-block {
+    margin: 1.5rem 0;
+  }
+  .product-embossing-block .embossing-wrapper {
+    border: 1px solid var(--embossing-border-color, #e0e0e0);
+    border-radius: 4px;
+    padding: 1.5rem;
+    background-color: var(--embossing-bg-color, transparent);
+  }
+  .product-embossing-block .embossing-checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 1.4rem;
+    user-select: none;
+    margin: 0;
+    color: rgba(var(--color-foreground), 0.9);
+  }
+  .product-embossing-block .embossing-checkbox {
+    width: 1.8rem;
+    height: 1.8rem;
+    cursor: pointer;
+    accent-color: var(--embossing-accent-color, #2e7d32);
+    margin: 0;
+  }
+  .product-embossing-block .embossing-price-badge {
+    font-weight: 500;
+    color: var(--embossing-accent-color, #2e7d32);
+    margin-left: 0.4rem;
+  }
+  .product-embossing-block .embossing-details {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.8rem;
+  }
+  .product-embossing-block .embossing-details[hidden] {
+    display: none !important;
+  }
+  .product-embossing-block .embossing-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+  .product-embossing-block .embossing-input-label {
+    font-weight: 600;
+    font-size: 1.3rem;
+    color: rgba(var(--color-foreground), 0.9);
+    margin: 0;
+  }
+  .product-embossing-block .embossing-required-star {
+    color: #d9534f;
+    margin-left: 0.2rem;
+  }
+  .product-embossing-block .embossing-input {
+    width: 100%;
+    padding: 1rem 1.2rem;
+    border: 1px solid var(--embossing-border-color, #ccc);
+    border-radius: 4px;
+    font-size: 1.4rem;
+    color: rgba(var(--color-foreground), 1);
+    background-color: #ffffff;
+    letter-spacing: 0.1em;
+    text-transform: {% if block_stts.uppercase %}uppercase{% else %}none{% endif %};
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+  .product-embossing-block .embossing-input:focus {
+    outline: none;
+    border-color: rgba(var(--color-foreground), 0.8);
+    box-shadow: 0 0 0 1px rgba(var(--color-foreground), 0.8);
+  }
+  .product-embossing-block .embossing-input.has-error {
+    border-color: #d9534f !important;
+    box-shadow: 0 0 0 1px #d9534f !important;
+  }
+  .product-embossing-block .embossing-error-msg {
+    color: #d9534f;
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-top: 0.3rem;
+  }
+  .product-embossing-block .embossing-error-msg.hidden {
+    display: none;
+  }
+  .product-embossing-block .embossing-helper-text {
+    font-size: 1.2rem;
+    color: rgba(var(--color-foreground), 0.7);
+    margin: 0;
+    line-height: 1.4;
+  }
+  .product-embossing-block .embossing-price-note {
+    font-size: 1.2rem;
+    font-weight: 500;
+    color: rgba(var(--color-foreground), 0.8);
+    margin: 0;
+  }
+  .product-embossing-block .embossing-price-note span {
+    color: var(--embossing-accent-color, #2e7d32);
+    font-weight: 600;
+  }
+</style>
+
+<product-embossing-block
+  id="ProductEmbossing-{{ block.id }}"
+  class="product-embossing-block block spacing-style"
+  data-product-title="{{ product.title | escape }}"
+  data-property-name="{{ property_name | escape }}"
+  data-addon-variant-id="{{ addon_variant_id }}"
+  data-required="{{ block_stts.is_required }}"
+  style="
+    {% render 'spacing-style', settings: block_stts %}
+    --embossing-border-color: {{ block_stts.border_color | default: '#e0e0e0' }};
+    --embossing-bg-color: {{ block_stts.bg_color | default: 'transparent' }};
+    --embossing-accent-color: {{ block_stts.accent_color | default: '#2e7d32' }};
+  "
+  {{ block.shopify_attributes }}
+>
+  <div class="embossing-wrapper">
+    <label class="embossing-checkbox-label" for="EmbossingToggle-{{ block.id }}">
+      <input
+        type="checkbox"
+        id="EmbossingToggle-{{ block.id }}"
+        class="embossing-checkbox"
+      >
+      <span class="embossing-checkbox-text">
+        {{ block_stts.checkbox_label | default: 'Add Embossing' }}
+        {%- if block_stts.show_price_in_label and price_text != blank -%}
+          <span class="embossing-price-badge">(+ {{ price_text }})</span>
+        {%- endif -%}
+      </span>
+    </label>
+
+    <div class="embossing-details" id="EmbossingDetails-{{ block.id }}" hidden>
+      <div class="embossing-field">
+        <label for="EmbossingInput-{{ block.id }}" class="embossing-input-label">
+          {{ block_stts.input_label | default: 'Letters to Emboss' }}
+          {%- if block_stts.is_required -%}
+            <span class="embossing-required-star" aria-hidden="true">*</span>
+          {%- endif -%}
+        </label>
+        <input
+          type="text"
+          id="EmbossingInput-{{ block.id }}"
+          class="embossing-input"
+          placeholder="{{ block_stts.input_placeholder | default: 'A.B.C or ABCD' }}"
+          maxlength="{{ block_stts.max_chars | default: 6 }}"
+          disabled
+          autocomplete="off"
+          autocapitalize="characters"
+        >
+        <div class="embossing-error-msg hidden" id="EmbossingError-{{ block.id }}">
+          {{ block_stts.error_message | default: 'Please enter the letters to emboss before adding to cart.' }}
+        </div>
+      </div>
+
+      {%- if block_stts.helper_text != blank -%}
+        <p class="embossing-helper-text">
+          {{ block_stts.helper_text }}
+        </p>
+      {%- endif -%}
+
+      {%- if block_stts.price_note != blank and price_text != blank -%}
+        {%- capture highlighted_price -%}<span>{{ price_text }}</span>{%- endcapture -%}
+        {%- assign formatted_note = block_stts.price_note | replace: '[price]', highlighted_price -%}
+        <p class="embossing-price-note">
+          {{ formatted_note }}
+        </p>
+      {%- endif -%}
+    </div>
+  </div>
+</product-embossing-block>
+
+<script>
+  if (!customElements.get('product-embossing-block')) {
+    customElements.define(
+      'product-embossing-block',
+      class ProductEmbossingBlock extends HTMLElement {
+        connectedCallback() {
+          this.checkbox = this.querySelector('.embossing-checkbox');
+          this.details = this.querySelector('.embossing-details');
+          this.input = this.querySelector('.embossing-input');
+          this.errorMsg = this.querySelector('.embossing-error-msg');
+          this.propertyName = this.dataset.propertyName || 'Letters to Emboss';
+          this.addonVariantId = this.dataset.addonVariantId;
+          this.isRequired = this.dataset.required === 'true';
+
+          if (!this.checkbox || !this.input) return;
+
+          this.checkbox.addEventListener('change', this.onCheckboxChange.bind(this));
+          this.input.addEventListener('input', this.onInputType.bind(this));
+
+          this.setupFormIntegration();
+        }
+
+        onCheckboxChange() {
+          const isChecked = this.checkbox.checked;
+          if (isChecked) {
+            this.details.removeAttribute('hidden');
+            this.input.removeAttribute('disabled');
+            this.input.setAttribute('name', `properties[${this.propertyName}]`);
+            this.input.focus();
+          } else {
+            this.details.setAttribute('hidden', '');
+            this.input.setAttribute('disabled', 'disabled');
+            this.input.removeAttribute('name');
+            this.input.value = '';
+            this.hideError();
+          }
+        }
+
+        onInputType() {
+          if (this.input.value.trim() !== '') {
+            this.hideError();
+          }
+        }
+
+        showError() {
+          this.input.classList.add('has-error');
+          if (this.errorMsg) this.errorMsg.classList.remove('hidden');
+          this.input.focus();
+        }
+
+        hideError() {
+          this.input.classList.remove('has-error');
+          if (this.errorMsg) this.errorMsg.classList.add('hidden');
+        }
+
+        setupFormIntegration() {
+          const form = this.closest('product-form-component')?.querySelector('form') 
+            || this.closest('product-info')?.querySelector('form[data-type="add-to-cart-form"]')
+            || this.closest('.product-details')?.querySelector('form[data-type="add-to-cart-form"]')
+            || document.querySelector('form[data-type="add-to-cart-form"]');
+
+          if (!form) return;
+
+          form.addEventListener('submit', (e) => {
+            if (this.checkbox.checked && this.isRequired && !this.input.value.trim()) {
+              e.preventDefault();
+              e.stopImmediatePropagation();
+              this.showError();
+
+              // Reset loading states on submit button
+              const submitBtn = form.querySelector('.add-to-cart-button');
+              if (submitBtn) {
+                submitBtn.removeAttribute('aria-disabled');
+                submitBtn.classList.remove('loading');
+                const spinner = submitBtn.querySelector('.loading__spinner');
+                if (spinner) spinner.classList.add('hidden');
+              }
+              return false;
+            }
+
+            // If an add-on product variant is configured, trigger add-on to cart
+            if (this.checkbox.checked && this.addonVariantId) {
+              const currentVariantInput = form.querySelector('[name="id"]');
+              const mainVariantId = currentVariantInput ? currentVariantInput.value : '';
+              this.enqueueAddonProduct(mainVariantId, this.input.value.trim(), form);
+            }
+          }, true);
+        }
+
+        getSelectedVariantDetails(form) {
+          const productTitle = this.dataset.productTitle || '';
+          let variantLabel = '';
+
+          try {
+            const selectedOptionInputs = document.querySelectorAll(
+              'variant-radios input:checked, variant-selects select, .product-form select[name="id"] option:checked'
+            );
+            if (selectedOptionInputs.length > 0) {
+              const options = [];
+              selectedOptionInputs.forEach(input => {
+                const val = (input.value || input.textContent || '').trim();
+                if (val && val.toLowerCase() !== 'default title') {
+                  options.push(val);
+                }
+              });
+              if (options.length > 0) {
+                variantLabel = options.join(' / ');
+              }
+            }
+          } catch (e) {
+            // fallback
+          }
+
+          if (productTitle && variantLabel) {
+            return `${productTitle} (${variantLabel})`;
+          } else if (productTitle) {
+            return productTitle;
+          }
+          return 'Main Product';
+        }
+
+        async enqueueAddonProduct(mainVariantId, textValue, form) {
+          try {
+            const formData = new FormData();
+            formData.append('id', this.addonVariantId);
+            formData.append('quantity', 1);
+
+            formData.append('properties[_is_addon]', 'true');
+            if (mainVariantId) {
+              formData.append('properties[_main_variant_id]', mainVariantId);
+            }
+
+            await fetch(`${window.routes?.cart_add_url || '/cart/add'}.js`, {
+              method: 'POST',
+              body: formData,
+              headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            });
+          } catch (err) {
+            console.warn('Could not add embossing addon product to cart:', err);
+          }
+        }
+      }
+    );
+  }
+</script>
+
+{% schema %}
+{
+  "name": "Product Embossing",
+  "tag": null,
+  "settings": [
+    {
+      "type": "header",
+      "content": "Display Condition"
+    },
+    {
+      "type": "select",
+      "id": "condition_type",
+      "label": "Show condition",
+      "options": [
+        {
+          "value": "all",
+          "label": "All products"
+        },
+        {
+          "value": "tag",
+          "label": "Specific product tag"
+        },
+        {
+          "value": "metafield",
+          "label": "Product metafield"
+        }
+      ],
+      "default": "all"
+    },
+    {
+      "type": "text",
+      "id": "required_tag",
+      "label": "Product tag",
+      "default": "embossing",
+      "info": "Display this block only if the product contains this tag (case-insensitive)."
+    },
+    {
+      "type": "text",
+      "id": "metafield_key",
+      "label": "Metafield key",
+      "default": "custom.embossing_available",
+      "info": "Display this block only if this metafield is true or present (e.g. custom.embossing_available)."
+    },
+    {
+      "type": "header",
+      "content": "Checkbox & Pricing"
+    },
+    {
+      "type": "text",
+      "id": "checkbox_label",
+      "label": "Checkbox label",
+      "default": "Add Embossing"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_price_in_label",
+      "label": "Show price in label",
+      "default": true
+    },
+    {
+      "type": "text",
+      "id": "embossing_price",
+      "label": "Price text (manual)",
+      "default": "£25.00 GBP",
+      "info": "Used if no Add-on Product is selected below."
+    },
+    {
+      "type": "product",
+      "id": "addon_product",
+      "label": "Linked Add-on Product (Optional)",
+      "info": "Select an 'Embossing Service' product if you want to automatically add a separate service item to the cart."
+    },
+    {
+      "type": "header",
+      "content": "Input Field"
+    },
+    {
+      "type": "text",
+      "id": "property_name",
+      "label": "Line item property name",
+      "default": "Letters to Emboss",
+      "info": "This will appear on cart, checkout and customer order admin."
+    },
+    {
+      "type": "text",
+      "id": "input_label",
+      "label": "Input label",
+      "default": "Letters to Emboss"
+    },
+    {
+      "type": "text",
+      "id": "input_placeholder",
+      "label": "Input placeholder",
+      "default": "A.B.C or ABCD"
+    },
+    {
+      "type": "range",
+      "id": "max_chars",
+      "label": "Maximum characters",
+      "min": 1,
+      "max": 20,
+      "step": 1,
+      "default": 6
+    },
+    {
+      "type": "checkbox",
+      "id": "uppercase",
+      "label": "Force uppercase letters",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "is_required",
+      "label": "Required when checked",
+      "default": true,
+      "info": "Prevent adding to cart without typing letters if checkbox is checked."
+    },
+    {
+      "type": "text",
+      "id": "error_message",
+      "label": "Validation error message",
+      "default": "Please enter the letters to emboss before adding to cart."
+    },
+    {
+      "type": "header",
+      "content": "Notices & Info"
+    },
+    {
+      "type": "textarea",
+      "id": "helper_text",
+      "label": "Helper guide text",
+      "default": "Limited to 3 letters and two fullstops or a max of 4 letters without fullstops."
+    },
+    {
+      "type": "text",
+      "id": "price_note",
+      "label": "Price note text",
+      "default": "Selections will add [price] to the price",
+      "info": "Use [price] to insert the price dynamically."
+    },
+    {
+      "type": "header",
+      "content": "Appearance & Colors"
+    },
+    {
+      "type": "color",
+      "id": "border_color",
+      "label": "Border color",
+      "default": "#e0e0e0"
+    },
+    {
+      "type": "color",
+      "id": "bg_color",
+      "label": "Background color"
+    },
+    {
+      "type": "color",
+      "id": "accent_color",
+      "label": "Accent / Price color",
+      "default": "#2e7d32"
+    },
+    {
+      "type": "header",
+      "content": "t:content.padding"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "t:settings.top",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "t:settings.bottom",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-start",
+      "label": "t:settings.left",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    },
+    {
+      "type": "range",
+      "id": "padding-inline-end",
+      "label": "t:settings.right",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0
+    }
+  ],
+  "presets": [
+    {
+      "name": "Product Embossing",
+      "category": "t:categories.product"
+    }
+  ]
+}
+{% endschema %}
