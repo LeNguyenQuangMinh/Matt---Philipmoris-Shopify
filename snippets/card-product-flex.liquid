@@ -73,9 +73,10 @@
                   assign ratio = 1
                 endif
 
-                assign sizes = sizes
+                assign default_card_sizes = '(min-width: 1400px) calc((100vw - 60px) / 4), (min-width: 990px) calc((100vw - 40px) / 3), (min-width: 750px) calc((100vw - 30px) / 3), calc((100vw - 20px) / 2)'
+                assign sizes = sizes | default: default_card_sizes
 
-                assign widths = '165, 360, 533, 720, 940, 1066'
+                assign widths = '165, 240, 360, 480, 533, 720, 940, 1066'
 
                 unless lazy_load == false
                   assign loading = "lazy"
@@ -96,13 +97,13 @@
                 <a href="{{ card_product.url }}" class="media media--transparent media--hover-effect">
                   {% if card_product.featured_media %}
                     {% if variant_img != blank %}
-                      {{ variant_img | image_url: width: variant_img.width | image_tag: sizes: sizes, widths: widths, loading: 'lazy', alt: variant_img.alt, class: 'motion-reduce', loading: loading, width: variant_img.width, height: variant_img.height }}
+                      {{ variant_img | image_url: width: variant_img.width, format: 'webp' | image_tag: sizes: sizes, widths: widths, loading: 'lazy', alt: variant_img.alt, class: 'motion-reduce', loading: loading, width: variant_img.width, height: variant_img.height }}
                     {% else %}
-                      {{ card_product.featured_media | image_url: width: card_product.featured_media.width | image_tag: sizes: sizes, widths: widths, loading: 'lazy', alt: card_product.featured_media.alt, class: 'motion-reduce', loading: loading, width: card_product.featured_media.width, height: card_product.featured_media.height }}
+                      {{ card_product.featured_media | image_url: width: card_product.featured_media.width, format: 'webp' | image_tag: sizes: sizes, widths: widths, loading: 'lazy', alt: card_product.featured_media.alt, class: 'motion-reduce', loading: loading, width: card_product.featured_media.width, height: card_product.featured_media.height }}
                     {% endif %}
 
                     {% if card_product.media[1] != null and show_secondary_image %}
-                      {{ card_product.media[1] | image_url: width: card_product.media[1].width | image_tag: sizes: sizes, widths: widths, loading: 'lazy', alt: card_product.featured_media.alt, class: 'motion-reduce', loading: 'lazy', width: card_product.media[1].width, height: card_product.media[1].height }}
+                      {{ card_product.media[1] | image_url: width: card_product.media[1].width, format: 'webp' | image_tag: sizes: sizes, widths: widths, loading: 'lazy', alt: card_product.featured_media.alt, class: 'motion-reduce', loading: 'lazy', width: card_product.media[1].width, height: card_product.media[1].height }}
                     {% endif %}
                   {% else %}
                     {% capture current %}{% cycle 1, 2, 3, 4 %}{% endcapture %}

@@ -46,7 +46,7 @@ const PUB_SUB_EVENTS = {
 let subscribers = {};
 
 (function() {
-  const interactionEvents = ['pointerdown', 'keydown', 'scroll'];
+  const interactionEvents = ['pointerdown', 'touchstart', 'keydown', 'scroll', 'wheel'];
   let deferQueue = [];
   let activated = false;
   let listenersReady = false;
@@ -59,7 +59,6 @@ let subscribers = {};
       interactionEvents.forEach(e =>
         window.removeEventListener(e, runDeferredTasks)
       );
-      window.removeEventListener('load', runDeferredTasks);
       listenersReady = false;
     }
 
@@ -75,19 +74,19 @@ let subscribers = {};
     if (listenersReady || activated) return;
     listenersReady = true;
 
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', runDeferredTasks, { once: true });
-    }
-
-    window.addEventListener('load', runDeferredTasks, { once: true });
-
     interactionEvents.forEach(e => {
-      window.addEventListener(e, runDeferredTasks, { passive: true });
+      window.addEventListener(e, runDeferredTasks, { passive: true, once: true });
     });
 
-    setTimeout(() => {
-      if (!activated && deferQueue.length) runDeferredTasks();
-    }, 3000);
+    if ('requestIdleCallback' in window) {
+      window.requestIdleCallback(() => {
+        if (!activated && deferQueue.length) runDeferredTasks();
+      }, { timeout: 2500 });
+    } else {
+      setTimeout(() => {
+        if (!activated && deferQueue.length) runDeferredTasks();
+      }, 2000);
+    }
   }
 
   setupDefers();
@@ -2098,12 +2097,29 @@ class SwiperComponent extends HTMLElement {
   }
 
   connectedCallback() {
-    deferUntilInteraction(() => {
-      Motion.inView(this, this.initializeSwiper.bind(this), { margin: "200px 0px 200px 0px" });
-    });
+    if ('IntersectionObserver' in window) {
+      this._observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            if (this._observer) {
+              this._observer.disconnect();
+              this._observer = null;
+            }
+            this.initializeSwiper();
+          }
+        });
+      }, { rootMargin: "200px 0px" });
+      this._observer.observe(this);
+    } else {
+      this.initializeSwiper();
+    }
   }
 
   disconnectedCallback() {
+    if (this._observer) {
+      this._observer.disconnect();
+      this._observer = null;
+    }
     if (this.breakpoint && this.breakpointChecker) {
       this.breakpoint.removeEventListener("change", this.breakpointChecker);
     }
@@ -2365,7 +2381,6 @@ class SwiperComponent extends HTMLElement {
         }
       } catch (error) {
         console.error("❌ Error initializing Swiper:", error);
-        enableSwiper();
       }
     };
 
@@ -2424,7 +2439,6 @@ class SwiperComponent extends HTMLElement {
         }
       } catch (error) {
         console.error("❌ Error initializing Swiper:", error);
-        enableSwiper();
       }
     };
 

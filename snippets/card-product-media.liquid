@@ -1,13 +1,5 @@
-{%- capture sizes -%}
-  {% comment %} '(min-width: 750px) 50vw, 100vw' {% endcomment %}
-  {%- render 'util-product-media-sizes-attr', block: block, section: section, settings: settings, is_single_column: is_single_column, needs_both_sizes: needs_both_sizes -%}
-{%- endcapture -%}
-
-{%- capture f_media_alt -%}
-  {{ 'content.product_image_main' | t }}
-{%- endcapture -%}
-{%- capture media_alt -%}
-  {{ 'content.product_image_secondary' | t }}
+{%- capture default_card_sizes -%}
+  (min-width: 1400px) calc((100vw - 60px) / 4), (min-width: 990px) calc((100vw - 40px) / 3), (min-width: 750px) calc((100vw - 30px) / 3), calc((100vw - 20px) / 2)
 {%- endcapture -%}
 
 {%- liquid
@@ -19,10 +11,10 @@
   assign f_media_alt = f_media.alt | default: card_product.title | append: ' ' | append: f_media_alt | strip
   assign media_alt = media.alt | default: card_product.title | append: ' ' | append: media_alt | strip
 
-  assign sizes = sizes
+  assign sizes = sizes | default: default_card_sizes
 
-  assign f_widths = widths | default: '240, 352, 650, 832, 1200'
-  assign m_widths = widths | default: '240, 352, 650, 832, 1200'
+  assign f_widths = widths | default: '165, 240, 360, 480, 650, 832, 1200'
+  assign m_widths = widths | default: '165, 240, 360, 480, 650, 832, 1200'
 
   unless lazy_load == false
     assign loading = "lazy"

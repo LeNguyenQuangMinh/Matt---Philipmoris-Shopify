@@ -39,13 +39,9 @@
     assign sizes_default = 'auto, (min-width: 750px) ' | append: media_width_desktop | append: ', ' | append: media_width_mobile
     assign image_sizes = sizes | default: sizes_default
 
-    assign widths_default = '300, 450, 600, 750, 900, 1050, 1200, 1350, 1500, 1650, 1800, 1950, 2000, 2500, 3000, 3500, 4000, 5000'
+    assign widths_default = '180, 240, 360, 450, 600, 750, 900, 1050, 1200, 1500, 1800, 2000, 2500, 3000'
     assign image_widths = widths | default: widths_default
   -%}
-
-  {% capture image_srcset -%}
-    {{ image | image_url: height: image_height, format: 'webp' }} 1x, {{ image | image_url: height: image_height_2x, format: 'webp' }} 2x, {{ image | image_url: height: image_height_3x, format: 'webp' }} 3x
-  {%- endcapture %}
 
   {% assign style_value = style | default: '' %}
 
@@ -53,21 +49,41 @@
     {% assign style_value = style_value | append: 'object-position: inherit;' %}
   {% endif %}
 
-  {{
-    image
-    | image_url: height: image_height, format: 'webp'
-    | image_tag:
-      widths: image_widths,
-      loading: image_loading,
-      class: class,
-      srcset: image_srcset,
-      sizes: image_sizes,
-      fetchpriority: image_fetch_priority,
-      style: style_value,
-      alt: image_alt,
-      preload: preload,
-      width: width
-  }}
+  {% if height != blank %}
+    {% capture image_srcset -%}
+      {{ image | image_url: height: image_height, format: 'webp' }} 1x, {{ image | image_url: height: image_height_2x, format: 'webp' }} 2x, {{ image | image_url: height: image_height_3x, format: 'webp' }} 3x
+    {%- endcapture %}
+
+    {{
+      image
+      | image_url: height: image_height, format: 'webp'
+      | image_tag:
+        loading: image_loading,
+        class: class,
+        srcset: image_srcset,
+        sizes: image_sizes,
+        fetchpriority: image_fetch_priority,
+        style: style_value,
+        alt: image_alt,
+        preload: preload,
+        width: width
+    }}
+  {% else %}
+    {{
+      image
+      | image_url: width: image.width, format: 'webp'
+      | image_tag:
+        widths: image_widths,
+        loading: image_loading,
+        class: class,
+        sizes: image_sizes,
+        fetchpriority: image_fetch_priority,
+        style: style_value,
+        alt: image_alt,
+        preload: preload,
+        width: width
+    }}
+  {% endif %}
 {% elsif text_fallback %}
   {{ text_fallback }}
 {% endif %}
