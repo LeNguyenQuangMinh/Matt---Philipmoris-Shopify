@@ -187,3 +187,12 @@ swiper-component {
     --button-icon-size: calc(var(--arrow-icon-size) / 2);
   }
 }
+
+/* Fix iOS Safari hiding slides with scroll-trigger */
+.swiper-slide.scroll-trigger,
+.swiper-slide .scroll-trigger,
+.swiper-wrapper .scroll-trigger {
+  opacity: 1 !important;
+  transform: none !important;
+  animation: none !important;
+}

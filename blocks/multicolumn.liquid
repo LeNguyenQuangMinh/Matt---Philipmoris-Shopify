@@ -50,8 +50,8 @@
 
 {% capture list_items %}
   {% for child_block in block.blocks %}
-    <li id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if block.settings.border_separator_items %} border-separator-item{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
-      {% if settings.animations_reveal_on_scroll %} style="--animation-order: {{ forloop.index }};"{% endif %}
+    <li id="Slide-{{ child_block.id }}-{{ forloop.index }}" class="grid__item{% if show_mobile_slider or block.settings.layout_type == 'carousel' %} swiper-slide{% endif %}{% if block.settings.border_separator_items %} border-separator-item{% endif %}{% if settings.animations_reveal_on_scroll and show_mobile_slider == false and block.settings.layout_type != 'carousel' %} scroll-trigger animate--slide-in{% endif %}"
+      {% if settings.animations_reveal_on_scroll and show_mobile_slider == false and block.settings.layout_type != 'carousel' %} style="--animation-order: {{ forloop.index }};"{% endif %}
     >
       {% render child_block %}
     </li>

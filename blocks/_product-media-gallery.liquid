@@ -292,6 +292,8 @@
     flex-direction: column;
     gap: var(--image-gap, 16px);
     width: calc(100% - 96px);
+    max-width: 498px;
+    margin: auto;
   }
 
   .custom-media-gallery__main-item {
@@ -1501,9 +1503,13 @@
         {
           "value": "2/1",
           "label": "t:options.landscape"
+        },
+        {
+          "value": "1/1.16",
+          "label": "Custom"
         }
       ],
-      "default": "adapt"
+      "default": "1/1.16"
     },
     {
       "type": "checkbox",
@@ -1514,7 +1520,7 @@
     {
       "type": "select",
       "id": "media_fit",
-      "label": "t:settings.media_fit",
+      "label": "Media fit",
       "options": [
         {
           "value": "cover",
