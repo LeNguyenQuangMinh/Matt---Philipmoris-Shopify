@@ -203,11 +203,31 @@ class CartItemsComponent extends HTMLElement {
       });
     }
 
-    await this.updateQuantity({
-      line: cartLine,
-      quantity,
-      action: 'change',
-    });
+    const mainVariantId = lineItemRow?.dataset?.variantId;
+    const allRows = Array.from(this.querySelectorAll(`.cart-items__table-row`));
+    const linkedAddonRows = mainVariantId
+      ? allRows.filter((row) => row.dataset.isAddon === 'true' && row.dataset.parentVariantId === mainVariantId)
+      : [];
+
+    if (linkedAddonRows.length > 0 && lineItemRow?.dataset?.key) {
+      const updates = {};
+      updates[lineItemRow.dataset.key] = quantity;
+      linkedAddonRows.forEach((row) => {
+        if (row.dataset.key) {
+          updates[row.dataset.key] = quantity;
+        }
+      });
+      await this.updateQuantity({
+        updates,
+        action: 'change',
+      });
+    } else {
+      await this.updateQuantity({
+        line: cartLine,
+        quantity,
+        action: 'change',
+      });
+    }
   }
 
   async onLineItemRemove(line) {
@@ -231,6 +251,18 @@ class CartItemsComponent extends HTMLElement {
       );
     }
 
+    const mainVariantId = cartItemRowToRemove.dataset.variantId;
+    if (mainVariantId) {
+      rowsToRemove = rowsToRemove.concat(
+        allRows.filter(
+          (row) => row.dataset.isAddon === 'true' && row.dataset.parentVariantId === mainVariantId
+        )
+      );
+    }
+
+    // Deduplicate rows
+    rowsToRemove = Array.from(new Set(rowsToRemove));
+
     const willBeEmpty = rowsToRemove.length >= allRows.length;
 
     for (const row of rowsToRemove) {
@@ -248,24 +280,36 @@ class CartItemsComponent extends HTMLElement {
       setCartDrawerEmptyState(true);
     }
 
-    await this.updateQuantity({
-      line,
-      quantity: 0,
-      action: 'clear',
-    });
+    if (rowsToRemove.length > 1) {
+      const updates = {};
+      rowsToRemove.forEach((row) => {
+        if (row.dataset.key) {
+          updates[row.dataset.key] = 0;
+        }
+      });
+      await this.updateQuantity({
+        updates,
+        action: 'clear',
+      });
+    } else {
+      await this.updateQuantity({
+        line,
+        quantity: 0,
+        action: 'clear',
+      });
+    }
   }
 
   createAbortController() {
     if (this.activeFetch) {
       this.activeFetch.abort();
     }
-    const abortController = new AbortController();
-    this.activeFetch = abortController;
-    return abortController;
+    this.activeFetch = new AbortController();
+    return this.activeFetch;
   }
 
-  async getSectionHTML(sectionId, url = window.location.href) {
-    const targetUrl = new URL(url);
+  async getSectionHTML(sectionId) {
+    const targetUrl = new URL(window.location.href);
     targetUrl.searchParams.set('section_id', sectionId);
 
     const response = await fetch(targetUrl, { cache: 'no-store' });
@@ -344,12 +388,19 @@ class CartItemsComponent extends HTMLElement {
 
     const abortController = this.createAbortController();
 
+    let requestUrl = routes.cart_change_url;
     const bodyObj = {
-      line,
-      quantity,
       sections: Array.from(sectionsToUpdate).join(','),
       sections_url: window.location.pathname,
     };
+
+    if (config.updates) {
+      requestUrl = routes.cart_update_url || '/cart/update.js';
+      bodyObj.updates = config.updates;
+    } else {
+      bodyObj.line = line;
+      bodyObj.quantity = quantity;
+    }
 
     const fetchOptions = {
       ...fetchConfig('json'),
@@ -362,7 +413,7 @@ class CartItemsComponent extends HTMLElement {
     });
 
     try {
-      const response = await fetch(`${routes.cart_change_url}`, fetchOptions);
+      const response = await fetch(requestUrl, fetchOptions);
       const json = await response.json();
       if (json.errors) {
         resetSpinner(this);

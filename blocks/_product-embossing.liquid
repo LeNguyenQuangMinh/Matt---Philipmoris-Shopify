@@ -1,15 +1,20 @@
 {%- liquid
   assign block_stts = block.settings
-  assign product = closest.product
-  if request.visual_preview_mode and product == blank
-    assign product = collections.all.products.first
+  assign main_product = product
+  if main_product == blank or main_product.handle == block_stts.addon_product
+    if closest.product != blank and closest.product.handle != block_stts.addon_product
+      assign main_product = closest.product
+    endif
+  endif
+  if request.visual_preview_mode and main_product == blank
+    assign main_product = collections.all.products.first
   endif
 
   assign is_eligible = true
   if block_stts.condition_type == 'tag'
     assign required_tag = block_stts.required_tag | strip | downcase
     assign is_eligible = false
-    for tag in product.tags
+    for tag in main_product.tags
       assign t_down = tag | downcase
       if t_down == required_tag
         assign is_eligible = true
@@ -23,10 +28,10 @@
       if key_parts.size == 2
         assign ns = key_parts[0]
         assign k = key_parts[1]
-        assign meta_val = product.metafields[ns][k].value | default: product.metafields[ns][k]
+        assign meta_val = main_product.metafields[ns][k].value | default: main_product.metafields[ns][k]
       else
         assign k = key_parts[0]
-        assign meta_val = product.metafields.custom[k].value | default: product.metafields.custom[k]
+        assign meta_val = main_product.metafields.custom[k].value | default: main_product.metafields.custom[k]
       endif
       if meta_val == true or meta_val == 'true' or meta_val == 1 or meta_val != blank
         assign is_eligible = true
@@ -157,7 +162,7 @@
 <product-embossing-block
   id="ProductEmbossing-{{ block.id }}"
   class="product-embossing-block block spacing-style"
-  data-product-title="{{ product.title | escape }}"
+  data-product-title="{{ main_product.title | escape }}"
   data-property-name="{{ property_name | escape }}"
   data-addon-variant-id="{{ addon_variant_id }}"
   data-required="{{ block_stts.is_required }}"
@@ -304,8 +309,8 @@
               return false;
             }
 
-            // If an add-on product variant is configured, trigger add-on to cart
-            if (this.checkbox.checked && this.addonVariantId) {
+            // Fallback for non-ajax forms only
+            if (this.checkbox.checked && this.addonVariantId && !this.closest('product-form-component')) {
               const currentVariantInput = form.querySelector('[name="id"]');
               const mainVariantId = currentVariantInput ? currentVariantInput.value : '';
               this.enqueueAddonProduct(mainVariantId, this.input.value.trim(), form);
@@ -313,24 +318,70 @@
           }, true);
         }
 
+        getAddonData(mainVariantId) {
+          if (!this.checkbox || !this.checkbox.checked || !this.addonVariantId) return null;
+          const forProductInfo = this.getSelectedVariantDetails(this.closest('form') || document);
+          return {
+            id: parseInt(this.addonVariantId),
+            quantity: 1,
+            properties: {
+              '_is_addon': 'true',
+              '_main_variant_id': String(mainVariantId || ''),
+              '_embossing_for': forProductInfo || ''
+            }
+          };
+        }
+
         getSelectedVariantDetails(form) {
-          const productTitle = this.dataset.productTitle || '';
+          let productTitle = this.dataset.productTitle || '';
+          if (!productTitle || productTitle.toLowerCase() === 'embossing charge') {
+            const h1Title = document.querySelector('.product__title h1, .product__title, h1.product-title, h1');
+            if (h1Title && h1Title.textContent.trim()) {
+              const h1Text = h1Title.textContent.trim();
+              if (h1Text.toLowerCase() !== 'embossing charge') {
+                productTitle = h1Text;
+              }
+            }
+          }
           let variantLabel = '';
 
           try {
-            const selectedOptionInputs = document.querySelectorAll(
-              'variant-radios input:checked, variant-selects select, .product-form select[name="id"] option:checked'
-            );
-            if (selectedOptionInputs.length > 0) {
-              const options = [];
-              selectedOptionInputs.forEach(input => {
-                const val = (input.value || input.textContent || '').trim();
-                if (val && val.toLowerCase() !== 'default title') {
-                  options.push(val);
+            // Method 1: Check variant-selects data-selected-variant JSON
+            const selectedVariantEl = document.querySelector('variant-selects [data-selected-variant]');
+            if (selectedVariantEl) {
+              const variantData = JSON.parse(selectedVariantEl.innerHTML);
+              if (variantData && variantData.title && variantData.title.toLowerCase() !== 'default title') {
+                variantLabel = variantData.title;
+              }
+            }
+
+            // Method 2: Check checked inputs or selects in variant-selects / variant-radios
+            if (!variantLabel) {
+              const selectedInputs = document.querySelectorAll(
+                'variant-selects input:checked, variant-selects select, variant-radios input:checked'
+              );
+              if (selectedInputs.length > 0) {
+                const options = [];
+                selectedInputs.forEach(input => {
+                  const val = (input.value || input.textContent || '').trim();
+                  if (val && val.toLowerCase() !== 'default title') {
+                    options.push(val);
+                  }
+                });
+                if (options.length > 0) {
+                  variantLabel = options.join(' / ');
                 }
-              });
-              if (options.length > 0) {
-                variantLabel = options.join(' / ');
+              }
+            }
+
+            // Method 3: Check select[name="id"] option:checked
+            if (!variantLabel) {
+              const optionEl = form?.querySelector('select[name="id"] option:checked');
+              if (optionEl && optionEl.textContent) {
+                const optText = optionEl.textContent.trim();
+                if (optText && optText.toLowerCase() !== 'default title') {
+                  variantLabel = optText;
+                }
               }
             }
           } catch (e) {
@@ -338,11 +389,11 @@
           }
 
           if (productTitle && variantLabel) {
-            return `${productTitle} (${variantLabel})`;
+            return `${productTitle} - ${variantLabel}`;
           } else if (productTitle) {
             return productTitle;
           }
-          return 'Main Product';
+          return '';
         }
 
         async enqueueAddonProduct(mainVariantId, textValue, form) {
@@ -354,6 +405,11 @@
             formData.append('properties[_is_addon]', 'true');
             if (mainVariantId) {
               formData.append('properties[_main_variant_id]', mainVariantId);
+            }
+
+            const forProductInfo = this.getSelectedVariantDetails(form);
+            if (forProductInfo) {
+              formData.append('properties[_embossing_for]', forProductInfo);
             }
 
             await fetch(`${window.routes?.cart_add_url || '/cart/add'}.js`, {

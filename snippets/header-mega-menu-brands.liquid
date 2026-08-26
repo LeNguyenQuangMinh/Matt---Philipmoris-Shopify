@@ -12,22 +12,50 @@
   assign popular_menu = bl_stts.popular_brands_menu
   assign has_popular = false
 
-  if popular_menu != blank and linklists[popular_menu].links.size > 0
+  assign popular_links = popular_menu.links
+  if popular_links == blank and popular_menu != blank
+    assign popular_links = linklists[popular_menu].links
+  endif
+
+  if popular_links != blank and popular_links.size > 0
     assign has_popular = true
   endif
 
-  assign brand_letters = ''
-  for vendor in shop.vendors
-    assign first = vendor | strip | slice: 0, 1 | upcase
-    if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
-      assign first = '#'
-    endif
-    unless brand_letters contains first
-      assign brand_letters = brand_letters | append: first
-    endunless
-  endfor
+  assign custom_menu = bl_stts.megamenu_submenu
+  assign custom_links = custom_menu.links
+  if custom_links == blank and custom_menu != blank
+    assign custom_links = linklists[custom_menu].links
+  endif
 
-  assign sorted_vendors = shop.vendors | sort_natural
+  assign has_custom_menu = false
+  if custom_links != blank and custom_links.size > 0
+    assign has_custom_menu = true
+  endif
+
+  assign brand_letters = ''
+  if has_custom_menu
+    for item in custom_links
+      assign first = item.title | strip | slice: 0, 1 | upcase
+      if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
+        assign first = '#'
+      endif
+      unless brand_letters contains first
+        assign brand_letters = brand_letters | append: first
+      endunless
+    endfor
+    assign sorted_brand_items = custom_links | sort_natural: 'title'
+  else
+    for vendor in shop.vendors
+      assign first = vendor | strip | slice: 0, 1 | upcase
+      if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
+        assign first = '#'
+      endif
+      unless brand_letters contains first
+        assign brand_letters = brand_letters | append: first
+      endunless
+    endfor
+    assign sorted_vendors = shop.vendors | sort_natural
+  endif
 -%}
 
 <style>
@@ -172,7 +200,7 @@
           {{ bl_stts.popular_title | default: 'Popular' | escape }}
         </p>
         <ul class="mega-menu-brands__list list-unstyled" role="list">
-          {%- for link in linklists[popular_menu].links -%}
+          {%- for link in popular_links -%}
             <li>
               <a href="{{ link.url }}" class="link link--underline">
                 {{ link.title | escape }}
@@ -193,18 +221,35 @@
         {{ bl_stts.all_title | default: 'All' | escape }}
       </p>
       <ul class="mega-menu-brands__list mega-menu-brands__list--columns list-unstyled" role="list">
-        {%- for vendor in sorted_vendors -%}
-          {%- liquid
-            assign first = vendor | strip | slice: 0, 1 | downcase
-            assign data_letter = first
-            if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
-              assign data_letter = '#'
-            endif
-          -%}
-          <li class="mega-menu-brands__item" data-letter="{{ data_letter }}">
-            {{ vendor | link_to_vendor: class: 'link link--underline' }}
-          </li>
-        {%- endfor -%}
+        {%- if has_custom_menu -%}
+          {%- for item in sorted_brand_items -%}
+            {%- liquid
+              assign first = item.title | strip | slice: 0, 1 | downcase
+              assign data_letter = first
+              if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
+                assign data_letter = '#'
+              endif
+            -%}
+            <li class="mega-menu-brands__item" data-letter="{{ data_letter }}">
+              <a href="{{ item.url }}" class="link link--underline">
+                {{ item.title | escape }}
+              </a>
+            </li>
+          {%- endfor -%}
+        {%- else -%}
+          {%- for vendor in sorted_vendors -%}
+            {%- liquid
+              assign first = vendor | strip | slice: 0, 1 | downcase
+              assign data_letter = first
+              if first == '0' or first == '1' or first == '2' or first == '3' or first == '4' or first == '5' or first == '6' or first == '7' or first == '8' or first == '9'
+                assign data_letter = '#'
+              endif
+            -%}
+            <li class="mega-menu-brands__item" data-letter="{{ data_letter }}">
+              {{ vendor | link_to_vendor: class: 'link link--underline' }}
+            </li>
+          {%- endfor -%}
+        {%- endif -%}
       </ul>
     </div>
   </div>

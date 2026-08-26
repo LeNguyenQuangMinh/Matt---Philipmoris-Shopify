@@ -28,23 +28,31 @@
         {%- assign position = position | plus: 1 -%}
       {%- endif -%}
     {%- elsif template.name == 'product' and product -%}
-      {%- assign current_collection = collection -%}
-      {%- if current_collection == blank and product.collections.size == 1 -%}
-        {%- assign current_collection = product.collections.first -%}
-      {%- endif -%}
-      {%- if current_collection -%}
+      {%- liquid
+        assign crumb_collection = collection
+        if crumb_collection == blank or crumb_collection.handle == blank
+          assign crumb_collection = product.collections.first
+        endif
+        assign parent_collection = blank
+        if crumb_collection
+          assign parent_collection = crumb_collection.metafields.custom.parent_collection.value
+        endif
+      -%}
+      {%- if parent_collection -%}
         ,{
           "@type": "ListItem",
           "position": {{ position }},
-          "name": "{{ 'content.breadcrumb.collections' | t | escape }}",
-          "item": "{{ routes.collections_url | prepend: request.host | prepend: 'https://' }}"
+          "name": "{{ parent_collection.title | escape }}",
+          "item": "{{ parent_collection.url | prepend: request.host | prepend: 'https://' }}"
         }
         {%- assign position = position | plus: 1 -%}
+      {%- endif -%}
+      {%- if crumb_collection -%}
         ,{
           "@type": "ListItem",
           "position": {{ position }},
-          "name": "{{ current_collection.title | escape }}",
-          "item": "{{ current_collection.url | prepend: request.host | prepend: 'https://' }}"
+          "name": "{{ crumb_collection.title | escape }}",
+          "item": "{{ crumb_collection.url | prepend: request.host | prepend: 'https://' }}"
         }
         {%- assign position = position | plus: 1 -%}
       {%- endif -%}
@@ -230,38 +238,46 @@
         {% assign position = position | plus: 1 %}
       {% endif %}
     {% elsif template.name == 'product' and product %}
-      {% assign current_collection = collection %}
-      {% if current_collection == blank and product.collections.size == 1 %}
-        {% assign current_collection = product.collections.first %}
-      {% endif %}
-      {% if current_collection %}
+      {%- liquid
+        assign crumb_collection = collection
+        if crumb_collection == blank or crumb_collection.handle == blank
+          assign crumb_collection = product.collections.first
+        endif
+        assign parent_collection = blank
+        if crumb_collection
+          assign parent_collection = crumb_collection.metafields.custom.parent_collection.value
+        endif
+      -%}
+      {%- if parent_collection -%}
         <li {{ attr_item }}>
           <a
-            href="{{ routes.collections_url }}"
-            title="{{ 'content.breadcrumb.collections' | t }}"
+            href="{{ parent_collection.url }}"
+            title="{{ parent_collection.title | escape }}"
             {{ class_link }}
           >
-            <span>{{ 'content.breadcrumb.collections' | t }}</span>
+            <span>{{ parent_collection.title | escape }}</span>
           </a>
           <span class="breadcrumbs__separator">
             {{ separator }}
           </span>
         </li>
         {% assign position = position | plus: 1 %}
+      {%- endif -%}
+      {%- if crumb_collection -%}
         <li {{ attr_item }}>
           <a
-            href="{{ current_collection.url }}"
-            title="{{ current_collection.title | escape }}"
+            href="{{ crumb_collection.url }}"
+            title="{{ crumb_collection.title | escape }}"
             {{ class_link }}
           >
-            <span>{{ current_collection.title | escape }}</span>
+            <span>{{ crumb_collection.title | escape }}</span>
           </a>
           <span class="breadcrumbs__separator">
             {{ separator }}
           </span>
         </li>
         {% assign position = position | plus: 1 %}
-      {% endif %}
+      {%- endif -%}
       <li {{ attr_item }}>
         <a href="{{ product.url }}" class="link link--underline">
           <span>{{ product.title | escape }}</span>

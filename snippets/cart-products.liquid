@@ -174,6 +174,39 @@
                         <span class="text">{{ item.product.title | escape }}</span>
                       </a>
 
+                      {%- if is_addon_item -%}
+                        {%- liquid
+                          assign parent_info = ''
+                          if item.properties._main_variant_id != blank
+                            assign parent_vid = item.properties._main_variant_id | plus: 0
+                            for cart_line in cart.items
+                              if cart_line.variant.id == parent_vid and cart_line.key != item.key
+                                assign parent_info = cart_line.product.title
+                                if cart_line.product.has_only_default_variant == false
+                                  assign parent_info = parent_info | append: ' - ' | append: cart_line.variant.title
+                                endif
+                                break
+                              endif
+                            endfor
+                          endif
+
+                          if parent_info == blank
+                            if item.properties._embossing_for != blank
+                              assign parent_info = item.properties._embossing_for
+                            elsif item.properties.For != blank
+                              assign parent_info = item.properties.For
+                            endif
+                          endif
+                        -%}
+                        {%- if parent_info != blank -%}
+                          <div class="product-option flex items-center gap-xs">
+                            <span class="cart-item__addon-target font-medium" style="color: rgba(var(--color-foreground), 0.75);">
+                              {{ parent_info }}
+                            </span>
+                          </div>
+                        {%- endif -%}
+                      {%- endif -%}
+
                       {%- if item.product.has_only_default_variant == false
                         or item.properties.size != 0
                         or item.selling_plan_allocation != null

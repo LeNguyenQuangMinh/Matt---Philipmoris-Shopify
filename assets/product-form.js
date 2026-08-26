@@ -136,9 +136,45 @@ if (!customElements.get('product-form-component')) {
 
           if (property.value == null || property.value === '') return;
           formData.append(property.name, property.value);
-        })
+        });
 
-        config.body = formData;
+        const embossingBlock = this.querySelector('product-embossing-block') 
+          || this.closest('product-info')?.querySelector('product-embossing-block')
+          || document.querySelector('product-embossing-block');
+        const mainVariantId = formData.get('id');
+        const addonData = embossingBlock && typeof embossingBlock.getAddonData === 'function'
+          ? embossingBlock.getAddonData(mainVariantId)
+          : null;
+
+        if (addonData) {
+          const mainProperties = {};
+          for (const [key, val] of formData.entries()) {
+            if (key.startsWith('properties[')) {
+              const propName = key.replace(/^properties\[/, '').replace(/\]$/, '');
+              mainProperties[propName] = val;
+            }
+          }
+
+          const mainItem = {
+            id: mainVariantId,
+            quantity: parseInt(formData.get('quantity') || '1'),
+            properties: mainProperties
+          };
+
+          const payload = {
+            items: [mainItem, addonData]
+          };
+
+          if (this.cart) {
+            payload.sections = this.cart.getSectionsToRender().map((section) => section.id);
+            payload.sections_url = window.location.pathname;
+          }
+
+          config.headers['Content-Type'] = 'application/json';
+          config.body = JSON.stringify(payload);
+        } else {
+          config.body = formData;
+        }
 
         fetch(`${routes.cart_add_url}`, config)
           .then((response) => response.json())

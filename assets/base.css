@@ -7962,6 +7962,10 @@ section-fetcher {
   }
 }
 
+.cart-item__remove .button-close-circle:hover {
+  transform: rotate(0) !important;
+}
+
 .image-block {
   display: flex;
   justify-content: var(--horizontal-alignment, 'inline-start');
