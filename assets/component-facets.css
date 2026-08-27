@@ -2712,7 +2712,7 @@ details.menu-opening .mobile-facets__close .svg-wrapper {
 }
 
 .mobile-facets__main {
-  padding: 0 0 2.7rem;
+  padding: 0;
   position: relative;
   z-index: 1;
   flex-grow: 1;
@@ -2859,8 +2859,10 @@ input.mobile-facets__checkbox {
 
 .mobile-facets__footer {
   border-top: 0.1rem solid rgb(var(--color-foreground-rgb) / var(--opacity-8));
-  padding: 2rem;
-  bottom: -3rem;
+  padding: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   position: sticky;
   display: flex;
   z-index: 2;

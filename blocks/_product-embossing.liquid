@@ -43,7 +43,7 @@
     break
   endunless
 
-  assign price_text = block_stts.embossing_price
+  assign price_text = block_stts.debossing_price
   assign addon_variant_id = ''
   if block_stts.addon_product != blank and all_products[block_stts.addon_product] != blank
     assign addon_p = all_products[block_stts.addon_product]
@@ -55,16 +55,16 @@
 -%}
 
 <style>
-  .product-embossing-block {
+  .product-debossing-block {
     margin: 1.5rem 0;
   }
-  .product-embossing-block .embossing-wrapper {
-    border: 1px solid var(--embossing-border-color, #e0e0e0);
+  .product-debossing-block .debossing-wrapper {
+    border: 1px solid var(--debossing-border-color, #e0e0e0);
     border-radius: 4px;
     padding: 1.5rem;
-    background-color: var(--embossing-bg-color, transparent);
+    background-color: var(--debossing-bg-color, transparent);
   }
-  .product-embossing-block .embossing-checkbox-label {
+  .product-debossing-block .debossing-checkbox-label {
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -75,46 +75,46 @@
     margin: 0;
     color: rgba(var(--color-foreground), 0.9);
   }
-  .product-embossing-block .embossing-checkbox {
+  .product-debossing-block .debossing-checkbox {
     width: 1.8rem;
     height: 1.8rem;
     cursor: pointer;
-    accent-color: var(--embossing-accent-color, #2e7d32);
+    accent-color: var(--debossing-accent-color, #2e7d32);
     margin: 0;
   }
-  .product-embossing-block .embossing-price-badge {
+  .product-debossing-block .debossing-price-badge {
     font-weight: 500;
-    color: var(--embossing-accent-color, #2e7d32);
+    color: var(--debossing-accent-color, #2e7d32);
     margin-left: 0.4rem;
   }
-  .product-embossing-block .embossing-details {
+  .product-debossing-block .debossing-details {
     margin-top: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 0.8rem;
   }
-  .product-embossing-block .embossing-details[hidden] {
+  .product-debossing-block .debossing-details[hidden] {
     display: none !important;
   }
-  .product-embossing-block .embossing-field {
+  .product-debossing-block .debossing-field {
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
   }
-  .product-embossing-block .embossing-input-label {
+  .product-debossing-block .debossing-input-label {
     font-weight: 600;
     font-size: 1.3rem;
     color: rgba(var(--color-foreground), 0.9);
     margin: 0;
   }
-  .product-embossing-block .embossing-required-star {
+  .product-debossing-block .debossing-required-star {
     color: #d9534f;
     margin-left: 0.2rem;
   }
-  .product-embossing-block .embossing-input {
+  .product-debossing-block .debossing-input {
     width: 100%;
     padding: 1rem 1.2rem;
-    border: 1px solid var(--embossing-border-color, #ccc);
+    border: 1px solid var(--debossing-border-color, #ccc);
     border-radius: 4px;
     font-size: 1.4rem;
     color: rgba(var(--color-foreground), 1);
@@ -123,97 +123,97 @@
     text-transform: {% if block_stts.uppercase %}uppercase{% else %}none{% endif %};
     transition: border-color 0.2s ease, box-shadow 0.2s ease;
   }
-  .product-embossing-block .embossing-input:focus {
+  .product-debossing-block .debossing-input:focus {
     outline: none;
     border-color: rgba(var(--color-foreground), 0.8);
     box-shadow: 0 0 0 1px rgba(var(--color-foreground), 0.8);
   }
-  .product-embossing-block .embossing-input.has-error {
+  .product-debossing-block .debossing-input.has-error {
     border-color: #d9534f !important;
     box-shadow: 0 0 0 1px #d9534f !important;
   }
-  .product-embossing-block .embossing-error-msg {
+  .product-debossing-block .debossing-error-msg {
     color: #d9534f;
     font-size: 1.2rem;
     font-weight: 500;
     margin-top: 0.3rem;
   }
-  .product-embossing-block .embossing-error-msg.hidden {
+  .product-debossing-block .debossing-error-msg.hidden {
     display: none;
   }
-  .product-embossing-block .embossing-helper-text {
+  .product-debossing-block .debossing-helper-text {
     font-size: 1.2rem;
     color: rgba(var(--color-foreground), 0.7);
     margin: 0;
     line-height: 1.4;
   }
-  .product-embossing-block .embossing-price-note {
+  .product-debossing-block .debossing-price-note {
     font-size: 1.2rem;
     font-weight: 500;
     color: rgba(var(--color-foreground), 0.8);
     margin: 0;
   }
-  .product-embossing-block .embossing-price-note span {
-    color: var(--embossing-accent-color, #2e7d32);
+  .product-debossing-block .debossing-price-note span {
+    color: var(--debossing-accent-color, #2e7d32);
     font-weight: 600;
   }
 </style>
 
-<product-embossing-block
-  id="ProductEmbossing-{{ block.id }}"
-  class="product-embossing-block block spacing-style"
+<product-debossing-block
+  id="Productdebossing-{{ block.id }}"
+  class="product-debossing-block block spacing-style"
   data-product-title="{{ main_product.title | escape }}"
   data-property-name="{{ property_name | escape }}"
   data-addon-variant-id="{{ addon_variant_id }}"
   data-required="{{ block_stts.is_required }}"
   style="
     {% render 'spacing-style', settings: block_stts %}
-    --embossing-border-color: {{ block_stts.border_color | default: '#e0e0e0' }};
-    --embossing-bg-color: {{ block_stts.bg_color | default: 'transparent' }};
-    --embossing-accent-color: {{ block_stts.accent_color | default: '#2e7d32' }};
+    --debossing-border-color: {{ block_stts.border_color | default: '#e0e0e0' }};
+    --debossing-bg-color: {{ block_stts.bg_color | default: 'transparent' }};
+    --debossing-accent-color: {{ block_stts.accent_color | default: '#2e7d32' }};
   "
   {{ block.shopify_attributes }}
 >
-  <div class="embossing-wrapper">
-    <label class="embossing-checkbox-label" for="EmbossingToggle-{{ block.id }}">
+  <div class="debossing-wrapper">
+    <label class="debossing-checkbox-label" for="debossingToggle-{{ block.id }}">
       <input
         type="checkbox"
-        id="EmbossingToggle-{{ block.id }}"
-        class="embossing-checkbox"
+        id="debossingToggle-{{ block.id }}"
+        class="debossing-checkbox"
       >
-      <span class="embossing-checkbox-text">
-        {{ block_stts.checkbox_label | default: 'Add Embossing' }}
+      <span class="debossing-checkbox-text">
+        {{ block_stts.checkbox_label | default: 'Add debossing' }}
         {%- if block_stts.show_price_in_label and price_text != blank -%}
-          <span class="embossing-price-badge">(+ {{ price_text }})</span>
+          <span class="debossing-price-badge">(+ {{ price_text }})</span>
         {%- endif -%}
       </span>
     </label>
 
-    <div class="embossing-details" id="EmbossingDetails-{{ block.id }}" hidden>
-      <div class="embossing-field">
-        <label for="EmbossingInput-{{ block.id }}" class="embossing-input-label">
+    <div class="debossing-details" id="debossingDetails-{{ block.id }}" hidden>
+      <div class="debossing-field">
+        <label for="debossingInput-{{ block.id }}" class="debossing-input-label">
           {{ block_stts.input_label | default: 'Letters to Emboss' }}
           {%- if block_stts.is_required -%}
-            <span class="embossing-required-star" aria-hidden="true">*</span>
+            <span class="debossing-required-star" aria-hidden="true">*</span>
           {%- endif -%}
         </label>
         <input
           type="text"
-          id="EmbossingInput-{{ block.id }}"
-          class="embossing-input"
+          id="debossingInput-{{ block.id }}"
+          class="debossing-input"
           placeholder="{{ block_stts.input_placeholder | default: 'A.B.C or ABCD' }}"
           maxlength="{{ block_stts.max_chars | default: 6 }}"
           disabled
           autocomplete="off"
           autocapitalize="characters"
         >
-        <div class="embossing-error-msg hidden" id="EmbossingError-{{ block.id }}">
+        <div class="debossing-error-msg hidden" id="debossingError-{{ block.id }}">
           {{ block_stts.error_message | default: 'Please enter the letters to emboss before adding to cart.' }}
         </div>
       </div>
 
       {%- if block_stts.helper_text != blank -%}
-        <p class="embossing-helper-text">
+        <p class="debossing-helper-text">
           {{ block_stts.helper_text }}
         </p>
       {%- endif -%}
@@ -221,24 +221,24 @@
       {%- if block_stts.price_note != blank and price_text != blank -%}
         {%- capture highlighted_price -%}<span>{{ price_text }}</span>{%- endcapture -%}
         {%- assign formatted_note = block_stts.price_note | replace: '[price]', highlighted_price -%}
-        <p class="embossing-price-note">
+        <p class="debossing-price-note">
           {{ formatted_note }}
         </p>
       {%- endif -%}
     </div>
   </div>
-</product-embossing-block>
+</product-debossing-block>
 
 <script>
-  if (!customElements.get('product-embossing-block')) {
+  if (!customElements.get('product-debossing-block')) {
     customElements.define(
-      'product-embossing-block',
-      class ProductEmbossingBlock extends HTMLElement {
+      'product-debossing-block',
+      class ProductdebossingBlock extends HTMLElement {
         connectedCallback() {
-          this.checkbox = this.querySelector('.embossing-checkbox');
-          this.details = this.querySelector('.embossing-details');
-          this.input = this.querySelector('.embossing-input');
-          this.errorMsg = this.querySelector('.embossing-error-msg');
+          this.checkbox = this.querySelector('.debossing-checkbox');
+          this.details = this.querySelector('.debossing-details');
+          this.input = this.querySelector('.debossing-input');
+          this.errorMsg = this.querySelector('.debossing-error-msg');
           this.propertyName = this.dataset.propertyName || 'Letters to Emboss';
           this.addonVariantId = this.dataset.addonVariantId;
           this.isRequired = this.dataset.required === 'true';
@@ -327,18 +327,18 @@
             properties: {
               '_is_addon': 'true',
               '_main_variant_id': String(mainVariantId || ''),
-              '_embossing_for': forProductInfo || ''
+              '_debossing_for': forProductInfo || ''
             }
           };
         }
 
         getSelectedVariantDetails(form) {
           let productTitle = this.dataset.productTitle || '';
-          if (!productTitle || productTitle.toLowerCase() === 'embossing charge') {
+          if (!productTitle || productTitle.toLowerCase() === 'debossing charge') {
             const h1Title = document.querySelector('.product__title h1, .product__title, h1.product-title, h1');
             if (h1Title && h1Title.textContent.trim()) {
               const h1Text = h1Title.textContent.trim();
-              if (h1Text.toLowerCase() !== 'embossing charge') {
+              if (h1Text.toLowerCase() !== 'debossing charge') {
                 productTitle = h1Text;
               }
             }
@@ -409,7 +409,7 @@
 
             const forProductInfo = this.getSelectedVariantDetails(form);
             if (forProductInfo) {
-              formData.append('properties[_embossing_for]', forProductInfo);
+              formData.append('properties[_debossing_for]', forProductInfo);
             }
 
             await fetch(`${window.routes?.cart_add_url || '/cart/add'}.js`, {
@@ -418,7 +418,7 @@
               headers: { 'X-Requested-With': 'XMLHttpRequest' }
             });
           } catch (err) {
-            console.warn('Could not add embossing addon product to cart:', err);
+            console.warn('Could not add debossing addon product to cart:', err);
           }
         }
       }
@@ -428,7 +428,7 @@
 
 {% schema %}
 {
-  "name": "Product Embossing",
+  "name": "Product debossing",
   "tag": null,
   "settings": [
     {
@@ -459,15 +459,15 @@
       "type": "text",
       "id": "required_tag",
       "label": "Product tag",
-      "default": "embossing",
+      "default": "debossing",
       "info": "Display this block only if the product contains this tag (case-insensitive)."
     },
     {
       "type": "text",
       "id": "metafield_key",
       "label": "Metafield key",
-      "default": "custom.embossing_available",
-      "info": "Display this block only if this metafield is true or present (e.g. custom.embossing_available)."
+      "default": "custom.debossing_available",
+      "info": "Display this block only if this metafield is true or present (e.g. custom.debossing_available)."
     },
     {
       "type": "header",
@@ -477,7 +477,7 @@
       "type": "text",
       "id": "checkbox_label",
       "label": "Checkbox label",
-      "default": "Add Embossing"
+      "default": "Add debossing"
     },
     {
       "type": "checkbox",
@@ -487,7 +487,7 @@
     },
     {
       "type": "text",
-      "id": "embossing_price",
+      "id": "debossing_price",
       "label": "Price text (manual)",
       "default": "£25.00 GBP",
       "info": "Used if no Add-on Product is selected below."
@@ -496,7 +496,7 @@
       "type": "product",
       "id": "addon_product",
       "label": "Linked Add-on Product (Optional)",
-      "info": "Select an 'Embossing Service' product if you want to automatically add a separate service item to the cart."
+      "info": "Select an 'debossing Service' product if you want to automatically add a separate service item to the cart."
     },
     {
       "type": "header",
@@ -634,7 +634,7 @@
   ],
   "presets": [
     {
-      "name": "Product Embossing",
+      "name": "Product debossing",
       "category": "t:categories.product"
     }
   ]

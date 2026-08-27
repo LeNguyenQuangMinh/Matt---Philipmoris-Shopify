@@ -46,7 +46,7 @@
       if (event?.detail?._addonSyncSource) return;
       // Skip if busy
       if (addonSyncBusy) return;
-      // Debounce: wait 800ms to ensure addon product fetch (from embossing block) has completed
+      // Debounce: wait 800ms to ensure addon product fetch (from debossing block) has completed
       clearTimeout(syncTimer);
       syncTimer = setTimeout(function() { syncAddonItems(); }, 800);
     });

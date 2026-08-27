@@ -20739,3 +20739,15 @@ ul.items-same-height > li {
     padding: 2.4rem 2.4rem 3.6rem 3.6rem;
   }
 }
+
+/* Hide active-facets section when no filter is applied */
+.active-facets:not(:has(.active-facets__button)),
+.active-facets-mobile:not(:has(.active-facets__button)),
+.active-facets-desktop:not(:has(.active-facets__button)) {
+  display: none !important;
+}
+
+.product-grid:is(.product-grid--grid)[data-view="1"] .card .card-product-information {
+  justify-content: flex-start !important;
+  align-items: flex-start !important;
+}

@@ -1057,19 +1057,8 @@
                 </div>
               {%- endif -%}
 
-              {%- if filter_type == 'vertical' -%}
-                <div class="active-facets flex flex-wrap w-full active-facets-mobile large-up-hide">
-                  <facet-remove class="active-facets__button-wrapper w-full flex justify-between items-center">
-                    <span>{{ 'products.facets.filter_by_label' | t }}</span>
-                    <a href="{{ results_url }}" class="active-facets__button-remove underlined-link">
-                      <span>{{ 'products.facets.clear_all' | t }}</span>
-                    </a>
-                  </facet-remove>
-
-                  <p class="mobile-facets__count w-full">
-                    {{ 'content.results_with_count' | t: terms: results.terms, count: results.products_count }}
-                  </p>
-
+              {%- if filter_type == 'vertical' or filters_sidebar_layout -%}
+                <div class="active-facets flex flex-wrap w-full active-facets-mobile{% unless filters_sidebar_layout %} large-up-hide{% endunless %}">
                   {%- for filter in results.filters -%}
                     {%- for value in filter.active_values -%}
                       <facet-remove>
@@ -1078,7 +1067,7 @@
                           class="active-facets__button block decoration-none active-facets__button--light"
                         >
                           <span class="active-facets__button-inner button button--tertiary button-unstyled">
-                            {{ value.label | escape }}
+                            {{ filter.label | escape }}: {{ value.label | escape }}
                             <span class="svg-wrapper">
                               {{- 'icon-close-small.svg' | inline_asset_content -}}
                             </span>
@@ -1109,6 +1098,11 @@
                       {%- endif -%}
                     {%- endif -%}
                   {%- endfor -%}
+                  <facet-remove class="active-facets__button-wrapper">
+                    <a href="{{ results_url }}" class="active-facets__button-remove underlined-link">
+                      <span>{{ 'products.facets.clear_all' | t }}</span>
+                    </a>
+                  </facet-remove>
                 </div>
               {%- endif -%}
               <div id="FacetsWrapperMobile" class="mobile-facets__main has-submenu cus-scrollbar">
@@ -1539,17 +1533,18 @@
                 {{ children }}
 
                 <div class="mobile-facets__footer">
-                  <facet-remove class="mobile-facets__clear-wrapper items-center flex justify-center">
+                  <facet-remove class="mobile-facets__clear-wrapper items-center flex justify-center hidden">
                     <a href="{{ results_url }}" class="mobile-facets__clear underlined-link">
                       {{- 'products.facets.clear_all' | t -}}
                     </a>
                   </facet-remove>
                   <button
                     type="button"
-                    class="button button--primary"
+                    class="button button--primary w-full"
                     onclick="this.closest('.mobile-facets__wrapper').querySelector('summary').click()"
+                    style="margin: 0;"
                   >
-                    {{ 'products.facets.apply' | t }}
+                    Close
                   </button>
                 </div>
               </div>
@@ -1698,7 +1693,7 @@
       %}
     {%- endif -%}
 
-    <facet-filters-form class="facets facets-pill small-hide medium-hide">
+    <facet-filters-form class="facets facets-pill">
       <form id="FacetFiltersPillsForm" class="facets__form">
         <div class="active-facets flex flex-wrap w-full active-facets-desktop">
           {%- for filter in results.filters -%}

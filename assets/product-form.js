@@ -138,12 +138,12 @@ if (!customElements.get('product-form-component')) {
           formData.append(property.name, property.value);
         });
 
-        const embossingBlock = this.querySelector('product-embossing-block') 
-          || this.closest('product-info')?.querySelector('product-embossing-block')
-          || document.querySelector('product-embossing-block');
+        const debossingBlock = this.querySelector('product-debossing-block') 
+          || this.closest('product-info')?.querySelector('product-debossing-block')
+          || document.querySelector('product-debossing-block');
         const mainVariantId = formData.get('id');
-        const addonData = embossingBlock && typeof embossingBlock.getAddonData === 'function'
-          ? embossingBlock.getAddonData(mainVariantId)
+        const addonData = debossingBlock && typeof debossingBlock.getAddonData === 'function'
+          ? debossingBlock.getAddonData(mainVariantId)
           : null;
 
         if (addonData) {

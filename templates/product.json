@@ -386,17 +386,17 @@
                 "padding-inline-end": 0
               },
               "blocks": {
-                "product_embossing_Gqa4w4": {
+                "product_debossing_Gqa4w4": {
                   "type": "_product-embossing",
-                  "name": "Product Embossing",
+                  "name": "Product debossing",
                   "settings": {
                     "condition_type": "all",
-                    "required_tag": "embossing",
-                    "metafield_key": "custom.embossing_available",
-                    "checkbox_label": "Add Embossing",
+                    "required_tag": "debossing",
+                    "metafield_key": "custom.debossing_available",
+                    "checkbox_label": "Add debossing",
                     "show_price_in_label": true,
-                    "embossing_price": "£25.00 GBP",
-                    "addon_product": "embossing-charge",
+                    "debossing_price": "£25.00 GBP",
+                    "addon_product": "debossing-charge",
                     "property_name": "Letters to Emboss",
                     "input_label": "Letters to Emboss",
                     "input_placeholder": "A.B.C or ABCD",
@@ -502,7 +502,7 @@
                 }
               },
               "block_order": [
-                "product_embossing_Gqa4w4",
+                "product_debossing_Gqa4w4",
                 "product_usp_QUazf6"
               ]
             },

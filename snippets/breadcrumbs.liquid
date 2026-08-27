@@ -210,20 +210,12 @@
 
     {% if template.name contains 'collections' %}
       <li {{ attr_item }}>
-        <a href="{{ routes.collections_url }}" class="link link--underline">
-          <span>{{ 'content.breadcrumb.collections' | t }}</span>
-        </a>
+        <span>{{ 'content.breadcrumb.collections' | t }}</span>
       </li>
     {% endif %}
     {% if template.name contains 'collection' and collection %}
       <li {{ attr_item }}>
-        <a
-          href="{{ routes.collections_url }}"
-          title="{{ 'content.breadcrumb.collections' | t }}"
-          {{ class_link }}
-        >
-          <span>{{ 'content.breadcrumb.collections' | t }}</span>
-        </a>
+        <span>{{ 'content.breadcrumb.collections' | t }}</span>
         <span class="breadcrumbs__separator">
           {{ separator }}
         </span>
@@ -250,13 +242,17 @@
       -%}
       {%- if parent_collection -%}
         <li {{ attr_item }}>
-          <a
-            href="{{ parent_collection.url }}"
-            title="{{ parent_collection.title | escape }}"
-            {{ class_link }}
-          >
+          {% if parent_collection.title == 'Collections' %}
             <span>{{ parent_collection.title | escape }}</span>
-          </a>
+          {% else %}
+            <a
+              href="{{ parent_collection.url }}"
+              title="{{ parent_collection.title | escape }}"
+              {{ class_link }}
+            >
+              <span>{{ parent_collection.title | escape }}</span>
+            </a>
+          {% endif %}
           <span class="breadcrumbs__separator">
             {{ separator }}
           </span>
@@ -265,13 +261,17 @@
       {%- endif -%}
       {%- if crumb_collection -%}
         <li {{ attr_item }}>
-          <a
-            href="{{ crumb_collection.url }}"
-            title="{{ crumb_collection.title | escape }}"
-            {{ class_link }}
-          >
+          {% if crumb_collection.title == 'Collections' %}
             <span>{{ crumb_collection.title | escape }}</span>
-          </a>
+          {% else %}
+            <a
+              href="{{ crumb_collection.url }}"
+              title="{{ crumb_collection.title | escape }}"
+              {{ class_link }}
+            >
+              <span>{{ crumb_collection.title | escape }}</span>
+            </a>
+          {% endif %}
           <span class="breadcrumbs__separator">
             {{ separator }}
           </span>

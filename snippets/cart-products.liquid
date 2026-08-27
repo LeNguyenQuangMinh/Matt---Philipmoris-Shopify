@@ -117,7 +117,7 @@
               <tbody role="rowgroup">
                 {%- for item in cart.items -%}
                   {%- assign is_addon_item = false -%}
-                  {%- if item.properties._is_addon != blank or item.properties._embossing_for != blank or item.properties._main_variant_id != blank or item.product.handle == 'embossing-charge' -%}
+                  {%- if item.properties._is_addon != blank or item.properties._debossing_for != blank or item.properties._main_variant_id != blank or item.product.handle == 'debossing-charge' -%}
                     {%- assign is_addon_item = true -%}
                   {%- endif -%}
                   <tr
@@ -191,8 +191,8 @@
                           endif
 
                           if parent_info == blank
-                            if item.properties._embossing_for != blank
-                              assign parent_info = item.properties._embossing_for
+                            if item.properties._debossing_for != blank
+                              assign parent_info = item.properties._debossing_for
                             elsif item.properties.For != blank
                               assign parent_info = item.properties.For
                             endif
