@@ -4,6 +4,8 @@
   <script src="{{ 'zoom-dialog.js' | asset_url }}" defer="defer"></script>
 {%- elsif bl_stts.zoom and bl_stts.zoom_type == 'inline' -%}
   <script id="EnableZoomOnHover-main" src="{{ 'zoom-inline.js' | asset_url }}" defer="defer"></script>
+{%- elsif bl_stts.zoom and bl_stts.zoom_type == 'custom' -%}
+  <script src="{{ 'easyzoom.js' | asset_url }}" defer="defer"></script>
 {%- endif -%}
 
 {%- liquid
@@ -303,6 +305,45 @@
     display: block !important;
   }
 
+  /* EasyZoom styles */
+  .easyzoom {
+    position: relative;
+    display: block;
+  }
+
+  .easyzoom-flyout {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 50;
+    background: var(--color-background, #fff);
+  }
+
+  .easyzoom-flyout img {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    will-change: transform, transform-origin;
+  }
+
+  .easyzoom.is-loading img.product-media__image {
+    cursor: progress;
+  }
+
+  .easyzoom.is-ready img.product-media__image,
+  .product-media-container--easyzoom img.product-media__image,
+  .media-gallery[data-zoom-easyzoom] .custom-media-gallery__main-item {
+    cursor: crosshair;
+  }
+
   body:has(header-component[data-sticky-state="active"]) .custom-media-gallery__main-item {
     scroll-margin-top: calc(var(--header-height, 0px) + 2rem);
   }
@@ -544,6 +585,9 @@
   data-presentation="{% if bl_stts.custom_media_layout %}custom-layout{% else %}{{ bl_stts.media_presentation }}{% endif %}"
   {% if bl_stts.zoom and bl_stts.zoom_type == 'inline' %}
     data-zoom-on-hover
+  {% elsif bl_stts.zoom and bl_stts.zoom_type == 'custom' %}
+    data-zoom-easyzoom
+    data-zoom-scale="{{ bl_stts.zoom_scale | default: 2 }}"
   {% endif %}
   data-section-id="{{ section.id }}"
   data-section="{{ section.id }}"
@@ -597,7 +641,7 @@
         {% endif %}
       {% endcapture %}
       {% capture class %}
-        {{ product_media_container_class }} product-media-container--{{ media.media_type }} product-media-container--slide{% if bl_stts.zoom %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}
+        {{ product_media_container_class }} product-media-container--{{ media.media_type }} product-media-container--slide{% if bl_stts.zoom and bl_stts.zoom_type == 'dialog' %} product-media-container--zoomable{% elsif bl_stts.zoom and bl_stts.zoom_type == 'custom' and media.media_type == 'image' %} product-media-container--easyzoom easyzoom{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}
       {% endcapture %}
       {% if bl_stts.aspect_ratio == 'adapt' %}
         {% capture style %}
@@ -605,9 +649,11 @@
         {% endcapture %}
       {% endif %}
       {% if bl_stts.zoom and media.media_type == 'model' %}
-        {%- capture attributes -%}"{% if settings.transition_to_main_product and forloop.first %} data-view-transition-type="product-image-transition"{% endif %}{% endcapture -%}
-      {% elsif bl_stts.zoom %}
+        {%- capture attributes -%}{% if settings.transition_to_main_product and forloop.first %} data-view-transition-type="product-image-transition"{% endif %}{% endcapture -%}
+      {% elsif bl_stts.zoom and bl_stts.zoom_type == 'dialog' %}
         {%- capture attributes -%}data-zoom-index="{{ forloop.index0 }}" data-zoom-target="#zoom-dialog-{{ block.id }}"{% if settings.transition_to_main_product and forloop.first %} data-view-transition-type="product-image-transition"{% endif %}{% endcapture -%}
+      {% elsif settings.transition_to_main_product and forloop.first %}
+        {%- capture attributes -%}data-view-transition-type="product-image-transition"{% endcapture -%}
       {% endif %}
 
       {% render 'slideshow-slide',
@@ -693,7 +739,7 @@
         -%}
         <div
           id="product-media-item-{{ block.id }}-{{ media.id }}"
-          class="custom-media-gallery__main-item{% if forloop.first %} active{% endif %} {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if bl_stts.zoom and media.media_type == 'image' %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}{% if show_variant_media_grouped %} filter-{{ media.alt | escape | downcase | replace: ' ', '-' | replace: '(', '-' | replace: ')', '-' }}{% endif %}"
+          class="custom-media-gallery__main-item{% if forloop.first %} active{% endif %} {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if bl_stts.zoom and bl_stts.zoom_type == 'dialog' and media.media_type == 'image' %} product-media-container--zoomable{% elsif bl_stts.zoom and bl_stts.zoom_type == 'custom' and media.media_type == 'image' %} product-media-container--easyzoom easyzoom{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}{% if show_variant_media_grouped %} filter-{{ media.alt | escape | downcase | replace: ' ', '-' | replace: '(', '-' | replace: ')', '-' }}{% endif %}"
           data-media-id="{{ media.id }}"
           data-index="{{ forloop.index0 }}"
           style="
@@ -828,7 +874,7 @@
       {% for media in sorted_media %}
         {%- if bl_stts.video_type == 'inline' -%}
           <li
-            class="media-gallery__grid-item {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if bl_stts.zoom and media.media_type == 'image' %} product-media-container--zoomable{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}{% if show_variant_media_grouped %} filter-{{ media.alt | escape | downcase | replace: ' ', '-' | replace: '(', '-' | replace: ')', '-' }}{% endif %}"
+            class="media-gallery__grid-item {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if bl_stts.zoom and bl_stts.zoom_type == 'dialog' and media.media_type == 'image' %} product-media-container--zoomable{% elsif bl_stts.zoom and bl_stts.zoom_type == 'custom' and media.media_type == 'image' %} product-media-container--easyzoom easyzoom{% endif %}{% if forloop.index0 == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}{% if show_variant_media_grouped %} filter-{{ media.alt | escape | downcase | replace: ' ', '-' | replace: '(', '-' | replace: ')', '-' }}{% endif %}"
             style="
               --ratio: {{ media.aspect_ratio | default: 1.0 }};
               --preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};
@@ -890,7 +936,7 @@
             {% assign index_first = false %}
           {% endif %}
           <li
-            class="media-gallery__grid-item {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if index == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}{% if show_variant_media_grouped %} filter-{{ media.alt | escape | downcase | replace: ' ', '-' | replace: '(', '-' | replace: ')', '-' }}{% endif %}"
+            class="media-gallery__grid-item {{ product_media_container_class }} product-media-container--{{ media.media_type }}{% if bl_stts.zoom and bl_stts.zoom_type == 'dialog' and media.media_type == 'image' %} product-media-container--zoomable{% elsif bl_stts.zoom and bl_stts.zoom_type == 'custom' and media.media_type == 'image' %} product-media-container--easyzoom easyzoom{% endif %}{% if index == lowest_aspect_ratio_index and bl_stts.aspect_ratio == 'adapt' %} product-media-container--tallest{% endif %}{% if show_variant_media_grouped %} filter-{{ media.alt | escape | downcase | replace: ' ', '-' | replace: '(', '-' | replace: ')', '-' }}{% endif %}"
             style="
               --ratio: {{ media.aspect_ratio | default: 1.0 }};
               --preview-ratio: {{ media.preview_image.aspect_ratio | default: 1.0 }};
@@ -1565,15 +1611,29 @@
       "options": [
         {
           "value": "dialog",
-          "label": "t:options.dialog"
+          "label": "Default (Dialog)"
         },
         {
           "value": "inline",
           "label": "t:options.inline"
+        },
+        {
+          "value": "custom",
+          "label": "Custom (EasyZoom hover)"
         }
       ],
       "default": "dialog",
       "visible_if": "{{ block.settings.zoom == true }}"
+    },
+    {
+      "type": "range",
+      "id": "zoom_scale",
+      "label": "Zoom ratio",
+      "min": 1.5,
+      "max": 3.5,
+      "step": 0.1,
+      "default": 2,
+      "visible_if": "{{ block.settings.zoom == true and block.settings.zoom_type == 'custom' }}"
     },
     {
       "type": "checkbox",

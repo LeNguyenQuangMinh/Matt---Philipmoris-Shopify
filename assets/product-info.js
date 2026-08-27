@@ -503,6 +503,9 @@ if (!customElements.get('product-info')) {
           if (this.querySelector('media-gallery[data-zoom-on-hover]')) {
             document.dispatchEvent(new CustomEvent('product:inline-zoom-reinit'));
           }
+          if (this.querySelector('media-gallery[data-zoom-easyzoom]')) {
+            document.dispatchEvent(new CustomEvent('product:easyzoom-reinit'));
+          }
         };
       }
 

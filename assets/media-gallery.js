@@ -364,6 +364,9 @@ if (!customElements.get('media-gallery')) {
                 if (newMediaGallery.hasAttribute('data-zoom-on-hover')) {
                   document.dispatchEvent(new CustomEvent('product:inline-zoom-reinit'));
                 }
+                if (newMediaGallery.hasAttribute('data-zoom-easyzoom')) {
+                  document.dispatchEvent(new CustomEvent('product:easyzoom-reinit'));
+                }
               } catch (e) {
                 // silent
               } finally {
