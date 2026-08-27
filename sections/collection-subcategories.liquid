@@ -91,8 +91,8 @@
   endif
   
   assign column_desktop = sec_stts.column_desktop
-  assign column_tablet = sec_stts.column_tablet
-  assign column_mobile = sec_stts.column_mobile
+  assign column_tablet = sec_stts.column_tablet | default: 3
+  assign column_mobile = sec_stts.column_mobile | default: 2
   assign gap_desktop = sec_stts.gap
   assign gap_mobile = sec_stts.gap_mobile | default: sec_stts.gap
 -%}
@@ -118,13 +118,28 @@
       #collection-subcategories-{{ section.id }} .category-item {
         width: calc(100% / {{ column_tablet }} - ({{ gap_desktop }}px * ({{ column_tablet }} - 1) / {{ column_tablet }}));
       }
+      #collection-subcategories-{{ section.id }} .category-item__content {
+        padding: 10px;
+      }
+      #collection-subcategories-{{ section.id }} .category-item__title {
+        font-size: 1.3rem;
+      }
     }
     @media screen and (max-width: 767px) {
       #collection-subcategories-{{ section.id }} .category-item {
-        width: calc(100% / {{ column_mobile }} - ({{ gap_mobile }}px * ({{ column_mobile }} - 1) / {{ column_mobile }}));
+        width: calc(100% / {{ column_mobile }} - ({{ gap_mobile }}px * ({{ column_mobile }} - 0.5) / {{ column_mobile }}));
       }
       #collection-subcategories-{{ section.id }} .collection-subcategories__grid {
         gap: {{ gap_mobile }}px;
+      }
+      #collection-subcategories-{{ section.id }} .category-item__content {
+        padding: 8px 10px;
+      }
+      #collection-subcategories-{{ section.id }} .category-item__title {
+        font-size: 1.2rem;
+      }
+      #collection-subcategories-{{ section.id }} .category-item__image {
+        min-height: 60px;
       }
     }
 
@@ -201,6 +216,15 @@
         flex-wrap: wrap;
         gap: {{ gap_desktop }}px;
         height: fit-content;
+      }
+
+      @media screen and (max-width: 989px) {
+        #collection-subcategories-{{ section.id }} .collection-subcategories__info {
+          width: 100%;
+        }
+        #collection-subcategories-{{ section.id }} .collection-subcategories__grid {
+          width: 100%;
+        }
       }
     {% else %}
       #collection-subcategories-{{ section.id }} .collection-subcategories__grid {
@@ -463,7 +487,7 @@
       "max": 4,
       "step": 1,
       "label": "Columns (Tablet)",
-      "default": 2
+      "default": 3
     },
     {
       "type": "range",
@@ -472,7 +496,7 @@
       "max": 3,
       "step": 1,
       "label": "Columns (Mobile)",
-      "default": 1
+      "default": 2
     },
     {
       "type": "range",
