@@ -1,6 +1,7 @@
 .mega-menu {
   position: static;
 }
+
 .mega-menu__content:not(:has(>.header__submenu-wrapper)) {
   background: var(--color-background);
   border-left: 0;
@@ -39,9 +40,11 @@
 .shopify-section-header-sticky .mega-menu__content {
   max-height: calc(100vh - var(--header-bottom-position-desktop, 20rem) - 4rem);
 }
+
 .header-wrapper--border-bottom .mega-menu__content {
   border-top: 0;
 }
+
 .mega-menu__list {
   display: flex;
   align-items: flex-start;
@@ -61,9 +64,11 @@
   flex-direction: column;
   gap: var(--gap-y, 1.8rem);
 }
+
 .header__mega-submenu ul li {
   margin-bottom: .5rem;
 }
+
 .mega-menu__collage {
   flex: 0 0 50rem;
 
@@ -82,9 +87,12 @@
   align-items: center;
 
   @media screen and (min-width: 750px) {
-    .collage__item--1, .collage__item--4 {
-        grid-row: span 1;
+
+    .collage__item--1,
+    .collage__item--4 {
+      grid-row: span 1;
     }
+
     .collage--2-items .collage__item--2 {
       grid-row: 1 / span 2;
     }
@@ -94,20 +102,23 @@
     }
   }
 }
+
 .mega-menu__collage-wrapper.mega-menu__collage-wrapper--divider {
   padding-top: 0;
-  margin-top: var(--margin-4xl);
+  margin-top: 3.6rem;
   border-top: var(--border-width, .1rem) solid rgba(var(--color-border-rgb) / var(--opacity-20));
 
   .mega-menu__collection {
     padding-top: var(--margin-xl);
   }
 }
+
 .mega-menu__link {
   display: inline-block;
   padding: 0;
   word-wrap: break-word;
 }
+
 .mega-menu__link--level-2 {
   font-weight: bold;
   margin-bottom: 1rem;
@@ -116,20 +127,24 @@
     margin-top: 1rem;
   }
 }
+
 .header--top-center .mega-menu__list {
   display: flex;
   justify-content: center;
   flex-wrap: wrap;
   column-gap: 0;
 }
+
 .header--top-center .mega-menu__list > .mega-menu__column {
   width: 16%;
   padding-right: 2.4rem;
   flex: none;
 }
+
 .mega-menu__list--condensed .mega-menu__link {
   font-weight: normal;
 }
+
 @media screen and (min-width: 750px) {
   .azbrandsTable {
     max-width: 34rem;
@@ -143,16 +158,19 @@
   text-align: left;
   margin-bottom: 2px;
 }
+
 .azbrandsTable .link {
   padding: 1px 0;
   text-transform: capitalize;
   opacity: var(--opacity-50);
   pointer-events: none;
 }
+
 .azbrandsTable .link.is-active {
   opacity: var(--opacity-100);
   pointer-events: auto;
 }
+
 .azbrandsTable li:first-child {
   margin-left: 0;
 }
@@ -173,7 +191,9 @@
   flex-flow: row nowrap;
   overflow-x: auto;
   margin-bottom: var(--margin-lg);
-  border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  border-top: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  border-bottom: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  padding: 1rem 0;
 }
 
 .mega-menu-brands__nav li {

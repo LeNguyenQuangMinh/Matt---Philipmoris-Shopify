@@ -29,6 +29,14 @@
   if block.settings.navigation == 'pagination' or block.settings.navigation == 'arrows-pagination'
     assign enable_pagination = true
   endif
+
+  assign gap_desktop = block.settings.gap
+  assign gap_tablet = block.settings.gap
+  assign gap_mobile = block.settings.gap
+  if block.settings.custom_gap_more_device
+    assign gap_tablet = block.settings.gap_tablet
+    assign gap_mobile = block.settings.gap_mobile
+  endif
 -%}
 
 {% capture list_items %}
@@ -106,14 +114,14 @@
               settings: block.settings,
               loop: false,
               slides_per_view: mobile_columns,
-              space_between: block.settings.gap
+              space_between: gap_mobile
             -%}
             style="
               {% render 'swiper-style',
                 columns_mobile: mobile_columns,
                 columns_tablet: columns_tablet,
                 columns_desktop: columns_desktop,
-                columns_gap: block.settings.gap,
+                columns_gap: gap_desktop,
               %}
             "
           >
@@ -130,10 +138,21 @@
           data-id="{{ block.id }}"
           class="grid grid-layout{% if block.settings.layout_type == 'asymmetrical' %} grid-layout-asymmetrical{% endif %} list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
           aria-label="{{ 'content.grid.name' | t }}"
-          style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;"
+          style="--grid-desktop-horizontal-spacing: {{ gap_desktop }}px; --grid-desktop-vertical-spacing: {{ gap_desktop }}px; --grid-mobile-horizontal-spacing: {{ gap_mobile }}px; --grid-mobile-vertical-spacing: {{ gap_mobile }}px;"
         >
           {{- list_items -}}
         </div>
+        {%- if block.settings.custom_gap_more_device -%}
+          <style>
+            @media screen and (min-width: 750px) and (max-width: 1024px) {
+              #Grid-{{ block.id }} {
+                --grid-desktop-horizontal-spacing: {{ gap_tablet }}px;
+                --grid-desktop-vertical-spacing: {{ gap_tablet }}px;
+                gap: {{ gap_tablet }}px;
+              }
+            }
+          </style>
+        {%- endif -%}
         {%- if show_mobile_slider -%}
             </div>
           </swiper-component>
@@ -143,9 +162,9 @@
       {%- assign slides_per_view = mobile_columns -%}
       {%- capture breakpoints -%}
         {
-          "768": { "slidesPerView": {{ columns_tablet }} },
-          "1024": { "slidesPerView": {{ columns_tablet }} },
-          "1400": { "slidesPerView": {{ columns_desktop }} }
+          "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ gap_tablet }} },
+          "1024": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ gap_tablet }} },
+          "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ gap_desktop }} }
         }
       {%- endcapture -%}
       <swiper-component
@@ -153,7 +172,7 @@
         {%- render 'swiper-data',
           settings: block.settings,
           slides_per_view: slides_per_view,
-          space_between: block.settings.gap,
+          space_between: gap_mobile,
           watch_slides_progress: true,
           breakpoints: breakpoints
         -%}
@@ -162,7 +181,7 @@
             columns_mobile: mobile_columns,
             columns_tablet: columns_tablet,
             columns_desktop: columns_desktop,
-            columns_gap: block.settings.gap,
+            columns_gap: gap_desktop,
           %}
         "
       >
@@ -331,6 +350,34 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_gap_more_device",
+      "label": "Custom gap more device",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "gap_tablet",
+      "label": "Gap tablet",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ block.settings.custom_gap_more_device }}"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ block.settings.custom_gap_more_device }}"
     },
     {
       "type": "header",

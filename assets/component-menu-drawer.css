@@ -77,11 +77,13 @@ details[open].menu-opening > .menu-drawer__submenu {
 }
 
 @media (hover: hover) {
+
   .menu-drawer__menu-item:hover,
   .menu-drawer__close-button:hover {
     color: var(--color-foreground);
     background-color: rgb(var(--color-foreground-rgb) / var(--opacity-4));
   }
+
   .menu-drawer__menu-item--active:hover {
     background-color: rgb(var(--color-foreground-rgb) / var(--opacity-8));
   }
@@ -117,7 +119,7 @@ details[open].menu-opening > .menu-drawer__submenu {
 }
 
 .menu-drawer__close-button {
-  padding: 1.2rem 2.6rem 1.2rem 3rem;
+  padding: 1.2rem 2.6rem 1.2rem 1rem;
   text-decoration: none;
   display: flex;
   align-items: center;
@@ -176,8 +178,7 @@ details[open].menu-opening > .menu-drawer__submenu {
   margin-bottom: 0;
 }
 
-.menu-drawer__utility-links:has(.menu-drawer__localization)
-  .menu-drawer__account {
+.menu-drawer__utility-links:has(.menu-drawer__localization) .menu-drawer__account {
   margin: 0;
 }
 

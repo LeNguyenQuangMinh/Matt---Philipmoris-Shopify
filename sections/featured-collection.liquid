@@ -179,6 +179,14 @@
       assign columns_gap = columns_gap_num | append: 'px'
       assign rows_gap = rows_gap_num | append: 'px'
 
+      assign gap_desktop = columns_gap_num
+      assign gap_tablet = columns_gap_num
+      assign gap_mobile = columns_gap_num
+      if sec_stts.custom_gap_more_device
+        assign gap_tablet = sec_stts.columns_gap_tablet | default: sec_stts.gap_tablet | default: columns_gap_num
+        assign gap_mobile = sec_stts.columns_gap_mobile | default: sec_stts.gap_mobile | default: columns_gap_num
+      endif
+
       assign pagination_type = sec_stts.pagination_type
     -%}
 
@@ -473,14 +481,14 @@
                     settings: section.settings,
                     loop: false,
                     slides_per_view: columns_mobile,
-                    space_between: columns_gap_num
+                    space_between: gap_mobile
                   -%}
                   style="
                     {% render 'swiper-style',
                       columns_mobile: columns_mobile,
                       columns_tablet: columns_tablet,
                       columns_desktop: columns_desktop,
-                      columns_gap: columns_gap,
+                      columns_gap: gap_desktop,
                     %}
                   "
                 >
@@ -494,10 +502,22 @@
                 role="list"
                 data-products-to-show="{{ max_items }}"
                 aria-label="{{ 'content.grid.name' | t }}"
-                style="--grid-desktop-horizontal-spacing: {{ columns_gap }}; --grid-desktop-vertical-spacing: {{ rows_gap }};"
+                style="--grid-desktop-horizontal-spacing: {{ gap_desktop }}px; --grid-desktop-vertical-spacing: {{ rows_gap }}; --grid-mobile-horizontal-spacing: {{ gap_mobile }}px; --grid-mobile-vertical-spacing: {{ gap_mobile }}px;"
               >
                 {{ list_items }}
               </ul>
+
+              {%- if sec_stts.custom_gap_more_device -%}
+                <style>
+                  @media screen and (min-width: 750px) and (max-width: 1024px) {
+                    #Grid-{{ sec_id }} {
+                      --grid-desktop-horizontal-spacing: {{ gap_tablet }}px;
+                      --grid-desktop-vertical-spacing: {{ gap_tablet }}px;
+                      gap: {{ gap_tablet }}px;
+                    }
+                  }
+                </style>
+              {%- endif -%}
 
               {%- if show_more_product -%}
                 <template data-product-grid-template-showmore>
@@ -583,9 +603,9 @@
             {%- endif -%}
             {%- capture breakpoints -%}
               {
-                "768": { "slidesPerView": {% if is_widget %}1{% else %}{{ columns_tablet }}{% endif %} },
-                "1024": { "slidesPerView": {% if is_widget %}{{ columns_desktop }}{% else %}{{ columns_tablet }}{% endif %} },
-                "1400": { "slidesPerView": {{ columns_desktop }} }
+                "768": { "slidesPerView": {% if is_widget %}1{% else %}{{ columns_tablet }}{% endif %}, "spaceBetween": {{ gap_tablet }} },
+                "1024": { "slidesPerView": {% if is_widget %}{{ columns_desktop }}{% else %}{{ columns_tablet }}{% endif %}, "spaceBetween": {{ gap_tablet }} },
+                "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ gap_desktop }} }
               }
             {%- endcapture -%}
             <swiper-component
@@ -593,7 +613,7 @@
               {%- render 'swiper-data',
                 settings: section.settings,
                 slides_per_view: slides_per_view,
-                space_between: columns_gap_num,
+                space_between: gap_mobile,
                 watch_slides_progress: true,
                 breakpoints: breakpoints,
                 arrows_outside: arrows_outside
@@ -603,7 +623,7 @@
                   columns_mobile: columns_mobile,
                   columns_tablet: columns_tablet,
                   columns_desktop: columns_desktop,
-                  columns_gap: columns_gap,
+                  columns_gap: gap_desktop,
                 %}
               "
               data-slide-id="{{ sec_id }}"
@@ -789,6 +809,35 @@
       "unit": "px",
       "default": 8,
       "visible_if": "{{ section.settings.layout_type == 'grid' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_gap_more_device",
+      "label": "Custom gap more device",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type != 'editorial' and section.settings.widget_layout != 'spotlight' }}"
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_tablet",
+      "label": "Gap tablet",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.custom_gap_more_device and section.settings.layout_type != 'editorial' and section.settings.widget_layout != 'spotlight' }}"
+    },
+    {
+      "type": "range",
+      "id": "columns_gap_mobile",
+      "label": "Gap mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 8,
+      "visible_if": "{{ section.settings.custom_gap_more_device and section.settings.layout_type != 'editorial' and section.settings.widget_layout != 'spotlight' }}"
     },
     {
       "type": "header",

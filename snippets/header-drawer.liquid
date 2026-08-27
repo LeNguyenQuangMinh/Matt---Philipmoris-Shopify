@@ -334,7 +334,7 @@
     background-color: #f4f1ea;
   }
   .side-drawer--custom .drawer__search-bar {
-    padding: 2rem 2rem 1rem !important;
+    padding: 2rem 1.5rem 1rem !important;
   }
   .side-drawer--custom .drawer__wrapper {
     padding: 0 !important;
@@ -355,18 +355,27 @@
     display: none;
   }
   .side-drawer--custom .menu-drawer__menu-item {
-    padding: 1.2rem 2rem;
+    padding: 1.2rem 1.5rem;
     font-size: 1.4rem;
     color: #1a2a3a;
   }
   .side-drawer--custom .menu-drawer__menu-item > .svg-wrapper {
-    right: 2rem;
+    right: 1.4rem;
   }
   
   .side-drawer-container--custom {
-    top: var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px))) !important;
-    height: calc(100vh - var(--header-bottom-offset, calc(var(--header-height, 100%) + var(--announcement-bar-height, 0px)))) !important;
+    top: var(--header-bottom-offset, calc(var(--header-height, 60px) + var(--announcement-bar-height, 0px))) !important;
+    height: calc(100vh - var(--header-bottom-offset, calc(var(--header-height, 60px) + var(--announcement-bar-height, 0px)))) !important;
   }
+
+  body:has(#header-component[data-sticky-state="active"]) .side-drawer-container--custom,
+  body:has(.header-wrapper[data-sticky-state="active"]) .side-drawer-container--custom,
+  body:has(.header[data-sticky-state="active"]) .side-drawer-container--custom,
+  body:has(header-component[data-sticky-state="active"]) .side-drawer-container--custom {
+    top: var(--header-bottom-offset, var(--header-height, 60px)) !important;
+    height: calc(100vh - var(--header-bottom-offset, var(--header-height, 60px))) !important;
+  }
+
   .side-drawer-container--custom .drawer__overlay {
     display: none !important;
   }
@@ -390,16 +399,43 @@
     setAnnouncementHeight();
     window.addEventListener('resize', setAnnouncementHeight);
 
-    const opener = document.querySelector('side-drawer-opener[data-side-drawer="#Drawer-Menu"] button');
-    const container = document.querySelector('#Drawer-Menu.side-drawer-container--custom');
-    if (opener && container) {
-      opener.addEventListener('click', () => {
-        const header = document.querySelector('.header-wrapper') || document.querySelector('header');
-        if (header) {
-          const rect = header.getBoundingClientRect();
-          container.style.setProperty('--header-bottom-offset', `${rect.bottom}px`);
+    const updateDrawerPosition = () => {
+      const container = document.querySelector('#Drawer-Menu');
+      if (!container) return;
+      const header = document.querySelector('header-component') || document.querySelector('.header-wrapper') || document.querySelector('.header') || document.querySelector('header');
+      if (header) {
+        const rect = header.getBoundingClientRect();
+        const bottom = Math.max(0, Math.round(rect.bottom));
+        container.style.setProperty('--header-bottom-offset', `${bottom}px`);
+        document.documentElement.style.setProperty('--header-bottom-offset', `${bottom}px`);
+      }
+    };
+
+    updateDrawerPosition();
+
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('side-drawer-opener[data-side-drawer="#Drawer-Menu"]') || e.target.closest('.header__icon--menu')) {
+        updateDrawerPosition();
+      }
+    }, true);
+
+    window.addEventListener('scroll', () => {
+      const container = document.querySelector('#Drawer-Menu');
+      if (container && (container.classList.contains('active') || container.classList.contains('open') || container.hasAttribute('open'))) {
+        updateDrawerPosition();
+      }
+    }, { passive: true });
+
+    window.addEventListener('resize', updateDrawerPosition);
+
+    const drawerMenu = document.querySelector('#Drawer-Menu');
+    if (drawerMenu) {
+      const observer = new MutationObserver(() => {
+        if (drawerMenu.classList.contains('active') || drawerMenu.classList.contains('open') || drawerMenu.hasAttribute('open')) {
+          updateDrawerPosition();
         }
       });
+      observer.observe(drawerMenu, { attributes: true, attributeFilter: ['class', 'open'] });
     }
   });
 </script>

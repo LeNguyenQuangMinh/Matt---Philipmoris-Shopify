@@ -1,13 +1,13 @@
 {%- capture class_badge -%}badge badge--bottom-left{% if settings.show_badge_arrow %} has-arrow{% endif %}{%- endcapture -%}
 {%- capture id_badge -%}NoMediaStandardBadge-{{ section_id }}-{{ card_product.id }}{%- endcapture -%}
-{% comment %} {%- capture style_badge -%}--pl: {{ settings.padding_left }}px; --pr: {{ settings.padding_right }}px; --pt: {{ settings.padding_top }}px; --pb: {{ settings.padding_bottom }}px;{%- endcapture -%} {% endcomment %}
+{%- capture style_badge -%}--pl: {{ settings.padding_left }}px; --pr: {{ settings.padding_right }}px; --pt: {{ settings.padding_top }}px; --pb: {{ settings.padding_bottom }}px;{%- endcapture -%}
 
 {%- if new_badge -%}
   <span
     id="{{ id_badge }}-new"
     class="new-badge {{ class_badge }}"
     aria-hidden="true"
-    style="{%- render 'block-padding', settings: settings -%}"
+    style="{{ style_badge }}"
   >
     {{ 'products.product.new' | t }}
   </span>
@@ -17,7 +17,7 @@
     id="{{ id_badge }}"
     class="sale-badge {{ class_badge }}"
     aria-hidden="true"
-    style="{%- render 'block-padding', settings: settings -%}"
+    style="{{ style_badge }}"
   >
     {%- liquid
       assign saving = card_product.compare_at_price | minus: card_product.price | times: 100.0 | divided_by: card_product.compare_at_price | round
@@ -30,7 +30,7 @@
     id="{{ id_badge }}"
     class="sold-out-badge {{ class_badge }}"
     aria-hidden="true"
-    style="{%- render 'block-padding', settings: settings -%}"
+    style="{{ style_badge }}"
   >
     {{- 'products.product.sold_out' | t -}}
   </span>
@@ -40,7 +40,7 @@
     id="{{ id_badge }}-custom"
     class="custom-badge {{ class_badge }}"
     aria-hidden="true"
-    style="{%- render 'block-padding', settings: settings -%}"
+    style="{{ style_badge }}"
   >
     {%- if custom_badge_text -%}
       {{ custom_badge_text }}

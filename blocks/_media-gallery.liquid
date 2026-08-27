@@ -55,6 +55,14 @@
     assign swiper_autoplay_speed = 0
     assign swiper_speed = block.settings.marquee_speed | times: 1000
   endif
+
+  assign gap_desktop = block.settings.gap
+  assign gap_tablet = block.settings.gap
+  assign gap_mobile = block.settings.gap
+  if block.settings.custom_gap_more_device
+    assign gap_tablet = block.settings.gap_tablet
+    assign gap_mobile = block.settings.gap_mobile
+  endif
 -%}
 
 {% capture list_items %}
@@ -124,7 +132,7 @@
 
   {% case block.settings.layout_type %}
     {% when 'grid' %}
-      <div class="collection--grid-layout w-full block" style="--grid-desktop-horizontal-spacing: {{ block.settings.gap }}px; --grid-desktop-vertical-spacing: {{ block.settings.gap }}px;">
+      <div class="collection--grid-layout w-full block" style="--grid-desktop-horizontal-spacing: {{ gap_desktop }}px; --grid-desktop-vertical-spacing: {{ gap_desktop }}px; --grid-mobile-horizontal-spacing: {{ gap_mobile }}px; --grid-mobile-vertical-spacing: {{ gap_mobile }}px;">
         {%- if show_mobile_slider -%}
           <swiper-component
             class="swiper-component-mobile"
@@ -133,7 +141,7 @@
               settings: block.settings,
               loop: swiper_loop,
               slides_per_view: mobile_columns,
-              space_between: block.settings.gap,
+              space_between: gap_mobile,
               autoplay: swiper_autoplay,
               autoplay_speed: swiper_autoplay_speed,
               speed: swiper_speed
@@ -143,7 +151,7 @@
                 columns_mobile: mobile_columns,
                 columns_tablet: columns_tablet,
                 columns_desktop: columns_desktop,
-                columns_gap: block.settings.gap,
+                columns_gap: gap_desktop,
               %}
             "
           >
@@ -158,6 +166,17 @@
         >
           {{- list_items -}}
         </ul>
+        {%- if block.settings.custom_gap_more_device -%}
+          <style>
+            @media screen and (min-width: 750px) and (max-width: 1024px) {
+              #Grid-{{ block.id }} {
+                --grid-desktop-horizontal-spacing: {{ gap_tablet }}px;
+                --grid-desktop-vertical-spacing: {{ gap_tablet }}px;
+                gap: {{ gap_tablet }}px;
+              }
+            }
+          </style>
+        {%- endif -%}
         {% if block.settings.show_view_more_icon %}
           <button type="button" aria-label="Show more" class="show-icon" style="--icon-more-margin-top: {{ block.settings.icon_more_margin_top }}px; --icon-more-margin-bottom: {{ block.settings.icon_more_margin_bottom }}px; --icon-more-color: {{ block.settings.icon_more_color }}; --icon-more-background: {{ block.settings.icon_more_background }}; --icon-more-border: {{ block.settings.icon_more_border }}; --icon-more-size: {{ block.settings.icon_more_size }}px;" data-load-more-block="" data-row-desktop="{{ columns_desktop }}" data-row-tablet="{{ columns_tablet }}" data-row-mobile="{{ mobile_columns }}"></button>
         {% endif %}
@@ -171,9 +190,9 @@
       {%- assign slides_per_view = mobile_columns -%}
       {%- capture breakpoints -%}
         {
-          "768": { "slidesPerView": {{ columns_tablet }} },
-          "1024": { "slidesPerView": {{ small_desktop_columns }} },
-          "1400": { "slidesPerView": {{ columns_desktop }} }
+          "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ gap_tablet }} },
+          "1024": { "slidesPerView": {{ small_desktop_columns }}, "spaceBetween": {{ gap_tablet }} },
+          "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ gap_desktop }} }
         }
       {%- endcapture -%}
       <swiper-component
@@ -181,7 +200,7 @@
         {%- render 'swiper-data',
           settings: block.settings,
           slides_per_view: slides_per_view,
-          space_between: block.settings.gap,
+          space_between: gap_mobile,
           watch_slides_progress: true,
           breakpoints: breakpoints,
           autoplay: swiper_autoplay,
@@ -196,7 +215,7 @@
             columns_tablet: columns_tablet,
             small_desktop_columns: small_desktop_columns,
             columns_desktop: columns_desktop,
-            columns_gap: block.settings.gap,
+            columns_gap: gap_desktop,
           %}
         "
         data-slide-id="{{ block.id }}"
@@ -418,6 +437,34 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_gap_more_device",
+      "label": "Custom gap more device",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "gap_tablet",
+      "label": "Gap tablet",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.custom_gap_more_device }}"
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "label": "Gap mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 12,
+      "visible_if": "{{ block.settings.custom_gap_more_device }}"
     },
     {
       "type": "header",

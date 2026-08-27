@@ -46,6 +46,13 @@
   endif
 
   assign always_show_swiper_button = block.settings.always_show_swiper_button
+  assign arrows_position = block.settings.arrows_position | default: 'outside'
+  assign arrows_position_mobile = block.settings.arrows_position_mobile | default: 'outside'
+
+  assign arrows_outside = false
+  if arrows_position == 'outside'
+    assign arrows_outside = true
+  endif
 -%}
 
 {% capture list_items %}
@@ -67,16 +74,24 @@
     {% when 'grid' %}
       <div class="collection--grid-layout w-full block">
         {%- if show_mobile_slider -%}
+          {%- capture mobile_breakpoints -%}
+            {
+              "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ block.settings.column_gap }} },
+              "1024": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ block.settings.column_gap }} }
+            }
+          {%- endcapture -%}
           <swiper-component
-            class="swiper-component-mobile"
+            class="swiper-component-mobile{% if arrows_position_mobile == 'outside' %} arrows-outside-mobile{% endif %}"
             data-swiper-mobile
             {%- render 'swiper-data',
               settings: block.settings,
               loop: false,
               slides_per_view: mobile_columns,
               space_between: block.settings.column_gap,
+              breakpoints: mobile_breakpoints,
               autoplay: block.settings.autoplay,
-              autoplay_speed: block.settings.autoplay_speed
+              autoplay_speed: block.settings.autoplay_speed,
+              arrows_outside: arrows_outside
             -%}
             style="
               {% render 'swiper-style',
@@ -109,7 +124,7 @@
         </ul>
         {%- if show_mobile_slider -%}
           {%- if enable_navigation -%}
-            <div class="swiper-btns-wrap{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
+            <div class="swiper-btns-wrap{% if arrows_position != 'outside' %} md:swiper-btns-wrap--{{ arrows_position }}{% endif %}{% if arrows_position_mobile == 'bottom' %} swiper-btns-wrap--bottom-mobile{% elsif arrows_position_mobile == 'inside' %} swiper-btns-wrap--inside-mobile{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
               {%- render 'swiper-button' -%}
             </div>
           {%- endif -%}
@@ -124,13 +139,13 @@
       {%- assign slides_per_view = mobile_columns -%}
       {%- capture breakpoints -%}
         {
-          "768": { "slidesPerView": {{ columns_tablet }} },
-          "1024": { "slidesPerView": {{ small_desktop_columns }} },
-          "1400": { "slidesPerView": {{ columns_desktop }} }
+          "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ block.settings.gap }} },
+          "1024": { "slidesPerView": {{ small_desktop_columns }}, "spaceBetween": {{ block.settings.gap }} },
+          "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ block.settings.gap }} }
         }
       {%- endcapture -%}
       <swiper-component
-        class="collection-carousel-swiper-component w-full block"
+        class="collection-carousel-swiper-component w-full block{% if arrows_position_mobile == 'outside' %} arrows-outside-mobile{% endif %}"
         {%- render 'swiper-data',
           settings: block.settings,
           slides_per_view: slides_per_view,
@@ -140,7 +155,7 @@
           autoplay: block.settings.autoplay,
           autoplay_speed: block.settings.autoplay_speed,
           loop: block.settings.loop,
-          arrows_outside: true
+          arrows_outside: arrows_outside
         -%}
         style="
           {% render 'swiper-style',
@@ -177,12 +192,49 @@
           {%- endif -%}
         </div>
         {%- if enable_navigation -%}
-          <div class="swiper-btns-wrap{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
+          <div class="swiper-btns-wrap{% if arrows_position != 'outside' %} md:swiper-btns-wrap--{{ arrows_position }}{% endif %}{% if arrows_position_mobile == 'bottom' %} swiper-btns-wrap--bottom-mobile{% elsif arrows_position_mobile == 'inside' %} swiper-btns-wrap--inside-mobile{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}">
             {%- render 'swiper-button', slide_id: block.id -%}
           </div>
         {%- endif -%}
       </swiper-component>
   {% endcase %}
+  {%- if enable_navigation -%}
+    <style>
+      @media screen and (max-width: 749px) {
+        .arrows-outside-mobile {
+          padding-inline: calc(var(--button-width, 3.2rem) + 0.8rem) !important;
+        }
+        .arrows-outside-mobile .swiper-btns-wrap .swiper-button-prev {
+          left: 0.2rem !important;
+        }
+        .arrows-outside-mobile .swiper-btns-wrap .swiper-button-next {
+          right: 0.2rem !important;
+        }
+        .swiper-btns-wrap--inside-mobile {
+          width: 100% !important;
+        }
+        .swiper-btns-wrap--bottom-mobile {
+          display: flex !important;
+          position: relative !important;
+          left: auto !important;
+          right: auto !important;
+          top: auto !important;
+          transform: none !important;
+          justify-content: center;
+          align-items: center;
+          gap: var(--gap-lg);
+          margin-top: 2rem;
+          width: 100%;
+        }
+        .swiper-btns-wrap--bottom-mobile .swiper-button {
+          position: relative !important;
+          left: auto !important;
+          right: auto !important;
+          transform: none !important;
+        }
+      }
+    </style>
+  {%- endif -%}
 {% endcapture %}
 
 {% render 'group', children: children, settings: block.settings, shopify_attributes: block.shopify_attributes %}
@@ -419,6 +471,48 @@
       "id": "always_show_swiper_button",
       "label": "Always show swiper button",
       "default": false,
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "select",
+      "id": "arrows_position",
+      "label": "t:settings.arrows_position",
+      "options": [
+        {
+          "value": "inside",
+          "label": "t:options.inside_slide"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom_slide"
+        },
+        {
+          "value": "outside",
+          "label": "Outside slide"
+        }
+      ],
+      "default": "outside",
+      "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
+    },
+    {
+      "type": "select",
+      "id": "arrows_position_mobile",
+      "label": "Arrows position on mobile",
+      "options": [
+        {
+          "value": "inside",
+          "label": "t:options.inside_slide"
+        },
+        {
+          "value": "outside",
+          "label": "Outside slide"
+        },
+        {
+          "value": "bottom",
+          "label": "t:options.bottom_slide"
+        }
+      ],
+      "default": "outside",
       "visible_if": "{{ block.settings.navigation == 'arrows' or block.settings.navigation == 'arrows-pagination' }}"
     },
     {

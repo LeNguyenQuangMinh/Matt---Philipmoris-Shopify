@@ -2254,7 +2254,7 @@
       {
         "type": "range",
         "id": "arrows_width",
-        "min": 24,
+        "min": 20,
         "max": 110,
         "step": 1,
         "unit": "px",
@@ -2264,7 +2264,7 @@
       {
         "type": "range",
         "id": "arrows_height",
-        "min": 24,
+        "min": 20,
         "max": 110,
         "step": 1,
         "unit": "px",

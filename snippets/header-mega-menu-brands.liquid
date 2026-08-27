@@ -155,7 +155,8 @@
         {% else %}
           href="{{ bl_stts.brand_url }}"
         {% endif %}
-        class="link link--underline"
+        class="link link--hover-underline"
+        style="--button-font-size-link: 1.6rem;"
       >
         {{ bl_stts.brand_text | escape }}
       </a>
@@ -188,7 +189,7 @@
     {%- endfor -%}
   </ul>
 
-  <div class="mega-menu-brands__body">
+  <div class="mega-menu-brands__body" style="--button-font-size-link: 1.6rem;">
     {%- if has_popular -%}
       <div class="mega-menu-brands__group mega-menu-brands__group--popular">
         <p

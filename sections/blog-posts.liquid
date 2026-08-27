@@ -35,6 +35,14 @@
   assign blog = section.settings.blog
   assign always_show_swiper_button = section.settings.always_show_swiper_button
   assign show_fraction_on_arrow = section.settings.show_fraction_on_arrow
+
+  assign gap_desktop = section.settings.items_gap
+  assign gap_tablet = section.settings.items_gap
+  assign gap_mobile = section.settings.items_gap
+  if section.settings.custom_gap_more_device
+    assign gap_tablet = section.settings.items_gap_tablet | default: section.settings.gap_tablet | default: section.settings.items_gap
+    assign gap_mobile = section.settings.items_gap_mobile | default: section.settings.gap_mobile | default: section.settings.items_gap
+  endif
 -%}
 
 {% capture header %}
@@ -94,14 +102,14 @@
                 settings: section.settings,
                 loop: false,
                 slides_per_view: mobile_columns,
-                space_between: section.settings.items_gap
+                space_between: gap_mobile
               -%}
               style="
                 {% render 'swiper-style',
                   columns_mobile: mobile_columns,
                   columns_tablet: columns_tablet,
                   columns_desktop: columns_desktop,
-                  columns_gap: section.settings.items_gap,
+                  columns_gap: gap_desktop,
                 %}
               "
             >
@@ -121,10 +129,21 @@
             class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop }} md:grid-layout--{{ columns_tablet }} max-sm:grid-layout--{{ mobile_columns }}"
             role="list"
             aria-label="{{ 'content.grid.name' | t }}"
-            style="--grid-desktop-horizontal-spacing: {{ section.settings.items_gap }}px; --grid-desktop-vertical-spacing: {{ section.settings.items_gap }}px;"
+            style="--grid-desktop-horizontal-spacing: {{ gap_desktop }}px; --grid-desktop-vertical-spacing: {{ gap_desktop }}px; --grid-mobile-horizontal-spacing: {{ gap_mobile }}px; --grid-mobile-vertical-spacing: {{ gap_mobile }}px;"
           >
             {{- list_items -}}
           </ul>
+          {%- if section.settings.custom_gap_more_device -%}
+            <style>
+              @media screen and (min-width: 750px) and (max-width: 1024px) {
+                #Grid-{{ section.id }} {
+                  --grid-desktop-horizontal-spacing: {{ gap_tablet }}px;
+                  --grid-desktop-vertical-spacing: {{ gap_tablet }}px;
+                  gap: {{ gap_tablet }}px;
+                }
+              }
+            </style>
+          {%- endif -%}
           {%- if show_mobile_slider -%}
               </div>
             </swiper-component>
@@ -132,11 +151,11 @@
         </div>
       {% when 'carousel' %}
         {%- assign slides_per_view = mobile_columns -%}
-        {%- assign space_between = section.settings.items_gap -%}
         {%- capture breakpoints -%}
           {
-            "750": { "slidesPerView": {{ columns_tablet }}, "space_between": {{ section.settings.items_gap | times: 0.75 }} },
-            "1024": { "slidesPerView": {{ columns_desktop }}, "space_between": {{ section.settings.items_gap | times: 0.5 }} }
+            "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ gap_tablet }} },
+            "1024": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": {{ gap_tablet }} },
+            "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": {{ gap_desktop }} }
           }
         {%- endcapture -%}
         <swiper-component
@@ -144,7 +163,7 @@
           {%- render 'swiper-data',
             settings: section.settings,
             slides_per_view: slides_per_view,
-            space_between: space_between,
+            space_between: gap_mobile,
             watch_slides_progress: true,
             breakpoints: breakpoints
           -%}
@@ -153,7 +172,7 @@
               columns_mobile: mobile_columns,
               columns_tablet: columns_tablet,
               columns_desktop: columns_desktop,
-              columns_gap: space_between,
+              columns_gap: gap_desktop,
             %}
           "
         >
@@ -185,7 +204,7 @@
         </swiper-component>
       {% when 'hero_grid' %}
         <div class="blog-posts--hero-grid-layout size-full block flex max-md:flex-column"
-          style="--gap-x: {{ section.settings.items_gap }}px; --gap-y: {{ section.settings.items_gap }}px;"
+          style="--gap-x: {{ gap_desktop }}px; --gap-y: {{ gap_desktop }}px;"
         >
           <div class="blog-posts--hero" style="--w-hero-article: {{ section.settings.width_hero_article | append: '%' }}">
             {{ hero }}
@@ -198,14 +217,14 @@
               settings: section.settings,
               loop: false,
               slides_per_view: mobile_columns,
-              space_between: section.settings.items_gap
+              space_between: gap_mobile
             -%}
             style="
               {% render 'swiper-style',
                 columns_mobile: mobile_columns,
                 columns_tablet: columns_tablet,
                 columns_desktop: columns_desktop,
-                columns_gap: section.settings.items_gap,
+                columns_gap: gap_desktop,
               %}
             "
           >
@@ -225,10 +244,31 @@
                 class="grid grid-layout list-unstyled{% if show_mobile_slider %} swiper-wrapper md:grid{% endif %} lg:grid-layout--{{ columns_desktop | plus: 0 | minus: 1 }} md:grid-layout--{{ columns_tablet | plus: 0 | minus: 1 }} max-sm:grid-layout--{{ mobile_columns }}"
                 role="list"
                 aria-label="{{ 'content.grid.name' | t }}"
-                style="--grid-desktop-horizontal-spacing: {{ section.settings.items_gap }}px; --grid-desktop-vertical-spacing: {{ section.settings.items_gap }}px;"
+                style="--grid-desktop-horizontal-spacing: {{ gap_desktop }}px; --grid-desktop-vertical-spacing: {{ gap_desktop }}px; --grid-mobile-horizontal-spacing: {{ gap_mobile }}px; --grid-mobile-vertical-spacing: {{ gap_mobile }}px;"
               >
                 {{- list_items -}}
               </ul>
+              {%- if section.settings.custom_gap_more_device -%}
+                <style>
+                  @media screen and (min-width: 750px) and (max-width: 1024px) {
+                    #Grid-{{ section.id }} {
+                      --grid-desktop-horizontal-spacing: {{ gap_tablet }}px;
+                      --grid-desktop-vertical-spacing: {{ gap_tablet }}px;
+                      gap: {{ gap_tablet }}px;
+                    }
+                    .blog-posts--hero-grid-layout {
+                      --gap-x: {{ gap_tablet }}px;
+                      --gap-y: {{ gap_tablet }}px;
+                    }
+                  }
+                  @media screen and (max-width: 749px) {
+                    .blog-posts--hero-grid-layout {
+                      --gap-x: {{ gap_mobile }}px;
+                      --gap-y: {{ gap_mobile }}px;
+                    }
+                  }
+                </style>
+              {%- endif -%}
           {%- if show_mobile_slider -%}
             </div>
           </swiper-component>
@@ -850,6 +890,34 @@
       "step": 1,
       "unit": "px",
       "default": 12
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_gap_more_device",
+      "label": "Custom gap more device",
+      "default": false
+    },
+    {
+      "type": "range",
+      "id": "items_gap_tablet",
+      "label": "Items gap tablet",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 24,
+      "visible_if": "{{ section.settings.custom_gap_more_device }}"
+    },
+    {
+      "type": "range",
+      "id": "items_gap_mobile",
+      "label": "Items gap mobile",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 16,
+      "visible_if": "{{ section.settings.custom_gap_more_device }}"
     },
     {
       "type": "header",

@@ -82,7 +82,7 @@
 
 {% comment %} Layout type [tabs-grid] and [tabs-carousel] {% endcomment %}
 {%- capture attr_tabs_header_wrapper -%}
-  class="tabs-product-header-wrapper flex md:justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }}"
+  class="tabs-product-header-wrapper flex justify-{{ sec_stts.tabs_header_alignment | replace: 'left', 'start' | replace: 'right', 'end' }}"
   style="
     {% if sec_stts.tabs_header_style == 'default' %}
       --pt: {{ sec_stts.tabs_header_padding_top | times: 0.1 }}rem;
@@ -193,6 +193,9 @@
       assign text_case = sec_stts.text_case
       assign text_margin_bottom = sec_stts.text_margin_bottom
       assign text_color = sec_stts.text_color
+      if sec_stts.custom_text_color and sec_stts.text_custom_color != blank
+        assign text_color = sec_stts.text_custom_color
+      endif
 
       if text_font_size contains 'heading-lg' or text_font_size contains 'heading-xl'
         assign text_type = 'display'
@@ -270,17 +273,17 @@
 
     {% capture attributes %}
         class=" spacing-style {{ heading_type_preset }} {{ heading_block_classes }} content-inside-media__heading"
-        style="--margin-block-end: {{ heading_margin_bottom | divided_by: 10.0 }}rem;{% render 'typography-style', preset: heading_type_preset, font: heading_font, font_size: heading_font_size, case: heading_case, weight: heading_font_weight %}"
+        style="--margin-block-end: {{ heading_margin_bottom | divided_by: 10.0 }}rem;{% render 'typography-style', preset: heading_type_preset, font: heading_font, font_size: heading_font_size, case: heading_case, weight: heading_font_weight, color: heading_color %}"
       {% endcapture %}
 
     {% capture attributes_subheading %}
         class=" spacing-style {{ subheading_type_preset }} {{ subheading_block_classes }} content-inside-media__subheading"
-        style="--margin-block-end: {{ subheading_margin_bottom | divided_by: 10.0 }}rem;{% render 'typography-style', preset: subheading_type_preset, font: subheading_font, font_size: subheading_font_size, case: subheading_case, weight: subheading_font_weight %}"
+        style="--margin-block-end: {{ subheading_margin_bottom | divided_by: 10.0 }}rem;{% render 'typography-style', preset: subheading_type_preset, font: subheading_font, font_size: subheading_font_size, case: subheading_case, weight: subheading_font_weight, color: subheading_color %}"
       {% endcapture %}
 
     {% capture attributes_text %}
         class=" spacing-style {{ text_type_preset }} {{ text_block_classes }} content-inside-media__text"
-        style="--margin-block-end: {{ text_margin_bottom | divided_by: 10.0 }}rem;{% render 'typography-style', preset: text_type_preset, font: text_font, font_size: text_font_size, case: text_case, weight: text_font_weight %}"
+        style="--margin-block-end: {{ text_margin_bottom | divided_by: 10.0 }}rem;{% render 'typography-style', preset: text_type_preset, font: text_font, font_size: text_font_size, case: text_case, weight: text_font_weight, color: text_color %}"
       {% endcapture %}
 
     {%- capture content_insde_media -%}
@@ -291,6 +294,12 @@
         assign content_button_label = sec_stts.content_button_label
         assign content_button_link = sec_stts.content_button_link
         assign content_button_style = sec_stts.content_button_style
+        assign btn_padding_style = ''
+        if sec_stts.custom_padding_button
+          assign btn_padding_block = sec_stts.button_padding_block | times: 0.1 | append: 'rem'
+          assign btn_padding_inline = sec_stts.button_padding_inline | times: 0.1 | append: 'rem'
+          assign btn_padding_style = 'padding: ' | append: btn_padding_block | append: ' ' | append: btn_padding_inline | append: ' !important;'
+        endif
       -%}
       {% if content_heading != blank or content_subheading != blank or content_text != blank  or content_button_label != blank %}
         <div class="content-inside-media absolute-c-c w-full h-full flex items-{{content_media_position | replace: 'top', 'start' | replace: 'bottom', 'end'}} justify-{{ content_media_alignment | replace: 'left', 'start' | replace: 'right', 'end' }} {{ content_media_alignment }}">
@@ -305,7 +314,7 @@
               <div {{ attributes_text }}>{{ content_text }}</div>
             {% endif %}
             {% if content_button_label != blank %}
-              {% render 'button', link: content_button_link, style_class: content_button_style, label: content_button_label %}
+              {% render 'button', link: content_button_link, style_class: content_button_style, label: content_button_label, style: btn_padding_style %}
             {% endif %}
           </div>
         </div>
@@ -806,9 +815,9 @@
                         {%- endunless -%}
                           {%- capture breakpoints -%}
                             {
-                              "768": { "slidesPerView": {{ columns_tablet }} },
-                              "1024": { "slidesPerView": {{ small_desktop_columns }} },
-                              "1400": { "slidesPerView": {{ columns_desktop }} }
+                              "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": 24 },
+                              "1024": { "slidesPerView": {{ small_desktop_columns }}, "spaceBetween": 30 },
+                              "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": 30 }
                             }
                           {%- endcapture -%}
                           {%- assign slide_id = sec_id | append: '-' | append: forloop.index -%}
@@ -818,7 +827,7 @@
                               settings: section.settings,
                               loop: false,
                               slides_per_view: columns_mobile,
-                              space_between: 30,
+                              space_between: 16,
                               watch_slides_progress: true,
                               breakpoints: breakpoints,
                               arrows_outside: arrows_outside
@@ -947,9 +956,9 @@
                         <template class="tabs-component-template">
                           {%- capture breakpoints -%}
                             {
-                              "768": { "slidesPerView": {{ columns_tablet }} },
-                              "1024": { "slidesPerView": {{ columns_tablet }} },
-                              "1400": { "slidesPerView": {{ columns_desktop }} }
+                              "768": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": 24 },
+                              "1024": { "slidesPerView": {{ columns_tablet }}, "spaceBetween": 30 },
+                              "1400": { "slidesPerView": {{ columns_desktop }}, "spaceBetween": 30 }
                             }
                           {%- endcapture -%}
                           {%- assign slide_id = sec_id | append: '-' | append: forloop.index -%}
@@ -959,7 +968,7 @@
                               settings: section.settings,
                               loop: false,
                               slides_per_view: columns_mobile,
-                              space_between: 30,
+                              space_between: 16,
                               watch_slides_progress: true,
                               breakpoints: breakpoints,
                               arrows_outside: arrows_outside
@@ -3364,6 +3373,13 @@
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset == 'custom' }}"
     },
     {
+      "type": "checkbox",
+      "id": "custom_text_color",
+      "label": "Custom text color",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset != 'rte' }}"
+    },
+    {
       "type": "select",
       "id": "text_color",
       "label": "t:settings.color",
@@ -3382,7 +3398,15 @@
         }
       ],
       "default": "var(--color-foreground)",
-      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset != 'rte' }}"
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset != 'rte' and section.settings.custom_text_color != true }}"
+    },
+    {
+      "type": "color",
+      "id": "text_custom_color",
+      "label": "t:settings.color",
+      "default": "#000000",
+      "alpha": true,
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.text_type_preset != 'rte' and section.settings.custom_text_color == true }}"
     },
     {
       "type": "text",
@@ -3416,6 +3440,40 @@
       "id": "content_button_link",
       "label": "t:settings.button_link",
       "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
+    },
+    {
+      "type": "header",
+      "content": "Button padding",
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
+    },
+    {
+      "type": "checkbox",
+      "id": "custom_padding_button",
+      "label": "Custom padding button",
+      "default": false,
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' }}"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_block",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 10,
+      "label": "t:settings.padding_top_bottom",
+      "unit": "px",
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.custom_padding_button }}"
+    },
+    {
+      "type": "range",
+      "id": "button_padding_inline",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "default": 20,
+      "label": "t:settings.padding_left_right",
+      "unit": "px",
+      "visible_if": "{{ section.settings.layout_type != 'vertical' and section.settings.layout_type != 'duo' and section.settings.layout_type != 'duo-carousel' and section.settings.custom_padding_button }}"
     },
     {
       "type": "header",

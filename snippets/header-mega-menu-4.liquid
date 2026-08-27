@@ -46,7 +46,7 @@
   >
   <style>
     #MegaMenu-Content-{{ section.id }}-{{ forloopIndex }}-{{ block_id }} .mega-menu-4-top {
-      margin-bottom: 2rem;
+      margin-bottom: 3.6rem;
     }
     #MegaMenu-Content-{{ section.id }}-{{ forloopIndex }}-{{ block_id }} .mega-menu__list {
       display: grid;
@@ -128,11 +128,19 @@
     }
   </style>
   {% if link.links.size > 0 %}
-    <div class="mega-menu__container page-width page-width--{{ bl_stts.width }}{% if bl_stts.width == 'custom' or bl_stts.width == 'page-width' %} mega-menu__container--custom-width{% endif %}"{% if bl_stts.width == 'custom' %} style="width: {{ bl_stts.custom_width }}px; max-width: 100%; margin: 0 auto;"{% endif %}>
+    <div class="mega-menu__container page-width page-width--{{ bl_stts.width }}{% if bl_stts.width == 'custom' or bl_stts.width == 'page-width' %} mega-menu__container--custom-width{% endif %}"{% if bl_stts.width == 'custom' %} style="width: min(100vw, {{ bl_stts.custom_width }}px); max-width: 100%; margin: 0 auto;"{% endif %}>
       
       {%- if bl_stts.top_link_label != blank -%}
-      <div class="mega-menu-4-top center">
-        <a href="{{ bl_stts.top_link_url | default: '#' }}" class="link link--text uppercase" style="font-size: 1.4rem; letter-spacing: 0.1em; color: rgba(var(--color-foreground), 1); text-decoration: none;">
+      <div class="mega-menu-4-top center uppercase">
+        <a
+          {% if bl_stts.top_link_url == blank %}
+            role="link" aria-disabled="true"
+          {% else %}
+            href="{{ bl_stts.top_link_url | default: '#' }}"
+          {% endif %}
+          class="link link--hover-underline"
+          style="--button-font-size-link: 1.6rem;"
+        >
           {{ bl_stts.top_link_label }}
         </a>
       </div>

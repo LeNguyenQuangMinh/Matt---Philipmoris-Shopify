@@ -93,6 +93,8 @@
   assign column_desktop = sec_stts.column_desktop
   assign column_tablet = sec_stts.column_tablet
   assign column_mobile = sec_stts.column_mobile
+  assign gap_desktop = sec_stts.gap
+  assign gap_mobile = sec_stts.gap_mobile | default: sec_stts.gap
 -%}
 
 {% if is_empty == false or request.design_mode %}
@@ -109,17 +111,20 @@
       --border-radius: {{ sec_stts.border_radius }}px;
       {% if sec_stts.border_radius > 0 %} overflow: hidden; {% endif %}
       transition: transform 0.3s ease, box-shadow 0.3s ease;
-      width: calc(100% / {{ column_desktop }} - ({{ sec_stts.gap }}px * ({{ column_desktop }} - 1) / {{ column_desktop }}));
+      width: calc(100% / {{ column_desktop }} - ({{ gap_desktop }}px * ({{ column_desktop }} - 1) / {{ column_desktop }}));
     }
     
     @media screen and (max-width: 989px) {
       #collection-subcategories-{{ section.id }} .category-item {
-        width: calc(100% / {{ column_tablet }} - ({{ sec_stts.gap }}px * ({{ column_tablet }} - 1) / {{ column_tablet }}));
+        width: calc(100% / {{ column_tablet }} - ({{ gap_desktop }}px * ({{ column_tablet }} - 1) / {{ column_tablet }}));
       }
     }
     @media screen and (max-width: 767px) {
       #collection-subcategories-{{ section.id }} .category-item {
-        width: calc(100% / {{ column_mobile }} - ({{ sec_stts.gap }}px * ({{ column_mobile }} - 1) / {{ column_mobile }}));
+        width: calc(100% / {{ column_mobile }} - ({{ gap_mobile }}px * ({{ column_mobile }} - 1) / {{ column_mobile }}));
+      }
+      #collection-subcategories-{{ section.id }} .collection-subcategories__grid {
+        gap: {{ gap_mobile }}px;
       }
     }
 
@@ -137,6 +142,12 @@
     .collection-subcategories__layout {
       display: flex;
       gap: 30px;
+    }
+
+    @media screen and (min-width: 1400px) {
+      .collection-subcategories__layout {
+        gap: 95px;
+      }
     }
     
     {% if has_info %}
@@ -184,20 +195,20 @@
         color: #333;
       }
 
-      .collection-subcategories__grid {
+      #collection-subcategories-{{ section.id }} .collection-subcategories__grid {
         width: 75%;
         display: flex;
         flex-wrap: wrap;
-        gap: {{ sec_stts.gap }}px;
+        gap: {{ gap_desktop }}px;
         height: fit-content;
       }
     {% else %}
-      .collection-subcategories__grid {
+      #collection-subcategories-{{ section.id }} .collection-subcategories__grid {
         width: 100%;
         display: flex;
         flex-wrap: wrap;
         height: fit-content;
-        gap: {{ sec_stts.gap }}px;
+        gap: {{ gap_desktop }}px;
       }
     {% endif %}
 
@@ -274,7 +285,7 @@
         {% if has_info %}
           <div class="collection-subcategories__info">
             {% if title != blank %}
-              <h2 class="collection-subcategories__title h3 mb-10">{{ title }}</h2>
+              <h1 class="collection-subcategories__title h3 mb-10">{{ title }}</h1>
             {% endif %}
             
             {% if description != blank %}
@@ -471,6 +482,16 @@
       "step": 2,
       "unit": "px",
       "label": "Gap between items",
+      "default": 10
+    },
+    {
+      "type": "range",
+      "id": "gap_mobile",
+      "min": 0,
+      "max": 40,
+      "step": 2,
+      "unit": "px",
+      "label": "Gap between items (Mobile)",
       "default": 10
     },
     {

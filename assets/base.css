@@ -1266,6 +1266,14 @@ svg {
   .menu-drawer__mega-menu-desktop {
     padding-top: 0 !important;
   }
+
+  .menu-drawer__mega-menu-desktop {
+    margin-top: 0.5rem;
+  }
+
+  .menu-drawer__mega-menu-desktop .mega-menu--2 .mega-menu__collage {
+    margin-top: 0;
+  }
 }
 
 @media screen and (max-width: 749px) {
@@ -2578,7 +2586,7 @@ deferred-media {
 .shopify-challenge__button,
 .customer button {
   font-size: var(--font-size--md);
-  letter-spacing: var(--botton-font-letter-spacing, 0.1rem);
+  letter-spacing: var(--botton-font-letter-spacing, 0);
 }
 
 .button--tertiary {
@@ -2691,7 +2699,7 @@ button.shopify-payment-button__button--unbranded {
   box-shadow: var(--shadow-horizontal-offset) var(--shadow-vertical-offset) var(--shadow-blur-radius) var(--color-shadow);
   padding-block: var(--button-padding-vertical-mobile, var(--button-padding-vertical));
   padding-inline: var(--button-padding-horizontal-mobile, var(--button-padding-horizontal));
-  letter-spacing: var(--botton-font-letter-spacing, 0.1rem);
+  letter-spacing: var(--botton-font-letter-spacing, 0);
 
   @media screen and (max-width: 749px) {
     font-size: min(var(--button-font-size, var(--font-size--paragraph-md)), var(--font-size--2xl));
@@ -7545,6 +7553,7 @@ text-loader-component {
 .tabs-product-header-wrapper .tabs-product-header {
   overflow: auto;
   max-width: 100%;
+  padding-bottom: 0.6rem;
 }
 
 .tabs-product-header-wrapper .tabs-product-header .tabs-product-header__item {
@@ -7883,7 +7892,9 @@ email-signup .checkbox .icon-checkmark {
   }
 
   .icon-minus-block {
-    display: block;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   }
 }
 
@@ -10409,7 +10420,7 @@ more-payment-options-link a:hover {
 .email-signup__input-groups {
   position: relative;
   display: grid;
-  align-items: stretch;
+  align-items: center;
   grid-template-columns: 1fr auto;
   background-color: transparent;
 
@@ -15253,19 +15264,14 @@ deferred-media[class].media-block__media :is(.deferred-media__poster-button img,
   .share-button__product .share-group .button {
     width: 50px;
   }
+
+  .section--featured-collection .content-inside-media {
+    padding: 1rem;
+  }
 }
 
 .swiper-button {
   overflow: hidden;
-
-  &:before {
-    content: '';
-    position: absolute;
-    inset: 1px;
-    background-color: var(--arrow-background);
-    z-index: -1;
-    border-radius: var(--arrow-radius);
-  }
 
   @media (hover: hover) {
     &:hover {
@@ -15273,23 +15279,11 @@ deferred-media[class].media-block__media :is(.deferred-media__poster-button img,
       --arrow-background: var(--arrow-background-hover);
     }
   }
-}
 
-@media screen and (min-width: 1025px) {
-  .swiper-button .fill-bg {
-    background-color: var(--arrow-color);
-    z-index: -2;
-    inset: -1px;
-    border-radius: var(--arrow-radius);
+  .fill-bg,
+  &:before {
+    display: none !important;
   }
-}
-
-.swiper-button-prev .fill-bg {
-  transform: translateX(100%);
-}
-
-.swiper-button-next .fill-bg {
-  transform: translateX(-100%);
 }
 
 [style*='--horizontal-alignment: center'] .text-block {
@@ -16664,7 +16658,7 @@ slideshow-animated .slide__img-wrapper img {
   gap: var(--gap);
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 767px) {
 
   .section--featured-collection:has(.type-style--tabs-grid) .has-media-banner,
   .section--featured-collection:has(.type-style--tabs-carousel) .has-media-banner {
@@ -16684,7 +16678,7 @@ slideshow-animated .slide__img-wrapper img {
   }
 }
 
-@media screen and (min-width: 1025px) {
+@media screen and (min-width: 768px) {
 
   .section--featured-collection:has(.type-style--tabs-grid) .has-media-banner,
   .section--featured-collection:has(.type-style--tabs-carousel) .has-media-banner {
@@ -16771,7 +16765,7 @@ slideshow-animated .slide__img-wrapper img {
   margin-top: var(--show-more-button-offset, 5.5rem);
 }
 
-@media screen and (max-width: 1024px) {
+@media screen and (max-width: 767px) {
   .product-infinite-scroll {
     margin-top: calc(var(--show-more-button-offset, 5.5rem) * 0.75);
   }
@@ -16796,7 +16790,7 @@ slideshow-animated .slide__img-wrapper img {
 }
 
 .section--featured-collection .content-inside-media {
-  padding: 3rem 1rem;
+  padding: 3rem;
 
   .content-inside-media__inner {
     max-width: 500px;
@@ -17428,6 +17422,7 @@ body:has(> #header-group:empty) {
     padding-left: 2.8rem;
     padding-right: 1.8rem;
     letter-spacing: 0.1px;
+    font-weight: 500;
   }
 }
 
@@ -17444,7 +17439,7 @@ body:has(> #header-group:empty) {
   left: 0;
   overflow-y: auto;
   padding-bottom: 0;
-  padding-top: 3rem;
+  padding-top: 2.4rem;
   position: absolute;
   right: 0;
   top: var(--top-position, 100%);
@@ -17474,6 +17469,7 @@ body:has(> #header-group:empty) {
 
 .mega-menu__content:not(:has(>.header__submenu-wrapper)):has(.mega-menu__container--custom-width) {
   width: fit-content;
+  max-width: 100vw;
   left: 50%;
   right: auto;
   transform: translateX(-50%);
@@ -17645,7 +17641,7 @@ body:has(> #header-group:empty) {
 }
 
 .mega-menu-brands__view-all {
-  margin-bottom: var(--margin-4xl);
+  margin-bottom: 3.6rem;
 }
 
 .mega-menu-brands__nav {
@@ -17653,7 +17649,9 @@ body:has(> #header-group:empty) {
   flex-flow: row nowrap;
   overflow-x: auto;
   margin-bottom: var(--margin-lg);
-  border: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  border-top: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  border-bottom: 1px solid rgb(var(--color-foreground-rgb) / var(--opacity-20));
+  padding: 1rem 0;
 }
 
 .mega-menu-brands__nav li {
@@ -17667,7 +17665,8 @@ body:has(> #header-group:empty) {
 }
 
 .mega-menu-brands__nav li.is-active {
-  background: rgb(var(--color-background-rgb));
+  /* background: rgb(var(--color-background-rgb)); */
+  background-color: #fff;
 }
 
 .mega-menu-brands__nav li.is-disabled button {
@@ -17698,9 +17697,27 @@ body:has(> #header-group:empty) {
   display: flex;
   align-items: flex-start;
   gap: var(--gap-2xl);
-  max-height: 28rem;
+  max-height: calc(60vh - 115px);
+  height: 100%;
   overflow-y: auto;
 }
+
+.mega-menu-brands__body::-webkit-scrollbar {
+  width: 4px;
+}
+
+.mega-menu-brands__body::-webkit-scrollbar-track {
+  background: #f0f1f1;
+}
+
+.mega-menu-brands__body::-webkit-scrollbar-thumb {
+  background: #a6a6a6;
+}
+
+.mega-menu-brands__body::-webkit-scrollbar-thumb:hover {
+  background: #787878;
+}
+
 
 .mega-menu-brands__group {
   display: flex;
@@ -17732,7 +17749,7 @@ body:has(> #header-group:empty) {
 }
 
 .mega-menu-brands__list li {
-  margin-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
 }
 
 .mega-menu-brands__list--columns {
@@ -17743,7 +17760,7 @@ body:has(> #header-group:empty) {
 
 .mega-menu-brands__list--columns .mega-menu-brands__item {
   break-inside: avoid;
-  margin-bottom: 0.4rem;
+  margin-bottom: 1.2rem;
 }
 
 .mega-menu-brands__list .link {
@@ -19800,12 +19817,6 @@ details-disclosure > details {
   height: 100%;
 }
 
-.switcher-grid .grid-view--list .grid-view--item.grid-view-5,
-.switcher-grid .grid-view--list .grid-view--item.grid-view-4,
-.switcher-grid .grid-view--list .grid-view--item.grid-view-3 {
-  display: none;
-}
-
 .switcher-grid .grid-view--list .grid-view--item.active {
   background-color: var(--bg-white);
 }
@@ -19845,9 +19856,11 @@ details-disclosure > details {
 }
 
 .switcher-grid .grid-view--list .grid-view--item .button--grid-view.has-custom-icon svg {
-  width: 2.2rem;
+  width: 1.6rem;
   height: auto;
   fill: var(--color-inactive);
+  min-width: 1.6rem;
+  min-height: 1.6rem;
 }
 
 @media (min-width: 360px) {
@@ -19910,6 +19923,10 @@ details-disclosure > details {
   color: var(--color-secondary-button-hover-text);
   background-color: var(--color-secondary-button-hover-background);
   border-color: var(--color-secondary-button-hover-border);
+}
+
+.tabs-component-panel-trigger.link:not(.tabs-product-header__item--underlined) > .text {
+  padding-bottom: 6px;
 }
 
 .tabs-component-panel-trigger.link:not(.tabs-product-header__item--underlined).--active {
@@ -20702,4 +20719,23 @@ ul.items-same-height > li {
 
 .reset__button.field__button {
   display: none;
+}
+
+.icon--fill-none {
+  fill: none !important;
+}
+
+/* Fix mega menu brands */
+@media screen and (min-width: 1025px) {
+  .mega-menu__content:has(.mega-menu-brands) {
+    padding: 0;
+  }
+
+  .mega-menu__content:has(.mega-menu-brands) .mega-menu--2 .mega-menu__collage {
+    margin: 0;
+  }
+
+  .mega-menu__content:has(.mega-menu-brands) .mega-menu__collage-wrapper {
+    padding: 2.4rem 2.4rem 3.6rem 3.6rem;
+  }
 }

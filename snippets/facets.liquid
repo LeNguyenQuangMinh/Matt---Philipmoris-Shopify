@@ -944,7 +944,7 @@
       <details class="mobile-facets__disclosure{% if filter_type == 'drawer' %} facets__disclosure-drawer{% endif %} disclosure-has-popup relative flex justify-end">
         <summary class="mobile-facets__open-wrapper focus-offset{% if filters_sidebar_layout %} large-up-hide{% endif %}">
           <side-drawer-opener
-            class="mobile-facets__open{% if filter_type == 'drawer' and enable_filtering == false %} large-up-hide{% endif %}"
+            class="mobile-facets__open hidden {% if filter_type == 'drawer' and enable_filtering == false %} large-up-hide{% endif %}"
             data-toggle-drawer="Drawer-Facets"
           >
             <span class="svg-wrapper">

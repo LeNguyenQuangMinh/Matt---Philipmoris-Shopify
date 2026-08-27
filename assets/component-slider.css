@@ -20,7 +20,7 @@ swiper-component {
     --button-height: 3.2rem;
     --button-icon-size: 1.2rem;
     background: rgba(var(--arrow-background, 255 255 255), 0.9);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    /* box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12); */
     z-index: 2;
   }
 
@@ -79,7 +79,8 @@ swiper-component {
     transform: rotate(90deg);
   }
 
-  &.icon-arrow {
+  &.icon-arrow,
+  &.icon-caret-custom {
     transform: rotate(180deg);
   }
 }

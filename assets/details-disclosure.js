@@ -502,7 +502,7 @@ class DropdownDetails extends HTMLDetailsElement {
   }
 
   onClickOutside(event) {
-    if (!this.contains(event.target) && !(event.target.closest('details') instanceof DetailsDropdown)) {
+    if (!this.contains(event.target) && !(event.target.closest('details') instanceof DropdownDetails)) {
       this.isOpen = false;
     }
   }
