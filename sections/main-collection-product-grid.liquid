@@ -295,6 +295,132 @@
       "default": "viewmore"
     },
     {
+      "type": "checkbox",
+      "id": "custom_show_more_button",
+      "label": "Custom show more button",
+      "default": false,
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_width_desktop",
+      "label": "Width (Desktop)",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true }}"
+    },
+    {
+      "type": "text",
+      "id": "show_more_custom_width_desktop",
+      "label": "Custom width (Desktop)",
+      "info": "Enter value with px or % (e.g. 300px or 50%)",
+      "default": "290px",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true and section.settings.show_more_width_desktop == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_height_desktop",
+      "label": "Height (Desktop)",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true }}"
+    },
+    {
+      "type": "text",
+      "id": "show_more_custom_height_desktop",
+      "label": "Custom height (Desktop)",
+      "info": "Enter value with px or % (e.g. 50px)",
+      "default": "50px",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true and section.settings.show_more_height_desktop == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_width_mobile",
+      "label": "Width (Mobile)",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "full",
+          "label": "Full"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true }}"
+    },
+    {
+      "type": "text",
+      "id": "show_more_custom_width_mobile",
+      "label": "Custom width (Mobile)",
+      "info": "Enter value with px or % (e.g. 100% or 200px)",
+      "default": "100%",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true and section.settings.show_more_width_mobile == 'custom' }}"
+    },
+    {
+      "type": "select",
+      "id": "show_more_height_mobile",
+      "label": "Height (Mobile)",
+      "options": [
+        {
+          "value": "default",
+          "label": "Default"
+        },
+        {
+          "value": "custom",
+          "label": "Custom"
+        }
+      ],
+      "default": "default",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true }}"
+    },
+    {
+      "type": "text",
+      "id": "show_more_custom_height_mobile",
+      "label": "Custom height (Mobile)",
+      "info": "Enter value with px or % (e.g. 44px)",
+      "default": "44px",
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true and section.settings.show_more_height_mobile == 'custom' }}"
+    },
+    {
+      "type": "range",
+      "id": "show_more_border_radius",
+      "label": "Border radius",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 0,
+      "visible_if": "{{ section.settings.pagination_type == 'viewmore' and section.settings.custom_show_more_button == true }}"
+    },
+    {
       "type": "range",
       "id": "padding-block-start-pagination",
       "label": "t:settings.padding_top",

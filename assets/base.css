@@ -14348,8 +14348,11 @@ deferred-media[class].media-block__media :is(.deferred-media__poster-button img,
 }
 
 .infinite-scrolling-btn {
-  width: 100%;
-  max-width: 29rem;
+  width: var(--show-more-width-desktop, 100%);
+  max-width: var(--show-more-max-width-desktop, 29rem);
+  height: var(--show-more-height-desktop, auto);
+  min-height: var(--show-more-min-height-desktop, unset);
+  border-radius: var(--button-border-radius, var(--style-border-radius-buttons-primary));
 }
 
 .infinite-scrolling-btn.loading {
@@ -14409,7 +14412,11 @@ deferred-media[class].media-block__media :is(.deferred-media__poster-button img,
 
 @media (max-width: 749px) {
   .infinite-scrolling-btn {
-    min-width: 16rem;
+    width: var(--show-more-width-mobile, var(--show-more-width-desktop, 100%));
+    max-width: var(--show-more-max-width-mobile, var(--show-more-max-width-desktop, 29rem));
+    min-width: var(--show-more-min-width-mobile, 16rem);
+    height: var(--show-more-height-mobile, var(--show-more-height-desktop, auto));
+    min-height: var(--show-more-min-height-mobile, var(--show-more-min-height-desktop, unset));
     padding: 1rem 2rem;
     font-size: var(--font-size--xs);
   }

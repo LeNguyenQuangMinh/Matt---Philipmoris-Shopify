@@ -173,6 +173,8 @@
         padding: 18px 20px 10px;
         -webkit-box-shadow: 2px 2px 3.96px .04px rgba(0, 0, 0, .09);
         box-shadow: 2px 2px 3.96px .04px rgba(0, 0, 0, .09);
+        display: flex;
+        flex-direction: column;
       }
       .collection-subcategories__title {
         color: #72253d;
@@ -191,8 +193,11 @@
       .collection-subcategories__description p {
         margin-bottom: 1.5rem;
       }
+      .collection-subcategories__description-wrapper {
+        margin-bottom: 15px;
+      }
       #read-more-btn-{{ section.id }} {
-        margin-top: 22px;
+        margin-top: auto;
         padding: 8px 0;
         text-align: center;
         justify-content: center;
@@ -322,7 +327,7 @@
             {% endif %}
             
             {% if sec_stts.button_label != blank %}
-              <button type="button" class="button button--primary mt-10" id="read-more-btn-{{ section.id }}" style="display: none;">
+              <button type="button" class="button button--primary" id="read-more-btn-{{ section.id }}" style="display: none;">
                 <span class="read-more-text">{{ sec_stts.button_label }}</span>
                 <span class="read-less-text" style="display: none;">Read Less</span>
               </button>

@@ -107,7 +107,7 @@
                   {%- endif -%}
                   style="{%  render 'highlight-style', order: '1', keys: keys, compare: link.title, settings: section.settings %}"
                 >
-                  {% render 'header-menu-summary-link', link: link %}
+                  {% render 'header-menu-summary-link', link: link, override_url: block.settings.menu_item_link %}
                   {% if icon_type == 'caret' %}
                     <span class="svg-wrapper">
                       {{- 'icon-caret.svg' | inline_asset_content -}}

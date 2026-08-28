@@ -188,6 +188,54 @@
     </nav>
 
     {% if sec_stts.pagination_type == 'infinite' or sec_stts.pagination_type == 'viewmore' %}
+      {% liquid
+        assign custom_btn_style = ''
+        if sec_stts.pagination_type == 'viewmore' and sec_stts.custom_show_more_button
+          if sec_stts.show_more_border_radius != blank
+            assign custom_btn_style = custom_btn_style | append: '--button-border-radius: ' | append: sec_stts.show_more_border_radius | append: 'px; border-radius: ' | append: sec_stts.show_more_border_radius | append: 'px;'
+          endif
+          if sec_stts.show_more_width_desktop == 'full'
+            assign custom_btn_style = custom_btn_style | append: ' --show-more-width-desktop: 100%; --show-more-max-width-desktop: 100%;'
+          elsif sec_stts.show_more_width_desktop == 'custom' and sec_stts.show_more_custom_width_desktop != blank
+            assign dt_w = sec_stts.show_more_custom_width_desktop | strip
+            if dt_w contains 'px' or dt_w contains '%' or dt_w contains 'rem' or dt_w contains 'vw' or dt_w contains 'em'
+              assign dt_w_val = dt_w
+            else
+              assign dt_w_val = dt_w | append: 'px'
+            endif
+            assign custom_btn_style = custom_btn_style | append: ' --show-more-width-desktop: ' | append: dt_w_val | append: '; --show-more-max-width-desktop: ' | append: dt_w_val | append: ';'
+          endif
+          if sec_stts.show_more_height_desktop == 'custom' and sec_stts.show_more_custom_height_desktop != blank
+            assign dt_h = sec_stts.show_more_custom_height_desktop | strip
+            if dt_h contains 'px' or dt_h contains '%' or dt_h contains 'rem' or dt_h contains 'vw' or dt_h contains 'em' or dt_h contains 'vh'
+              assign dt_h_val = dt_h
+            else
+              assign dt_h_val = dt_h | append: 'px'
+            endif
+            assign custom_btn_style = custom_btn_style | append: ' --show-more-height-desktop: ' | append: dt_h_val | append: '; --show-more-min-height-desktop: ' | append: dt_h_val | append: ';'
+          endif
+          if sec_stts.show_more_width_mobile == 'full'
+            assign custom_btn_style = custom_btn_style | append: ' --show-more-width-mobile: 100%; --show-more-max-width-mobile: 100%; --show-more-min-width-mobile: unset;'
+          elsif sec_stts.show_more_width_mobile == 'custom' and sec_stts.show_more_custom_width_mobile != blank
+            assign mb_w = sec_stts.show_more_custom_width_mobile | strip
+            if mb_w contains 'px' or mb_w contains '%' or mb_w contains 'rem' or mb_w contains 'vw' or mb_w contains 'em'
+              assign mb_w_val = mb_w
+            else
+              assign mb_w_val = mb_w | append: 'px'
+            endif
+            assign custom_btn_style = custom_btn_style | append: ' --show-more-width-mobile: ' | append: mb_w_val | append: '; --show-more-max-width-mobile: ' | append: mb_w_val | append: '; --show-more-min-width-mobile: unset;'
+          endif
+          if sec_stts.show_more_height_mobile == 'custom' and sec_stts.show_more_custom_height_mobile != blank
+            assign mb_h = sec_stts.show_more_custom_height_mobile | strip
+            if mb_h contains 'px' or mb_h contains '%' or mb_h contains 'rem' or mb_h contains 'vw' or mb_h contains 'em' or mb_h contains 'vh'
+              assign mb_h_val = mb_h
+            else
+              assign mb_h_val = mb_h | append: 'px'
+            endif
+            assign custom_btn_style = custom_btn_style | append: ' --show-more-height-mobile: ' | append: mb_h_val | append: '; --show-more-min-height-mobile: ' | append: mb_h_val | append: ';'
+          endif
+        endif
+      %}
       <!-- Infinite Scrolling Button -->
       <infinite-scrolling class="infinite-scrolling-wrapper block center" data-pagination-type="{{ sec_stts.pagination_type }}">
         <div class="pagination-page-item pagination-page-total flex-center flex-wrap gap-2xs hidden">
@@ -221,6 +269,7 @@
           class="button button--primary infinite-scrolling-btn"
           data-infinite-scrolling
           aria-label="{{ 'content.show_more' | t }}"
+          {% if custom_btn_style != '' %}style="{{ custom_btn_style | strip }}"{% endif %}
         >
           <span class="text">
             {%- if paginate.next -%}
