@@ -48,6 +48,7 @@
   assign heading_label_case = bl_stts.heading_label_case
   assign text_label_case = bl_stts.text_label_case
   assign heading_label_font_size = bl_stts.heading_label_font_size
+  assign heading_label_color = bl_stts.heading_label_color
   assign text_label_font_size = bl_stts.text_label_font_size
   assign enable_divider = bl_stts.enable_divider
   assign divider_color = bl_stts.divider_color
@@ -79,6 +80,42 @@
       }
     }
   {% endif %}
+  {% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}
+    .mobile-facets__details .mobile-facets__summary {
+      color: {{ heading_label_color }} !important;
+    }
+  {% endif %}
+  
+  .facets-price__apply .button:not(:hover) {
+    background: #6d3f49;
+    border: 1px solid #6d3f49;
+    color: #fff;
+  }
+
+  .mobile-facets__info {
+    padding-top: 1rem;
+  }
+
+  .facets-layout-list--pill .facets__label.active,
+  .facets-layout-list--pill .mobile-facets__label.active,
+  .facets-layout-list--pill .facets__label:has(input:checked),
+  .facets-layout-list--pill .mobile-facets__label:has(input:checked) {
+    background: #6d3f49;
+    border: 1px solid #6d3f49;
+    color: #fff;
+  }
+
+  .facets-layout-list--pill .facets__label.active .facet-checkbox__text-label,
+  .facets-layout-list--pill .mobile-facets__label.active .facet-checkbox__text-label,
+  .facets-layout-list--pill .facets__label:has(input:checked) .facet-checkbox__text-label,
+  .facets-layout-list--pill .mobile-facets__label:has(input:checked) .facet-checkbox__text-label {
+    color: #fff;
+  }
+
+  .mobile-facets__item .input--primary:before,
+  .mobile-facets__item .input--primary:after {
+    border-radius: 0;
+  }
 </style>
 <div
   class="
@@ -123,10 +160,10 @@
     "
     id="main-collection-filters"
     data-id="{{ section.id }}"
-    style="--font-size--sidebar-heading: {{ heading_label_font_size }};"
+    style="--font-size--sidebar-heading: {{ heading_label_font_size }};{% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %} --color--sidebar-heading: {{ heading_label_color }}; --heading-label-color: {{ heading_label_color }};{% endif %}"
   >
     {%- capture sidebar_categories -%}
-      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case, heading_label_font_size: heading_label_font_size, text_label_font_size: text_label_font_size -%}
+      {%- content_for 'block', type: '_blog-post-sidebar-category', id: 'static-collection-categories', in_facets: true, heading_label_case: heading_label_case, text_label_case: text_label_case, heading_label_font_size: heading_label_font_size, heading_label_color: heading_label_color, text_label_font_size: text_label_font_size -%}
     {%- endcapture -%}
     {%- if filter_type == 'vertical' and bl_stts.filters_sidebar_layout == false -%}
       {{ sidebar_categories }}
@@ -152,6 +189,7 @@
       heading_label_case: heading_label_case,
       text_label_case: text_label_case,
       heading_label_font_size: heading_label_font_size,
+      heading_label_color: heading_label_color,
       text_label_font_size: text_label_font_size,
       style: style,
       limit: limit,
@@ -276,6 +314,17 @@
             .custom-toolbar .view-as-btn {
               display: none;
             }
+
+             .custom-toolbar .actionBar .form-field {
+                border-radius: 0;
+                height: 44px;
+                width: 100%;
+                max-width: 139px;
+
+                .form-label {
+                  display: none;
+                }
+              }
           }
         </style>
         <div class="custom-toolbar flex items-center justify-between w-full">
@@ -495,8 +544,16 @@
           "label": "12px"
         },
         {
+          "value": "1.3rem",
+          "label": "13px"
+        },
+        {
           "value": "1.4rem",
           "label": "14px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "15px"
         },
         {
           "value": "1.6rem",
@@ -520,6 +577,14 @@
         }
       ],
       "default": "1.2rem",
+      "visible_if": "{{ block.settings.enable_filtering == true }}"
+    },
+    {
+      "type": "color",
+      "id": "heading_label_color",
+      "label": "Heading label color",
+      "alpha": true,
+      "default": "#000000",
       "visible_if": "{{ block.settings.enable_filtering == true }}"
     },
     {
@@ -553,8 +618,16 @@
           "label": "12px"
         },
         {
+          "value": "1.3rem",
+          "label": "13px"
+        },
+        {
           "value": "1.4rem",
           "label": "14px"
+        },
+        {
+          "value": "1.5rem",
+          "label": "15px"
         },
         {
           "value": "1.6rem",

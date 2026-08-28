@@ -3,6 +3,7 @@
 
   @param {boolean} in_facets - whether the category list is in a facets panel
   @param {string} heading_label_case - the case of the heading label
+  @param {string} heading_label_color - the color of the heading label
   @param {string} text_label_case - the case of the text label
 {%- enddoc -%}
 
@@ -50,6 +51,10 @@
   --font-size: {{ heading_label_font_size }};
   --text-transform: {{ text_label_case }};
   --button-font-size-link: var(--font-size, var(--body-xs-font-size));
+  {% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}
+  --font-h3--color: {{ heading_label_color }};
+  color: {{ heading_label_color }};
+  {% endif %}
   {% endif %}"
   {% if is_open %}
     open-by-default-on-desktop

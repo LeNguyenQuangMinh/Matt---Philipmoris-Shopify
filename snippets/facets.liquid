@@ -31,7 +31,7 @@
   assign filter_label_all = filter_label_all | strip | default: 'More filters'
 -%}
 
-<div class="facets-container w-full{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
+<div class="facets-container w-full{% if filter_type == 'drawer' %} facets-container-drawer{% endif %}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}" style="{% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}--heading-label-color: {{ heading_label_color }};--color--sidebar-heading: {{ heading_label_color }};{% endif %}">
   {%- if filter_type == 'vertical' or filter_type == 'horizontal' -%}
     {% comment %} Sorting and product count are the last elements when filter type is horizontal {% endcomment %}
     {% if enable_count %}
@@ -107,7 +107,7 @@
                     {%- unless results.filters == empty -%}
                       <h2
                         class="facets__heading facets__heading--vertical"
-                        style="--font-h2--case: {{ heading_label_case }};--font-size--h2: {{ heading_label_font_size }};"
+                        style="--font-h2--case: {{ heading_label_case }};--font-size--h2: {{ heading_label_font_size }};{% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}color: {{ heading_label_color }};{% endif %}"
                         id="verticalTitle"
                         tabindex="-1"
                       >
@@ -278,6 +278,9 @@
                                   --facet-label-transform: uppercase;
                                 {%- endif -%}
                                 --font-size: {{ heading_label_font_size }};
+                                {% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}
+                                  color: {{ heading_label_color }};
+                                {% endif %}
                                 "
                               >
                                 {{- list_tag_heading }}
@@ -525,6 +528,9 @@
                             --facet-label-transform: uppercase;
                           {%- endif -%}
                             --font-size: {{ heading_label_font_size }};
+                          {% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}
+                            color: {{ heading_label_color }};
+                          {% endif %}
                           "
                         >
                           {{- filter_label }}
@@ -753,6 +759,9 @@
                             --facet-label-transform: uppercase;
                           {%- endif -%}
                           --font-size: {{ heading_label_font_size }};
+                          {% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}
+                            color: {{ heading_label_color }};
+                          {% endif %}
                           "
                         >
                           {{- filter.label | escape -}}
@@ -1180,6 +1189,9 @@
                                           --facet-label-transform: uppercase;
                                         {%- endif -%}
                                         --font-size: {{ heading_label_font_size }};
+                                        {% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}
+                                          color: {{ heading_label_color }};
+                                        {% endif %}
                                         "
                                       >
                                         <span>{{ list_tag_heading }}</span>
@@ -1348,6 +1360,9 @@
                                   --facet-label-transform: uppercase;
                                 {%- endif -%}
                                 --font-size: {{ heading_label_font_size }};
+                                {% if heading_label_color != blank and heading_label_color != 'rgba(0,0,0,0)' %}
+                                  color: {{ heading_label_color }};
+                                {% endif %}
                                 "
                               >
                                 <span>{{ filter.label | escape }}</span>

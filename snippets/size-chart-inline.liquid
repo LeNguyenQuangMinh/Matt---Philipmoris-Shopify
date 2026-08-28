@@ -79,14 +79,63 @@
       endif
     endif
 
-    assign types_to_check = ''
+    assign raw_types = ''
     if t != blank
+      assign raw_types = raw_types | append: t | append: ','
       if t_alt != blank and t_alt != t
-        assign types_to_check = t | append: ',' | append: t_alt | split: ','
-      else
-        assign types_to_check = t | split: ','
+        assign raw_types = raw_types | append: t_alt | append: ','
       endif
     endif
+
+    # Collect tags
+    for tag in product.tags
+      assign tag_h = tag | handleize
+      if tag_h != blank and tag_h != 'male' and tag_h != 'female' and tag_h != 'mens' and tag_h != 'womens' and tag_h != 'unisex' and tag_h != v
+        assign raw_types = raw_types | append: tag_h | append: ','
+      endif
+    endfor
+
+    # Collect collections
+    for col in product.collections
+      assign col_h = col.handle
+      if col_h != blank and col_h != 'all' and col_h != v
+        assign raw_types = raw_types | append: col_h | append: ','
+      endif
+    endfor
+
+    # Semantic mapping for broader categories (e.g. Ankle Boot -> Footwear)
+    assign p_tags_str = product.tags | join: ' ' | downcase
+    assign p_cols_str = product.collections | map: 'title' | join: ' ' | downcase
+    assign combined_info = t | append: ' ' | append: p_tags_str | append: ' ' | append: p_cols_str
+    if combined_info contains 'boot' or combined_info contains 'shoe' or combined_info contains 'footwear' or combined_info contains 'sneaker' or combined_info contains 'wellington' or combined_info contains 'slipper' or combined_info contains 'derby' or combined_info contains 'brogue' or combined_info contains 'chelsea' or combined_info contains 'loaf' or combined_info contains 'trainer'
+      assign raw_types = raw_types | append: 'footwear,shoes,boots,ankle-boots,chelsea-boots,'
+    endif
+    if combined_info contains 'jacket' or combined_info contains 'coat' or combined_info contains 'gilet' or combined_info contains 'waistcoat' or combined_info contains 'parka' or combined_info contains 'fleece'
+      assign raw_types = raw_types | append: 'clothing,jackets,coats,outerwear,'
+    endif
+    if combined_info contains 'knitwear' or combined_info contains 'jumper' or combined_info contains 'sweater' or combined_info contains 'cardigan'
+      assign raw_types = raw_types | append: 'clothing,knitwear,jumpers,'
+    endif
+    if combined_info contains 'shirt' or combined_info contains 'polo' or combined_info contains 't-shirt' or combined_info contains 'tee' or combined_info contains 'top'
+      assign raw_types = raw_types | append: 'clothing,shirts,tops,t-shirts,'
+    endif
+    if combined_info contains 'trouser' or combined_info contains 'jean' or combined_info contains 'pant' or combined_info contains 'short'
+      assign raw_types = raw_types | append: 'clothing,trousers,jeans,shorts,bottoms,'
+    endif
+    if combined_info contains 'hat' or combined_info contains 'cap' or combined_info contains 'beanie'
+      assign raw_types = raw_types | append: 'accessories,hats,caps,'
+    endif
+    if combined_info contains 'glove' or combined_info contains 'mitten'
+      assign raw_types = raw_types | append: 'accessories,gloves,'
+    endif
+    if combined_info contains 'belt'
+      assign raw_types = raw_types | append: 'accessories,belts,'
+    endif
+    if combined_info contains 'sock'
+      assign raw_types = raw_types | append: 'accessories,socks,'
+    endif
+
+    assign types_to_check = raw_types | split: ',' | compact | uniq
 
     # 1. Try gender + vendor + type combinations
     if guide == blank and genders_to_check != blank and v != blank and types_to_check != blank
@@ -159,6 +208,54 @@
           break
         endif
       endfor
+    endif
+
+    # 5. Fallback: Search in shop.metaobjects by attributes matching
+    if guide == blank
+      assign meta_list = shop.metaobjects.size_guide.values | default: shop.metaobjects['size-guide'].values | default: shop.metaobjects.size_chart.values | default: shop.metaobjects.size_guides.values
+      if meta_list != blank
+        for meta_item in meta_list
+          # Check vendor match
+          assign meta_v = meta_item.vendor | default: meta_item.brand | default: meta_item.manufacturer | handleize
+          assign vendor_match = false
+          if meta_v == blank or meta_v == v
+            assign vendor_match = true
+          endif
+
+          # Check gender match
+          assign meta_g = meta_item.gender | default: meta_item.target_gender | handleize
+          assign gender_match = false
+          if meta_g == blank
+            assign gender_match = true
+          elsif genders_to_check != blank
+            for gen in genders_to_check
+              if gen == meta_g
+                assign gender_match = true
+                break
+              endif
+            endfor
+          endif
+
+          # Check type match
+          assign meta_t = meta_item.product_type | default: meta_item.type | default: meta_item.category | handleize
+          assign type_match = false
+          if meta_t == blank
+            assign type_match = true
+          else
+            for typ in types_to_check
+              if typ == meta_t
+                assign type_match = true
+                break
+              endif
+            endfor
+          endif
+
+          if vendor_match and gender_match and type_match
+            assign guide = meta_item
+            break
+          endif
+        endfor
+      endif
     endif
   endif
 
