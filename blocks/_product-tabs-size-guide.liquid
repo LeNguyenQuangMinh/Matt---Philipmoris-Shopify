@@ -92,15 +92,15 @@
     assign v = product.vendor | handleize
     assign t = product.type | handleize
 
-    assign g_alt = g
-    if g == 'mens' or g == 'men'
-      assign g_alt = 'male'
-    elsif g == 'male'
-      assign g_alt = 'mens'
-    elsif g == 'womens' or g == 'women'
-      assign g_alt = 'female'
-    elsif g == 'female'
-      assign g_alt = 'womens'
+    assign genders_to_check = ''
+    if g == 'm' or g == 'men' or g == 'mens' or g == 'male'
+      assign genders_to_check = 'mens,male,men,m' | split: ','
+    elsif g == 'f' or g == 'w' or g == 'women' or g == 'womens' or g == 'female'
+      assign genders_to_check = 'female,womens,women,f' | split: ','
+    elsif g == 'u' or g == 'unisex'
+      assign genders_to_check = 'unisex,u' | split: ','
+    elsif g != blank
+      assign genders_to_check = g | split: ','
     endif
 
     assign t_alt = t
@@ -115,52 +115,86 @@
       endif
     endif
 
-    if guide == blank and g != blank and v != blank and t != blank
-      assign k = g | append: '-' | append: v | append: '-' | append: t
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    assign types_to_check = ''
+    if t != blank
+      if t_alt != blank and t_alt != t
+        assign types_to_check = t | append: ',' | append: t_alt | split: ','
+      else
+        assign types_to_check = t | split: ','
+      endif
     endif
 
-    if guide == blank and g_alt != blank and v != blank and t != blank
-      assign k = g_alt | append: '-' | append: v | append: '-' | append: t
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    # 1. Try gender + vendor + type combinations
+    if guide == blank and genders_to_check != blank and v != blank and types_to_check != blank
+      for gen in genders_to_check
+        if guide != blank
+          break
+        endif
+        for typ in types_to_check
+          assign k = gen | append: '-' | append: v | append: '-' | append: typ
+          assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects['size-guide'][k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+          if guide == blank
+            assign k_sizes = k | append: '-sizes'
+            assign guide = shop.metaobjects.size_guide[k_sizes] | default: shop.metaobjects['size-guide'][k_sizes] | default: shop.metaobjects.size_chart[k_sizes] | default: shop.metaobjects.size_guides[k_sizes]
+          endif
+          if guide == blank
+            assign k_size = k | append: '-size'
+            assign guide = shop.metaobjects.size_guide[k_size] | default: shop.metaobjects['size-guide'][k_size] | default: shop.metaobjects.size_chart[k_size] | default: shop.metaobjects.size_guides[k_size]
+          endif
+          if guide != blank
+            break
+          endif
+        endfor
+      endfor
     endif
 
-    if guide == blank and g != blank and v != blank and t_alt != blank
-      assign k = g | append: '-' | append: v | append: '-' | append: t_alt
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    # 2. Try vendor + type combinations
+    if guide == blank and v != blank and types_to_check != blank
+      for typ in types_to_check
+        assign k = v | append: '-' | append: typ
+        assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects['size-guide'][k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+        if guide == blank
+          assign k_sizes = k | append: '-sizes'
+          assign guide = shop.metaobjects.size_guide[k_sizes] | default: shop.metaobjects['size-guide'][k_sizes] | default: shop.metaobjects.size_chart[k_sizes] | default: shop.metaobjects.size_guides[k_sizes]
+        endif
+        if guide != blank
+          break
+        endif
+      endfor
     endif
 
-    if guide == blank and g_alt != blank and v != blank and t_alt != blank
-      assign k = g_alt | append: '-' | append: v | append: '-' | append: t_alt
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+    # 3. Try gender + type combinations
+    if guide == blank and genders_to_check != blank and types_to_check != blank
+      for gen in genders_to_check
+        if guide != blank
+          break
+        endif
+        for typ in types_to_check
+          assign k = gen | append: '-' | append: typ
+          assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects['size-guide'][k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
+          if guide == blank
+            assign k_sizes = k | append: '-sizes'
+            assign guide = shop.metaobjects.size_guide[k_sizes] | default: shop.metaobjects['size-guide'][k_sizes] | default: shop.metaobjects.size_chart[k_sizes] | default: shop.metaobjects.size_guides[k_sizes]
+          endif
+          if guide != blank
+            break
+          endif
+        endfor
+      endfor
     endif
 
-    if guide == blank and v != blank and t != blank
-      assign k = v | append: '-' | append: t
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
-    endif
-
-    if guide == blank and v != blank and t_alt != blank
-      assign k = v | append: '-' | append: t_alt
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
-    endif
-
-    if guide == blank and g != blank and t != blank
-      assign k = g | append: '-' | append: t
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
-    endif
-
-    if guide == blank and g_alt != blank and t != blank
-      assign k = g_alt | append: '-' | append: t
-      assign guide = shop.metaobjects.size_guide[k] | default: shop.metaobjects.size_chart[k] | default: shop.metaobjects.size_guides[k]
-    endif
-
-    if guide == blank and t != blank
-      assign guide = shop.metaobjects.size_guide[t] | default: shop.metaobjects.size_chart[t] | default: shop.metaobjects.size_guides[t]
-    endif
-
-    if guide == blank and t_alt != blank
-      assign guide = shop.metaobjects.size_guide[t_alt] | default: shop.metaobjects.size_chart[t_alt] | default: shop.metaobjects.size_guides[t_alt]
+    # 4. Try type combinations
+    if guide == blank and types_to_check != blank
+      for typ in types_to_check
+        assign guide = shop.metaobjects.size_guide[typ] | default: shop.metaobjects['size-guide'][typ] | default: shop.metaobjects.size_chart[typ] | default: shop.metaobjects.size_guides[typ]
+        if guide == blank
+          assign k_sizes = typ | append: '-sizes'
+          assign guide = shop.metaobjects.size_guide[k_sizes] | default: shop.metaobjects['size-guide'][k_sizes] | default: shop.metaobjects.size_chart[k_sizes] | default: shop.metaobjects.size_guides[k_sizes]
+        endif
+        if guide != blank
+          break
+        endif
+      endfor
     endif
   endif
 
