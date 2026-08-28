@@ -361,7 +361,7 @@
  * CSS extracted from Philip Morris BigCommerce theme (Cornerstone 6.16.1)
  * covering all classes used in the blog post widget HTML inside the CSV.
  *
- * Usage in Shopify (Ella 7):
+ * Usage in Shopify:
  *   - Add this file to your Shopify theme as assets/blog-widgets.css
  *   - Reference it in theme.liquid (or blog-post template) with:
  *       {{ 'blog-widgets.css' | asset_url | stylesheet_tag }}
