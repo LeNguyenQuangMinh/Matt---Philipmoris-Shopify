@@ -1,7 +1,7 @@
 {%- liquid
   assign sec_stts = section.settings
-  assign title = sec_stts.title
-  assign description = sec_stts.description
+  assign title = sec_stts.title | default: collection.title
+  assign description = sec_stts.description | default: collection.description
   
   assign is_metafield = false
   assign is_empty = false
@@ -89,6 +89,13 @@
   else
     assign has_info = false
   endif
+
+  assign show_grid = false
+  if is_empty == false
+    assign show_grid = true
+  elsif request.design_mode and has_info == false
+    assign show_grid = true
+  endif
   
   assign column_desktop = sec_stts.column_desktop
   assign column_tablet = sec_stts.column_tablet | default: 3
@@ -97,7 +104,7 @@
   assign gap_mobile = sec_stts.gap_mobile | default: sec_stts.gap
 -%}
 
-{% if is_empty == false or request.design_mode %}
+{% if has_info or is_empty == false or request.design_mode %}
   {% style %}
     #collection-subcategories-{{ section.id }} {
       --padding-block-start: {{ sec_stts.padding_top }}px;
@@ -167,7 +174,11 @@
     
     {% if has_info %}
       .collection-subcategories__info {
-        width: 25%;
+        {% if is_empty %}
+          width: 100%;
+        {% else %}
+          width: 25%;
+        {% endif %}
         flex-shrink: 0;
         border: 1px solid #dddedd;
         padding: 18px 20px 10px;
@@ -216,7 +227,11 @@
       }
 
       #collection-subcategories-{{ section.id }} .collection-subcategories__grid {
-        width: 75%;
+        {% if is_empty %}
+          width: 100%;
+        {% else %}
+          width: 75%;
+        {% endif %}
         display: flex;
         flex-wrap: wrap;
         gap: {{ gap_desktop }}px;
@@ -335,7 +350,8 @@
           </div>
         {% endif %}
         
-        <div class="collection-subcategories__grid">
+        {% if show_grid %}
+          <div class="collection-subcategories__grid">
           {% if is_empty and request.design_mode %}
             {% for i in (1..4) %}
               <a href="#" class="category-item relative flex items-stretch color-scheme-custom"
@@ -392,8 +408,9 @@
             {% endfor %}
           {% endif %}
         </div>
-      </div>
+      {% endif %}
     </div>
+  </div>
   </div>
 {% endif %}
 
