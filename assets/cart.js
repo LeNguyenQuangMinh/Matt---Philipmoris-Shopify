@@ -1055,11 +1055,15 @@ class CountryProvinceComponent extends HTMLElement {
     this.countryElement = this.querySelector('[name="address[country]"]');
     this.countryElement.addEventListener('change', this.handleCountryChange.bind(this));
 
-    if (this.dataset.country && this.dataset.country !== '') {
+    const targetCountry = (this.dataset.country || this.countryElement.getAttribute('data-default') || 'United Kingdom').trim().toLowerCase();
+    if (targetCountry && targetCountry !== '') {
       const idx = Array.from(this.countryElement.options).findIndex(
-        (option) => option.textContent === this.dataset.country
+        (option) => option.textContent.trim().toLowerCase() === targetCountry ||
+                    option.value.trim().toLowerCase() === targetCountry
       );
-      this.countryElement.selectedIndex = Math.max(0, idx);
+      if (idx !== -1) {
+        this.countryElement.selectedIndex = idx;
+      }
       this.countryElement.dispatchEvent(new Event('change'));
     } else {
       this.handleCountryChange();

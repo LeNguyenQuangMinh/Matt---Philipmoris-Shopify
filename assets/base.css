@@ -12046,7 +12046,7 @@ quantity-input.quantity .quantity__input:focus {
     top: 0;
   }
 
-  body:has(header-component[data-sticky-state="active"]) .product-information__media {
+  body:has(header-component[data-sticky-state="active"]) .product-information__grid:not(.product-quick-add__grid) .product-information__media {
     top: calc(var(--header-height, 0px) + 2rem);
   }
 

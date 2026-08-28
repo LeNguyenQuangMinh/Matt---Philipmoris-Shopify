@@ -5,21 +5,23 @@
   <div class="grid gap-xl">
     <country-province-component
       class="grid gap-xl"
-      {% if shop.customer_accounts_enabled and customer and customer.default_address %}
+      {% if shop.customer_accounts_enabled and customer and customer.default_address and customer.default_address.country != blank %}
         data-country="{{ customer.default_address.country }}"
         {% if customer.default_address.province != blank %}
           data-province="{{ customer.default_address.province }}"
         {% endif %}
+      {% else %}
+        data-country="United Kingdom"
       {% endif %}
     >
       <div class="field">
         <label for="ShippingCalculatorCountry-{{ block.id }}">{{ 'customer.addresses.country' | t }}</label>
         <select
           name="address[country]"
-          {% if shop.customer_accounts_enabled and customer and customer.default_address %}
+          {% if shop.customer_accounts_enabled and customer and customer.default_address and customer.default_address.country != blank %}
             data-default="{{ customer.default_address.country }}"
           {% else %}
-            data-default="{{ form.country }}"
+            data-default="United Kingdom"
           {% endif %}
           autocomplete="country"
           is="custom-select"
@@ -64,7 +66,7 @@
           {% endif %}
           class="field__input"
         />
-        <label for="ShippingCalculatorZip-{{ block.id }}" class="field__label">{{ 'customer.addresses.zip' | t }}</label>
+        <label for="ShippingCalculatorZip-{{ block.id }}" class="field__label">Postcode</label>
       </div>
     </country-province-component>
     <button class="button w-full" type="submit">
