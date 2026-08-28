@@ -77,12 +77,12 @@
                 {{ article.title | truncate: 50 | escape }}
               </a>
             </h3>
-            <div class="article-card__info caption-with-letter-spacing h5">
+            <div class="article-card__info caption-with-letter-spacing h5" style="display: flex; flex-direction: row; flex-wrap: wrap; align-items: center; gap: 0.8rem;">
               {%- if show_date -%}
-                <span class="circle-divider">{{ article.published_at | time_tag: format: 'date' }}</span>
+                <span class="article-date" style="white-space: nowrap;">{{ article.published_at | time_tag: format: 'date' }}</span>
               {%- endif -%}
               {%- if show_author -%}
-                <span>{{ article.author }}</span>
+                <span class="article-author" style="white-space: nowrap;">by {{ article.author }}</span>
               {%- endif -%}
             </div>
             {%- if show_excerpt -%}

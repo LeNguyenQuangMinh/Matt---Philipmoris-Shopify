@@ -4,17 +4,12 @@
 
 {% capture details %}
   {%- if block.settings.show_date -%}
-    {{ article.published_at | time_tag: format: 'date' }}
-  {%- endif -%}
-
-  {%- if block.settings.show_date and block.settings.show_author -%}
-    <span>{{ 'blogs.article.blog_details_separator' | t }}</span>
+    <span class="article-details__date" style="white-space: nowrap;">{{ article.published_at | time_tag: format: 'date' }}</span>
   {%- endif -%}
 
   {%- if block.settings.show_author -%}
-    {{ article.author }}
+    <span class="article-details__author" style="white-space: nowrap;">by {{ article.author }}</span>
   {%- endif -%}
-
 {% endcapture %}
 
 {%- if block.settings.show_date or block.settings.show_author -%}

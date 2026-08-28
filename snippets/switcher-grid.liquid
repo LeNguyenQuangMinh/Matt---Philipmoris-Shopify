@@ -9,7 +9,12 @@
 {% endcomment %}
 
 {% assign columns_desktop = 4 %}
-{% assign show_custom_icons = block.settings.show_custom_icons %}
+{% if show_custom_icons == nil %}
+  {% assign show_custom_icons = block.settings.show_custom_icons %}
+{% endif %}
+{% if show_custom_icons == nil or show_custom_icons == false %}
+  {% assign show_custom_icons = true %}
+{% endif %}
 
 <grid-view class="switcher-grid{% if show_custom_icons %} custom-icon{% endif %} flex items-center {{ class }}">
   <span class="hidden switcher-grid__label facet-filters__field-label block {{ text_label_case }}" style="--font-size: {{ heading_label_font_size }};">{{ 'content.view_as' | t }}</span>

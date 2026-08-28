@@ -55,6 +55,7 @@
             "enable_count": true,
             "enable_items_per_page": true,
             "enable_grid_density": true,
+            "show_custom_icons": true,
             "sorting_vertical_padding_block_start": 24,
             "sorting_vertical_padding_block_end": 40,
             "padding-block-start": 16,

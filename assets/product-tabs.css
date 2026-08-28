@@ -141,6 +141,7 @@
   position: relative;
   display: block;
   width: 100%;
+  font-size: 1.3rem !important;
 }
 
 .tabs-content {
@@ -248,7 +249,8 @@
 
 .tab-content.border-bottom .toggle-title,
 .tab-content.border-bottom side-drawer-opener {
-  border-bottom: 1px solid var(--accordion-border-color);
+  /* border-bottom: 1px solid var(--accordion-border-color); */
+  border-bottom: 1px solid transparent;
 }
 
 .tab-content.border-top-bottom .toggle-title,

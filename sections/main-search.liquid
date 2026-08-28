@@ -26,6 +26,17 @@
   endif
 -%}
 
+<style>
+  .article-card-wrapper--page .card__heading a {
+    font-size: {{ section.settings.page_title_size_mobile | default: 24 }}px;
+  }
+  @media screen and (min-width: 750px) {
+    .article-card-wrapper--page .card__heading a {
+      font-size: {{ section.settings.page_title_size_desktop | default: 32 }}px;
+    }
+  }
+</style>
+
 <div class="product-grid-container spacing-style color-{{ section.settings.color_scheme }}">
   {% paginate search.results by limit %}
     <div
@@ -37,7 +48,7 @@
     >
       <div class="section">
         <div class="template-search__header{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--fade-in{% endif %}">
-          <h1 class="h2 center" style="--mt: 3rem; margin-block-start: var(--mt)">
+          <h1 class="h2 center template-search__title" style="--mt: 3rem; margin-block-start: var(--mt)">
             {%- if search.performed -%}
               {{- 'content.search_results' | t -}}
             {%- else -%}
@@ -187,7 +198,7 @@
                           {%- when 'article' -%}
                             {% content_for 'block', id: 'static-blog-post-block', type: '_blog-post-block', article: item %}
                           {%- when 'page' -%}
-                            <div class="article-card-wrapper card-wrapper">
+                            <div class="article-card-wrapper card-wrapper article-card-wrapper--page">
                               <div
                                 class="card card--card card--text ratio"
                                 style="--ratio-percent: 100%;"
@@ -239,6 +250,30 @@
   "name": "t:names.search_results",
   "class": "section-wrapper",
   "settings": [
+    {
+      "type": "header",
+      "content": "Page Title Typography"
+    },
+    {
+      "type": "range",
+      "id": "page_title_size_desktop",
+      "min": 16,
+      "max": 60,
+      "step": 1,
+      "unit": "px",
+      "label": "Page title font size on desktop",
+      "default": 32
+    },
+    {
+      "type": "range",
+      "id": "page_title_size_mobile",
+      "min": 14,
+      "max": 40,
+      "step": 1,
+      "unit": "px",
+      "label": "Page title font size on mobile",
+      "default": 24
+    },
     {
       "type": "header",
       "content": "t:content.layout"
