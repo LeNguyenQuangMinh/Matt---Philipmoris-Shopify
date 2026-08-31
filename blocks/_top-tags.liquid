@@ -23,18 +23,18 @@
 {%- style -%}
   @media screen and (max-width: 767px) {
     .blog-top-tags {
-      flex-wrap: nowrap !important;
-      justify-content: flex-start !important;
-      overflow-x: auto !important;
-      overflow-y: hidden !important;
-      max-width: 100% !important;
-      width: 100% !important;
-      min-width: 0 !important;
-      box-sizing: border-box !important;
+      flex-wrap: nowrap;
+      justify-content: flex-start;
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+      width: 100%;
+      min-width: 0;
+      box-sizing: border-box;
       -webkit-overflow-scrolling: touch;
       padding-bottom: 8px;
       scrollbar-width: thin;
-      scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.05);
+      scrollbar-color: #6D3F49 #D8D4CF;
     }
 
     .blog-top-tags::-webkit-scrollbar {
@@ -42,13 +42,13 @@
     }
 
     .blog-top-tags::-webkit-scrollbar-track {
-      background: rgba(0, 0, 0, 0.05);
-      border-radius: 2px;
+      background: #D8D4CF;
+      border-radius: 99px;
     }
 
     .blog-top-tags::-webkit-scrollbar-thumb {
-      background: rgba(0, 0, 0, 0.3);
-      border-radius: 2px;
+      background: #6D3F49;
+      border-radius: 99px;
     }
 
     .blog-top-tags > * {
@@ -58,7 +58,8 @@
   }
 {%- endstyle -%}
 
-<div 
+<div class="flex justify-center">
+  <div 
   class="blog-top-tags flex flex-wrap items-center justify-center gap-xs spacing-style"
   style="{% render 'spacing-style', settings: bl_stts %}"
   {{ block.shopify_attributes }}
@@ -89,6 +90,7 @@
       %}
     {%- endif -%}
   {%- endfor -%}
+</div>
 </div>
 
 {% schema %}

@@ -185,12 +185,18 @@
 }
 
 .previewCart-shippingNotice-amount,
-.previewCart-shippingNotice-eligible,
 .previewCart-shippingNotice-time,
 .previewCart-shippingNotice-time .order-time__text,
 .previewCart-shippingNotice-time .time {
   color: var(--shipping-notice-highlight, #13aa13);
   font-weight: 700;
+}
+
+.previewCart-shippingNotice-eligible {
+  color: #3e3e3e;
+  font-weight: 700;
+  margin-bottom: 2px;
+  font-size: 14px;
 }
 
 .previewCart-shippingNotice-link {

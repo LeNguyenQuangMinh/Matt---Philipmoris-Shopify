@@ -88,8 +88,46 @@
   @media only screen and (max-width: 768px) {
     .article-tag.blog-tags {
       flex-direction: column;
-      align-items: flex-start;
+      align-items: center;
+      min-width: 0 !important;
+      max-width: 100% !important;
+      width: 100% !important;
     }
+
+    .article-tag.blog-tags .blog-post-card__tags {
+      flex-wrap: nowrap !important;
+      justify-content: flex-start !important;
+      overflow-x: auto !important;
+      overflow-y: hidden !important;
+      max-width: 100% !important;
+      width: fit-content !important;
+      min-width: 0 !important;
+      box-sizing: border-box !important;
+      -webkit-overflow-scrolling: touch;
+      padding-bottom: 8px;
+      scrollbar-width: thin;
+      scrollbar-color: #6D3F49 #D8D4CF;
+    }
+
+    .article-tag.blog-tags .blog-post-card__tags::-webkit-scrollbar {
+      height: 4px;
+    }
+
+    .article-tag.blog-tags .blog-post-card__tags::-webkit-scrollbar-track {
+      background: #D8D4CF;
+      border-radius: 99px;
+    }
+
+    .article-tag.blog-tags .blog-post-card__tags::-webkit-scrollbar-thumb {
+      background: #6D3F49;
+      border-radius: 99px;
+    }
+
+    .article-tag.blog-tags .blog-post-card__tags > * {
+      flex-shrink: 0 !important;
+      white-space: nowrap !important;
+    }
+
     .blog-post-jump-recipe {
       width: 100%;
     }

@@ -152,3 +152,12 @@ input::-webkit-search-decoration {
 .search__button .icon {
   height: 1.8rem;
 }
+
+.product-grid__item:has(.article-card-wrapper--page) {
+  background-color: rgb(240 235 230 / 0.4);
+
+  .card__badge {
+    top: 1rem !important;
+    right: 1rem !important;
+  }
+}

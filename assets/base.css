@@ -8336,6 +8336,52 @@ animate-image {
   margin-top: 1rem;
 }
 
+@media screen and (max-width: 767px) {
+  .article-tag.blog-tags {
+    min-width: 0 !important;
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  .article-tag.blog-tags .blog-post-card__tags {
+    flex-wrap: nowrap !important;
+    justify-content: flex-start !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    max-width: 100% !important;
+    width: fit-content !important;
+    min-width: 0 !important;
+    box-sizing: border-box !important;
+    -webkit-overflow-scrolling: touch;
+    padding-bottom: 8px;
+    scrollbar-width: thin;
+    scrollbar-color: #6D3F49 #D8D4CF;
+  }
+
+  .article-tag.blog-tags .blog-post-card__tags::-webkit-scrollbar {
+    height: 4px;
+  }
+
+  .article-tag.blog-tags .blog-post-card__tags::-webkit-scrollbar-track {
+    background: #D8D4CF;
+    border-radius: 99px;
+  }
+
+  .article-tag.blog-tags .blog-post-card__tags::-webkit-scrollbar-thumb {
+    background: #6D3F49;
+    border-radius: 99px;
+  }
+
+  .article-tag.blog-tags .blog-post-card__tags > * {
+    flex-shrink: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  .article-tag.blog-tags .blog-post-card__tags > a {
+    font-size: 15px;
+  }
+}
+
 .blog-post-card--custom .blog-post-card__tag-item {
   display: inline-block;
   padding: 0.6rem 1.6rem;
@@ -20636,6 +20682,7 @@ ul.items-same-height > li {
 
   h3 {
     font-size: 22px;
+    margin-top: 3.6rem;
   }
 
   ul {
@@ -20696,7 +20743,7 @@ ul.items-same-height > li {
 
 .page-Careers h2 {
   font-size: 18px;
-  text-transform: uppercase;
+  text-transform: uppercase !important;
   margin: 0;
   padding: 4px 0 0;
   line-height: 23px;
@@ -20757,4 +20804,27 @@ ul.items-same-height > li {
 .product-grid:is(.product-grid--grid)[data-view="1"] .card .card-product-information {
   justify-content: flex-start !important;
   align-items: flex-start !important;
+}
+
+.rte-table-wrapper {
+  overflow: auto;
+}
+
+.rte-table-wrapper::-webkit-scrollbar {
+  height: 4px;
+}
+
+.rte-table-wrapper::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.rte-table-wrapper::-webkit-scrollbar-thumb {
+  background: #6D3F49;
+  border-radius: 4px;
+}
+
+.rte-table-wrapper table {
+  border-collapse: collapse;
+  border-spacing: 0;
+  text-align: center;
 }

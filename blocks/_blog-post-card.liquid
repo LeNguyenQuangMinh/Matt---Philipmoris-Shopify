@@ -211,13 +211,13 @@
                 overflow-x: auto !important;
                 overflow-y: hidden !important;
                 max-width: 100% !important;
-                width: 100% !important;
+                width: fit-content !important;
                 min-width: 0 !important;
                 box-sizing: border-box !important;
                 -webkit-overflow-scrolling: touch;
                 padding-bottom: 8px;
                 scrollbar-width: thin;
-                scrollbar-color: rgba(0, 0, 0, 0.3) rgba(0, 0, 0, 0.05);
+                scrollbar-color: #6D3F49 #D8D4CF;
               }
 
               .blog-post-card__tags::-webkit-scrollbar {
@@ -225,13 +225,13 @@
               }
 
               .blog-post-card__tags::-webkit-scrollbar-track {
-                background: rgba(0, 0, 0, 0.05);
-                border-radius: 2px;
+                background: #D8D4CF;
+                border-radius: 99px;
               }
 
               .blog-post-card__tags::-webkit-scrollbar-thumb {
-                background: rgba(0, 0, 0, 0.3);
-                border-radius: 2px;
+                background: #6D3F49;
+                border-radius: 99px;
               }
 
               .blog-post-card__tags > * {
@@ -240,32 +240,34 @@
               }
             }
           {%- endstyle -%}
-
-          <div class="blog-post-card__tags flex flex-wrap items-center justify-center gap-xs">
-            {%- for tag in article.tags -%}
-              {%- assign tag_handle = tag | handleize -%}
-              {%- assign tag_url = blog.url | append: '/tagged/' | append: tag_handle -%}
-              {% render 'button',
-                link: tag_url,
-                label: tag,
-                style_class: block_settings.tags_style_class,
-                button_style: block_settings.tags_button_style,
-                button_border_width: block_settings.tags_button_border_width,
-                button_border_radius: block_settings.tags_button_border_radius,
-                button_type_font: block_settings.tags_button_type_font,
-                button_type_size: block_settings.tags_button_type_size,
-                button_type_line_height: block_settings.tags_button_type_line_height,
-                button_type_letter_spacing: block_settings.tags_button_type_letter_spacing,
-                button_font_weight: block_settings.tags_button_font_weight,
-                button_text_case: block_settings.tags_button_text_case,
-                button_type_alignment: block_settings.tags_button_type_alignment,
-                buttons_shadow_horizontal_offset: block_settings.tags_buttons_shadow_horizontal_offset,
-                buttons_shadow_vertical_offset: block_settings.tags_buttons_shadow_vertical_offset,
-                buttons_shadow_blur: block_settings.tags_buttons_shadow_blur,
-                style: tags_btn_padding_style
-              %}
-            {%- endfor -%}
+          <div class="flex justify-center w-full">
+            <div class="blog-post-card__tags flex flex-wrap items-center justify-center gap-xs">
+              {%- for tag in article.tags -%}
+                {%- assign tag_handle = tag | handleize -%}
+                {%- assign tag_url = blog.url | append: '/tagged/' | append: tag_handle -%}
+                {% render 'button',
+                  link: tag_url,
+                  label: tag,
+                  style_class: block_settings.tags_style_class,
+                  button_style: block_settings.tags_button_style,
+                  button_border_width: block_settings.tags_button_border_width,
+                  button_border_radius: block_settings.tags_button_border_radius,
+                  button_type_font: block_settings.tags_button_type_font,
+                  button_type_size: block_settings.tags_button_type_size,
+                  button_type_line_height: block_settings.tags_button_type_line_height,
+                  button_type_letter_spacing: block_settings.tags_button_type_letter_spacing,
+                  button_font_weight: block_settings.tags_button_font_weight,
+                  button_text_case: block_settings.tags_button_text_case,
+                  button_type_alignment: block_settings.tags_button_type_alignment,
+                  buttons_shadow_horizontal_offset: block_settings.tags_buttons_shadow_horizontal_offset,
+                  buttons_shadow_vertical_offset: block_settings.tags_buttons_shadow_vertical_offset,
+                  buttons_shadow_blur: block_settings.tags_buttons_shadow_blur,
+                  style: tags_btn_padding_style
+                %}
+              {%- endfor -%}
+            </div>
           </div>
+
         {%- endif -%}
       </div>
 

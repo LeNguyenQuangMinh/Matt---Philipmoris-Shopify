@@ -92,6 +92,7 @@ cart-items-component {
 }
 
 @media (hover: hover) {
+
   .cart__note:hover.cart__note:after,
   .cart__note:hover.cart__note:before {
     border-bottom-right-radius: var(--inputs-radius);

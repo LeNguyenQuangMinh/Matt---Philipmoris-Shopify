@@ -238,6 +238,7 @@
   margin-left: -20px;
   margin-right: -20px;
   flex-wrap: wrap;
+  row-gap: 1.6rem;
 }
 
 .quick-view-modal--custom .product-usp .info__item {

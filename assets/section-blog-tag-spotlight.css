@@ -59,11 +59,11 @@
   justify-content: flex-start;
   text-align: center;
   padding: 0;
-  background-color: var(--color-background-secondary, #f8f6f3);
+  background-color: var(--color-background-secondary, #f7f5f2);
   border-radius: var(--media-radius, 0px);
   border: 1px solid rgba(0, 0, 0, 0.05);
 
-  @media screen and (min-width: 768px) {
+  @media screen and (min-width: 990px) {
     max-width: 570px;
   }
 }
@@ -74,8 +74,12 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.8rem;
-  margin-bottom: 1.8rem;
+  margin-bottom: 2.6rem;
   padding-top: 4rem;
+}
+
+.blog-tag-spotlight__tags > a {
+  color: #72253d !important;
 }
 
 @media screen and (max-width: 767px) {
@@ -162,6 +166,10 @@
   flex-direction: column;
   align-items: center;
   padding: 0 2rem 1.2rem;
+
+  @media screen and (max-width: 767px) {
+    padding: 0;
+  }
 }
 
 .blog-tag-spotlight__products-heading {
@@ -181,23 +189,29 @@
   max-height: 405px;
   overflow-y: auto;
   overflow-x: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--color-primary, #611c28) #e6e6e6;
   padding: 0 26px 0 50px;
+
+  @media screen and (max-width: 767px) {
+    padding: 0;
+  }
 }
 
 .blog-tag-spotlight__products-grid::-webkit-scrollbar {
-  width: 6px;
+  width: 7px;
 }
 
 .blog-tag-spotlight__products-grid::-webkit-scrollbar-track {
-  background: #e6e6e6;
-  border-radius: 3px;
+  background: #D8D4CF;
+  border-radius: 99px;
 }
 
 .blog-tag-spotlight__products-grid::-webkit-scrollbar-thumb {
-  background: var(--color-primary, #611c28);
-  border-radius: 3px;
+  background: #6D3F49;
+  border-radius: 99px;
+}
+
+.blog-tag-spotlight__products-grid::-webkit-scrollbar-thumb:hover {
+  background: #787878;
 }
 
 .blog-tag-spotlight__product-card,
@@ -347,6 +361,10 @@
 .spotlight-product-card__price {
   font-size: var(--card-price-size, 1.5rem);
   font-weight: 600;
+}
+
+.spotlight-product-card__price .price {
+  color: #3e3e3e !important;
 }
 
 .spotlight-product-card__price .compare-at-price {

@@ -141,7 +141,7 @@ side-drawer#Drawer-Blog-Sidebar.active {
 
 .blog-posts__sidebar-drawer .blog-posts__sidebar-container,
 .blog-posts__sidebar-drawer--desktop-drawer .blog-posts__sidebar-container {
-  width: min(90vw, 360px);
+  width: min(90vw, 420px);
   height: 100%;
   background-color: #ffffff;
   z-index: 2;
@@ -522,9 +522,17 @@ side-drawer#Drawer-Blog-Sidebar.active {
 
 @media screen and (max-width: 640px) {
   .pagination__container {
-    flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-start;
     gap: 1.2rem;
+
+    .pagination__list {
+      flex-wrap: wrap;
+      max-width: 50%;
+    }
+  }
+
+  .template-blog .pagination-wrapper {
+    margin-top: 5rem;
   }
 
   .pagination__prev-wrap,
@@ -571,4 +579,11 @@ side-drawer#Drawer-Blog-Sidebar.active {
   .pagination__list > li {
     min-width: 2.8rem;
   }
+}
+
+.blog-posts__sidebar-container .button--drawer-close-footer {
+  font-size: 15px;
+  line-height: 19px;
+  padding: 21px;
+  font-weight: 400;
 }
