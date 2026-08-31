@@ -6,18 +6,32 @@ class SideDrawerOpener extends HTMLElement {
 
     button.addEventListener('click', () => {
       const drawer = document.querySelector(this.getAttribute('data-side-drawer'));
+      if (!drawer) return;
 
-      if(button.closest('.header__icon--menu')) {
-        if(button.classList.contains('active')) {
-          button.classList.remove('active');
-          if (drawer) drawer.close();
+      const isMenuDrawer = this.getAttribute('data-side-drawer') === '#Drawer-Menu' || button.closest('.header__icon--menu');
+      const menuButton = document.querySelector('.header__icon--menu button');
+
+      if (isMenuDrawer) {
+        if (drawer.classList.contains('active') || (menuButton && menuButton.classList.contains('active'))) {
+          if (menuButton) menuButton.classList.remove('active');
+          drawer.close();
         } else {
-          document.documentElement.style.setProperty('--header-height', `${document.querySelector(".header").offsetHeight}px`);
-          button.classList.add('active');
-          if (drawer) drawer.open(button);
+          const headerEl = document.querySelector(".header");
+          if (headerEl) {
+            document.documentElement.style.setProperty('--header-height', `${headerEl.offsetHeight}px`);
+          }
+          if (menuButton) menuButton.classList.add('active');
+          drawer.open(button);
+
+          if (button.closest('.search-action') || button.classList.contains('header__icon--search')) {
+            setTimeout(() => {
+              const searchInput = drawer.querySelector('#Search-In-Drawer');
+              if (searchInput) searchInput.focus();
+            }, 100);
+          }
         }
       } else {
-        if (drawer) drawer.open(button);
+        drawer.open(button);
       }
     });
   }
@@ -52,6 +66,11 @@ class SideDrawer extends HTMLElement {
     setTimeout(() => {
       this.classList.add('animate', 'active');
     });
+
+    if (this.id === 'Drawer-Menu') {
+      const menuButton = document.querySelector('.header__icon--menu button');
+      if (menuButton) menuButton.classList.add('active');
+    }
 
     let rtl = typeof theme !== "undefined" && theme.config && theme.config.rtl === true;
     let drawerDirection = this.getAttribute("data-drawer-direction");
