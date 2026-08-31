@@ -178,6 +178,7 @@
       assign swiper_buttons_gap = sec_stts.swiper_buttons_gap
       assign speed = 800
       assign dot_bottom = sec_stts.dot_bottom
+      assign always_show_swiper_button = sec_stts.always_show_swiper_button
 
       assign block_size = section.blocks.size
       if block_size <= 1
@@ -232,7 +233,7 @@
             {%- endcapture -%}
 
             <div
-              class="swiper-btns-wrap{% if enable_navigation %} {{ arrows_position }}{% if arrows_position == 'bottom_right' %} page-width{% endif %}{% endif %}"
+              class="swiper-btns-wrap{% if enable_navigation %} {{ arrows_position }}{% if arrows_position == 'bottom_right' %} page-width{% endif %}{% if always_show_swiper_button %} always_show_swiper_button{% else %} small-hide{% endif %}{% endif %}"
               {{ buttons_styles }}
             >
               {% if enable_navigation %}
@@ -674,6 +675,13 @@
         }
       ],
       "default": "arrows"
+    },
+    {
+      "type": "checkbox",
+      "id": "always_show_swiper_button",
+      "label": "Always show swiper button",
+      "default": false,
+      "visible_if": "{{ section.settings.navigation == 'arrows' or section.settings.navigation == 'arrows-pagination' }}"
     },
     {
       "type": "select",

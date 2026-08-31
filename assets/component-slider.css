@@ -51,6 +51,10 @@ swiper-component {
   padding-bottom: var(--progress-margin-bottom, 4rem);
 }
 
+.swiper.slideshow__slides {
+  padding-bottom: 0 !important;
+}
+
 .product-information__grid .swiper:not(.swiper-vertical):not(:has(.swiper-actions--bottom_right)):has(.swiper-pagination:not(.swiper-pagination-pos--inside):not(.swiper-pagination-lock)),
 .has-variant-image-grouped .swiper:not(.swiper-vertical):not(:has(.swiper-actions--bottom_right)) {
   padding-bottom: 1rem;
