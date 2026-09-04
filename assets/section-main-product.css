@@ -552,3 +552,43 @@ featured-product product-recommendations swiper-component,
 .main-product-information.section--full-width .back-in-stock-alert {
   max-width: 72rem;
 }
+
+
+/* Custom Klaviyo Back In Stock */
+.klaviyo-bis-trigger {
+  width: fit-content !important;
+  max-width: unset !important;
+  margin-top: 10px !important;
+  padding: 14px 15px 12px;
+  font-size: 18px;
+  font-weight: 700;
+
+  @media (max-width: 1200px) {
+    width: 100% !important;
+  }
+}
+
+.klaviyo-bis-trigger:hover {
+  color: #ffffff;
+}
+
+.cannot_purchase {
+  .klaviyo-bis-trigger {
+    display: block !important;
+  }
+}
+
+ol.breadcrumbs {
+  padding-top: 10px;
+  padding-bottom: 10px;
+}
+
+#___ratingbadge_0 {
+  margin-bottom: 50px !important;
+}
+
+#feefo-service-review-floating-widgetId {
+  .b_c {
+    margin-bottom: 50px !important;
+  }
+}

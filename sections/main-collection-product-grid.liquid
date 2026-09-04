@@ -77,8 +77,18 @@
               {% render 'loading-spinner' %}
             </div>
 
+            {%- liquid
+              if section.settings.show_sold_out_at_end
+                assign available_products = collection.products | where: 'available', true
+                assign unavailable_products = collection.products | where: 'available', false
+                assign sorted_products = available_products | concat: unavailable_products
+              else
+                assign sorted_products = collection.products
+              endif
+            -%}
+
             {% capture children %}
-              {% for product in collection.products %}
+              {% for product in sorted_products %}
                 <li
                   id="{{ section.id }}-{{ product.id }}"
                   class="product-grid__item product-grid__item--{{ forloop.index0 }}{% if settings.animations_reveal_on_scroll %} scroll-trigger animate--slide-in{% endif %}"
@@ -99,7 +109,7 @@
             {% render 'product-grid',
               section: section,
               children: children,
-              products: collection.products,
+              products: sorted_products,
               paginate: paginate
             %}
 
@@ -166,6 +176,12 @@
       "step": 8,
       "default": 16,
       "label": "t:settings.products_per_page"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_sold_out_at_end",
+      "label": "Show sold out products at the end",
+      "default": false
     },
     {
       "type": "select",
