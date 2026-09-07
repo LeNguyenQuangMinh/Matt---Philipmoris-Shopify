@@ -265,6 +265,12 @@
         }
 
         onInputType() {
+          // Enforce real uppercase value so cart/checkout display correctly
+          const start = this.input.selectionStart;
+          const end = this.input.selectionEnd;
+          this.input.value = this.input.value.toUpperCase();
+          this.input.setSelectionRange(start, end);
+
           if (this.input.value.trim() !== '') {
             this.hideError();
           }
