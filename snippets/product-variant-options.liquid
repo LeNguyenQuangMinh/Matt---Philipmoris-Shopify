@@ -278,75 +278,159 @@
     </div>
   {%- endif -%}
 {%- else -%}
-  {%- capture product_variants -%}
-    {%- for value in option.values -%}
-      {%- liquid
-        assign option_disabled = true
-        if value.available
-          assign option_disabled = false
+  {%- liquid
+    assign is_size_option = false
+    assign option_name_lower = option.name | downcase
+    if option_name_lower contains 'size' or option_name_lower contains 'kích' or option_name_lower contains 'taille' or option_name_lower contains 'größe'
+      assign is_size_option = true
+    endif
+
+    assign size_order_enabled = true
+    if block.settings.enable_size_order == false
+      assign size_order_enabled = false
+    elsif block.settings.enable_size_order == nil and settings.enable_size_order == false
+      assign size_order_enabled = false
+    endif
+
+    assign sorted_indices_string = ''
+
+    if is_size_option and size_order_enabled
+      assign custom_size_order = block.settings.size_order
+      if custom_size_order == blank
+        assign custom_size_order = settings.size_order
+      endif
+      if custom_size_order == blank
+        assign custom_size_order = 'XXS, XS, S, M, L, XL, XXL, XXXL, 1X, 2X, 3X, 4X, 2XL, 3XL, 4XL, 5XL, 6XL, Extra Small, Small, Medium, Large, Extra Large, X-Large, XX-Large, XXX-Large, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 38, 40, 42, 44, 46, 48, 50, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12, 12.5, 13, 13.5, 14, 14.5, 15, One Size, OS'
+      endif
+
+      assign clean_size_order = custom_size_order | newline_to_br | replace: '<br />', ',' | replace: '<br/>', ',' | replace: '<br>', ',' | split: ','
+      assign matched_indices_string = ''
+
+      for size_item in clean_size_order
+        assign target_size = size_item | strip | downcase
+        if target_size == blank
+          continue
         endif
-      -%}
 
-      {%- capture input_id -%}
-        {%- if block.id -%}
-          {{ block.id }}-{{ option.position }}-{{ forloop.index0 -}}
-        {%- else -%}
-          StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ forloop.index0 -}}
-        {%- endif -%}
-      {%- endcapture -%}
+        for val in option.values
+          assign current_idx_str = forloop.index0 | append: ''
+          assign match_check = ',' | append: current_idx_str | append: ','
+          assign all_matched = ',' | append: matched_indices_string | append: ','
 
-      {%- capture input_name -%}
-        {{ option.name | escape | append: section_name }}-{{ product.id }}-{{ option.position }}
-      {%- endcapture -%}
+          unless all_matched contains match_check
+            assign val_name = val.name | default: val | strip | downcase
+            if val_name == target_size
+              if sorted_indices_string == blank
+                assign sorted_indices_string = current_idx_str
+                assign matched_indices_string = current_idx_str
+              else
+                assign sorted_indices_string = sorted_indices_string | append: ',' | append: current_idx_str
+                assign matched_indices_string = matched_indices_string | append: ',' | append: current_idx_str
+              endif
+            endif
+          endunless
+        endfor
+      endfor
 
-      {%- capture input_dataset -%}
-        data-product-url="{{ value.product_url }}"
-        data-option-value-id="{{ value.id }}"
-      {%- endcapture -%}
+      for val in option.values
+        assign current_idx_str = forloop.index0 | append: ''
+        assign match_check = ',' | append: current_idx_str | append: ','
+        assign all_matched = ',' | append: matched_indices_string | append: ','
+        unless all_matched contains match_check
+          if sorted_indices_string == blank
+            assign sorted_indices_string = current_idx_str
+          else
+            assign sorted_indices_string = sorted_indices_string | append: ',' | append: current_idx_str
+          endif
+        endunless
+      endfor
+    else
+      for val in option.values
+        if forloop.first
+          assign sorted_indices_string = forloop.index0 | append: ''
+        else
+          assign sorted_indices_string = sorted_indices_string | append: ',' | append: forloop.index0
+        endif
+      endfor
+    endif
 
-      {%- capture label_unavailable -%}
-        <span class="visually-hidden label-unavailable">
-          {{- 'products.product.variant_sold_out_or_unavailable' | t -}}
-        </span>
-      {%- endcapture -%}
+    assign sorted_indices = sorted_indices_string | split: ','
+  -%}
 
-      {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
-        <input
-          type="radio"
-          id="{{ input_id }}"
-          name="{{ input_name | escape }}"
-          value="{{ value | escape }}"
-          form="{{ product_form_id }}"
-          {% if value.selected %}
-            checked
-          {% endif %}
-          {% if option_disabled %}
-            class="disabled"
-          {% endif %}
-          {{ input_dataset }}
-        >
-        <label for="{{ input_id }}">
-          {{ value | escape -}}
-          {%- if option_disabled -%}
-            {{ label_unavailable }}
+  {%- capture product_variants -%}
+    {%- for idx_str in sorted_indices -%}
+      {%- assign target_idx = idx_str | plus: 0 -%}
+      {%- for value in option.values -%}
+        {%- if forloop.index0 == target_idx -%}
+          {%- liquid
+            assign option_disabled = true
+            if value.available
+              assign option_disabled = false
+            endif
+          -%}
+
+          {%- capture input_id -%}
+            {%- if block.id -%}
+              {{ block.id }}-{{ option.position }}-{{ value.id | default: target_idx -}}
+            {%- else -%}
+              StickyCart-{{ option.name | handle }}-{{ option.position }}-{{ value.id | default: target_idx -}}
+            {%- endif -%}
+          {%- endcapture -%}
+
+          {%- capture input_name -%}
+            {{ option.name | escape | append: section_name }}-{{ product.id }}-{{ option.position }}
+          {%- endcapture -%}
+
+          {%- capture input_dataset -%}
+            data-product-url="{{ value.product_url }}"
+            data-option-value-id="{{ value.id }}"
+          {%- endcapture -%}
+
+          {%- capture label_unavailable -%}
+            <span class="visually-hidden label-unavailable">
+              {{- 'products.product.variant_sold_out_or_unavailable' | t -}}
+            </span>
+          {%- endcapture -%}
+
+          {%- if variant_style == 'pills' or variant_style == 'swatch'-%}
+            <input
+              type="radio"
+              id="{{ input_id }}"
+              name="{{ input_name | escape }}"
+              value="{{ value | escape }}"
+              form="{{ product_form_id }}"
+              {% if value.selected %}
+                checked
+              {% endif %}
+              {% if option_disabled %}
+                class="disabled"
+              {% endif %}
+              {{ input_dataset }}
+            >
+            <label for="{{ input_id }}">
+              {{ value | escape -}}
+              {%- if option_disabled -%}
+                {{ label_unavailable }}
+              {%- endif -%}
+            </label>
+          {%- elsif variant_style == 'dropdowns' -%}
+            <option
+              id="{{ input_id }}"
+              value="{{ value | escape }}"
+              {% if value.selected %}
+                selected="selected"
+              {% endif %}
+              {{ input_dataset }}
+            >
+              {% if option_disabled -%}
+                {{- 'products.product.value_unavailable' | t: option_value: value -}}
+              {%- else -%}
+                {{- value | escape -}}
+              {%- endif %}
+            </option>
           {%- endif -%}
-        </label>
-      {%- elsif variant_style == 'dropdowns' -%}
-        <option
-          id="{{ input_id }}"
-          value="{{ value | escape }}"
-          {% if value.selected %}
-            selected="selected"
-          {% endif %}
-          {{ input_dataset }}
-        >
-          {% if option_disabled -%}
-            {{- 'products.product.value_unavailable' | t: option_value: value -}}
-          {%- else -%}
-            {{- value | escape -}}
-          {%- endif %}
-        </option>
-      {%- endif -%}
+        {%- endif -%}
+      {%- endfor -%}
     {%- endfor -%}
   {%- endcapture -%}
 

@@ -2987,6 +2987,23 @@
       },
       {
         "type": "header",
+        "content": "Variant Size Ordering"
+      },
+      {
+        "type": "checkbox",
+        "id": "enable_size_order",
+        "label": "Enable pre-determined size sorting",
+        "default": true
+      },
+      {
+        "type": "textarea",
+        "id": "size_order",
+        "label": "Global custom size order",
+        "info": "Enter sizes separated by commas or newlines in the order you want them to appear (e.g. XS, S, M, L, XL, 3, 3.5, 4...). Sizes not listed here will appear at the end in their original order. Leave blank to use standard default order.",
+        "placeholder": "XS, S, M, L, XL, XXL, XXXL, 2XL, 3XL, 3, 3.5, 4, 4.5, 5, 5.5, 6, 6.5, 7, 7.5, 8, 8.5, 9, 9.5, 10, 10.5, 11, 11.5, 12"
+      },
+      {
+        "type": "header",
         "content": "t:content.border"
       },
       {
