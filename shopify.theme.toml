@@ -1,5 +1,5 @@
 [environments.mint]
-theme = "203111465300"
+theme = "203168416084"
 store = "philip-morris-direct"
 ignore = ["*.scss","assets/dist", "*.json"]
 theme-editor-sync = true

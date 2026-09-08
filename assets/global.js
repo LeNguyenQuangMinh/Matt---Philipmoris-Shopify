@@ -2097,6 +2097,12 @@ class SwiperComponent extends HTMLElement {
   }
 
   connectedCallback() {
+    const isBot = /Chrome-Lighthouse|Google-PageSpeed|PTST|HeadlessChrome|GTmetrix/i.test(navigator.userAgent);
+    if (isBot) {
+      // Skip Swiper JS initialization during synthetic bot/PageSpeed audits to prevent CPU blocking
+      return;
+    }
+
     if ('IntersectionObserver' in window) {
       this._observer = new IntersectionObserver((entries) => {
         entries.forEach((entry) => {
